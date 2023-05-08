@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{AA3B0072-737B-4160-B47D-79233CCC00BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Programs", "Programs", "{8F88A631-BD6E-414B-8DEF-A210EE3E6540}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{1369360D-2FD6-454A-8F0E-A4509A6E10C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{17EB1E76-FAF4-4D3C-9C2F-E0DAA8AB40A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Profile|x64 = Profile|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA3B0072-737B-4160-B47D-79233CCC00BF}.Debug|x64.ActiveCfg = Debug|x64
+		{AA3B0072-737B-4160-B47D-79233CCC00BF}.Debug|x64.Build.0 = Debug|x64
+		{AA3B0072-737B-4160-B47D-79233CCC00BF}.Profile|x64.ActiveCfg = Profile|x64
+		{AA3B0072-737B-4160-B47D-79233CCC00BF}.Profile|x64.Build.0 = Profile|x64
+		{AA3B0072-737B-4160-B47D-79233CCC00BF}.Release|x64.ActiveCfg = Release|x64
+		{AA3B0072-737B-4160-B47D-79233CCC00BF}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DC119030-FBAC-43C1-9334-A89ED413DABA}
+	EndGlobalSection
+EndGlobal
