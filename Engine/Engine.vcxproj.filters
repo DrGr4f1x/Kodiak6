@@ -1,28 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Core">
-      <UniqueIdentifier>{4e7b21a4-a859-4acc-adc5-fe6bb3365b08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RHI">
-      <UniqueIdentifier>{ab6d8c69-d627-4677-8601-ce02ed14179d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RHI\D3D12">
-      <UniqueIdentifier>{0b4a1335-8571-4a00-a2f3-3170f73d7ac8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RHI\Vulkan">
-      <UniqueIdentifier>{cf1c5f8d-3fa0-4904-aa3b-8420ee0fde2a}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="D:\Depot\Kodiak6\Engine\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Depot\Kodiak6\Engine\Stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Stdafx.h" />
-    <ClInclude Include="Core\BitmaskEnum.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="D:\Depot\Kodiak6\Engine\Core\BitmaskEnum.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h" />
+    <ClInclude Include="D:\Depot\Kodiak6\Engine\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Depot\Kodiak6\Engine\Stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Stdafx.cpp" />
-    <ClCompile Include="Application.cpp" />
+    <CustomBuild Include="D:\Depot\Kodiak6\Engine\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{DABA9C1E-D825-3639-A02E-AF22D184E27B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9110B521-604B-3431-9C9F-640FF008A25C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

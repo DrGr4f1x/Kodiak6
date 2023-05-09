@@ -25,7 +25,6 @@ def copy_template_file(filename, project, guid):
     template_filename = os.path.join(TEMPLATES_FOLDER, filename)
     output_filename = os.path.join(APPS_FOLDER, project)
     output_filename = os.path.join(output_filename, filename)
-    output_filename = output_filename.replace('AppTemplate', project)
     output_filename = output_filename.replace('TEMPLATE', project)
     with open(template_filename, 'r', encoding='utf-8') as infile:
         with open(output_filename, 'w', encoding='utf-8') as outfile:
@@ -38,17 +37,12 @@ def copy_template_file(filename, project, guid):
 
 def copy_app_template(project, guid):
     '''Instantiates a new solution from a template'''
-    shutil.copy(os.path.join(TEMPLATES_FOLDER, 'packages.config'), project)
-    shutil.copy(os.path.join(TEMPLATES_FOLDER, 'Stdafx.h'), project)
-    shutil.copy(os.path.join(TEMPLATES_FOLDER, 'Stdafx.cpp'), project)
     copy_template_file('Stdafx.h', project, guid)
     copy_template_file('Stdafx.cpp', project, guid)
     copy_template_file('TEMPLATEApp.h', project, guid)
     copy_template_file('TEMPLATEApp.cpp', project, guid)
     copy_template_file('Main.cpp', project, guid)
-    copy_template_file('AppTemplate.sln', project, guid)
-    copy_template_file('AppTemplate.vcxproj', project, guid)
-    copy_template_file('AppTemplate.vcxproj.filters', project, guid)
+    copy_template_file('CMakeLists.txt', project, guid)
 
 
 def create_project():
