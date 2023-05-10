@@ -36,8 +36,8 @@ public:
 protected:
 	const std::string m_name;
 
-	uint32_t m_displayWidth{ 1280 };
-	uint32_t m_displayHeight{ 720 };
+	uint32_t m_displayWidth{ 1920 };
+	uint32_t m_displayHeight{ 1080 };
 
 private:
 	void Initialize();

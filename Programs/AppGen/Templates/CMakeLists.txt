@@ -13,6 +13,8 @@ set(APP_NAME TEMPLATE_NAME)
 # Main
 file(GLOB SOURCE *.cpp)
 file(GLOB HEADERS *.h)
+source_group("" FILES ${HEADERS})
+source_group("" FILES ${SOURCE})
 
 # Target executable
 add_executable(${APP_NAME} WIN32 ${SOURCE} ${HEADERS})

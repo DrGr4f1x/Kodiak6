@@ -17,6 +17,9 @@ using namespace Kodiak;
 using namespace std;
 
 
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
+
 Application::Application()
 	: m_name("Unnamed")
 {}

@@ -8,20 +8,24 @@
 # Author:  David Elder
 #
 
-set(EngineInclude
-	Core/BitmaskEnum.h
-	Application.h
-	Stdafx.h
-)
+# Top-level
+file(GLOB SOURCE *.cpp)
+file(GLOB HEADERS *.h)
+source_group("" FILES ${SOURCE})
+source_group("" FILES ${HEADERS})
 
-set(EngineSrc
-	Application.cpp
-	Stdafx.cpp
-)
+# Core
+file(GLOB CORE_SOURCE *.cpp)
+file(GLOB CORE_HEADERS *.h)
+source_group(Core FILES ${CORE_SOURCE})
+source_group(Core FILES ${CORE_HEADERS})
+
 
 add_library(Engine STATIC
-	${EngineInclude}
-	${EngineSrc}
+	${SOURCE}
+	${HEADERS}
+	${CORE_SOURCE}
+	${CORE_HEADERS}
 )
 
 if (MSVC)
@@ -31,6 +35,4 @@ endif(MSVC)
 
 set_target_properties(Engine PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIRECTORY}/Lib"
-	LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIRECTORY}/Lib"
-	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIRECTORY}/Bin"
 )
