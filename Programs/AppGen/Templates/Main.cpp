@@ -12,9 +12,21 @@
 
 #include "TEMPLATEApp.h"
 
-int wmain(int argc, wchar_t** argv)
+using namespace Kodiak;
+
+
+int wmain(int argc, char** argv)
 {
-	TEMPLATEApp app;
+	GraphicsApi api = GetGraphicsApiFromCommandline(argc, argv);
+
+	ApplicationDesc desc{
+		"TEMPLATE",
+		1920,
+		1080,
+		api
+	};
+
+	TEMPLATEApp app(desc);
 	app.Run();
 
 	return 0;

@@ -10,5 +10,23 @@
 
 #pragma once
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
+// Windows headers
+#include <windows.h>
+
 // Standard library headers
+#include <chrono>
+#include <cstdarg>
+#include <memory>
 #include <string>
+
+// Engine headers
+#include "Core\BitmaskEnum.h"
+#include "Core\CoreEnums.h"
+#include "Core\Utility.h"

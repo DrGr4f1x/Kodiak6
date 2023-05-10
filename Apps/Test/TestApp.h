@@ -16,8 +16,8 @@
 class TestApp : public Kodiak::Application
 {
 public:
-	TestApp() 
-		: Application("Test")
+	explicit TestApp(const Kodiak::ApplicationDesc& desc) 
+		: Application(desc)
 	{}
 
 	void Configure() final;

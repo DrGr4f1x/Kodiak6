@@ -16,8 +16,8 @@
 class TEMPLATEApp : public Kodiak::Application
 {
 public:
-	TEMPLATEApp() 
-		: Application("TEMPLATE")
+	explicit TEMPLATEApp(const Kodiak::ApplicationDesc& desc) 
+		: Application(desc)
 	{}
 
 	void Configure() final;

@@ -59,6 +59,7 @@
 
 // Standard library headers
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <cstdarg>
@@ -84,7 +85,8 @@
 
 // Engine headers
 #include "Core\BitmaskEnum.h"
-
+#include "Core\CoreEnums.h"
+#include "Core\Utility.h"
 
 // Engine info
 #define KODIAK_MAKE_VERSION(major, minor, patch) \
