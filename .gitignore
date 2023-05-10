@@ -412,3 +412,6 @@ CTestTestfile.cmake
 ALL_BUILD.*
 ZERO_CHECK.*
 _deps
+*.vcxproj
+*.sln
+*.filters
