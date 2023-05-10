@@ -8,5 +8,7 @@
 # Author:  David Elder
 #
 
-# List of all Apps
-add_subdirectory("./Test")
+# Required dependencies
+set(EXTERNAL_FOLDER "External")
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)

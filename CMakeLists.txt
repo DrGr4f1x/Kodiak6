@@ -21,5 +21,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+add_subdirectory(External)
 add_subdirectory(Engine)
 add_subdirectory(Apps)
