@@ -41,6 +41,19 @@ public:
 	virtual void UpdateUI() {}
 	virtual void Render() {}
 
+	// Accessors
+	const HINSTANCE GetHINSTANCE() const { return m_hinst; }
+	const HWND GetHWND() const { return m_hwnd; }
+	uint32_t GetWidth() const { return m_displayWidth; }
+	uint32_t GetHeight() const { return m_displayHeight; }
+
+	// Application state
+	bool IsPaused() const { return m_isPaused; }
+	void Pause() { m_isPaused = true; }
+	void Unpause() { m_isPaused = false; }
+	void TogglePause() { m_isPaused = !m_isPaused; }
+	void Stop() { m_isRunning = false; }
+
 protected:
 	const std::string m_name;
 	
@@ -51,6 +64,7 @@ protected:
 
 	// Application state
 	bool m_isRunning{ false };
+	bool m_isPaused{ false };
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_appStartTime;
 
 	HINSTANCE	m_hinst{ 0 };

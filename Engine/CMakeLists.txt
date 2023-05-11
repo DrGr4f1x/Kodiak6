@@ -32,8 +32,14 @@ ADDFILEROOT(FILE_LIST Stdafx.cpp)
 # Core files
 ADDFILEGROUP(FILE_LIST Core Core/BitmaskEnum.h)
 ADDFILEGROUP(FILE_LIST Core Core/CoreEnums.h)
+ADDFILEGROUP(FILE_LIST Core Core/Hash.h)
+ADDFILEGROUP(FILE_LIST Core Core/Hash.cpp)
 ADDFILEGROUP(FILE_LIST Core Core/Utility.h)
 ADDFILEGROUP(FILE_LIST Core Core/Utility.cpp)
+ADDFILEGROUP(FILE_LIST Core Core/VectorMath.h)
+
+# Core\Math files
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/CommonMath.h)
 
 add_library(Engine STATIC ${FILE_LIST})
 

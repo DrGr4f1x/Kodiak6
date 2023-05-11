@@ -87,6 +87,7 @@
 #include "Core\BitmaskEnum.h"
 #include "Core\CoreEnums.h"
 #include "Core\Utility.h"
+#include "Core\VectorMath.h"
 
 // Engine info
 #define KODIAK_MAKE_VERSION(major, minor, patch) \
