@@ -28,10 +28,15 @@ ADDFILEROOT(FILE_LIST TEMPLATEApp.cpp)
 
 # Target executable
 add_executable(${APP_NAME} WIN32 ${FILE_LIST})
+
+if (MSVC)
+	set_target_properties(Engine PROPERTIES COMPILE_FLAGS "/YuStdafx.h")
+	set_source_files_properties(Stdafx.cpp PROPERTIES COMPILE_FLAGS "/YcStdafx.h")
+endif(MSVC)
+
 target_link_libraries(${APP_NAME} Engine ${WINLIBS})
-set_target_properties(${APP_NAME} PROPERTIES
-	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Bin"
-)
+
+set_target_properties(${APP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Bin")
 set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin)
 set_target_properties(${APP_NAME} PROPERTIES FOLDER "Apps")
 set_target_properties(${APP_NAME} PROPERTIES 

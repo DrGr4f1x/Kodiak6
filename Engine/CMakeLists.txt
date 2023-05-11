@@ -40,6 +40,21 @@ ADDFILEGROUP(FILE_LIST Core Core/VectorMath.h)
 
 # Core\Math files
 ADDFILEGROUP(FILE_LIST Core/Math Core/Math/CommonMath.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/BoundingBox.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/BoundingBox.cpp)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/BoundingPlane.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/BoundingSphere.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Frustum.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Frustum.cpp)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Functions.inl)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Matrix3.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Matrix4.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Quaternion.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Random.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Random.cpp)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Scalar.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Transform.h)
+ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Vector.h)
 
 add_library(Engine STATIC ${FILE_LIST})
 
