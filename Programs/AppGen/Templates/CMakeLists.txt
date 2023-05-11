@@ -10,14 +10,24 @@
 
 set(APP_NAME TEMPLATE_NAME)
 
-# Main
-file(GLOB SOURCE *.cpp)
-file(GLOB HEADERS *.h)
-source_group("" FILES ${HEADERS})
-source_group("" FILES ${SOURCE})
+# Macro to add a source file to the root group
+macro(ADDFILEROOT file_list source_file)
+	list(APPEND ${file_list} ${source_file})
+	source_group("" FILES ${source_file})
+endmacro()
+
+# Initialize empty file list
+set(FILE_LIST "")
+
+# Root files
+ADDFILEROOT(FILE_LIST Main.cpp)
+ADDFILEROOT(FILE_LIST Stdafx.h)
+ADDFILEROOT(FILE_LIST Stdafx.cpp)
+ADDFILEROOT(FILE_LIST TEMPLATEApp.h)
+ADDFILEROOT(FILE_LIST TEMPLATEApp.cpp)
 
 # Target executable
-add_executable(${APP_NAME} WIN32 ${SOURCE} ${HEADERS})
+add_executable(${APP_NAME} WIN32 ${FILE_LIST})
 target_link_libraries(${APP_NAME} Engine ${WINLIBS})
 set_target_properties(${APP_NAME} PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Bin"

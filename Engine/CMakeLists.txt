@@ -8,25 +8,34 @@
 # Author:  David Elder
 #
 
-# Top-level
-file(GLOB SOURCE *.cpp)
-file(GLOB HEADERS *.h)
-source_group("" FILES ${SOURCE})
-source_group("" FILES ${HEADERS})
+# Macro to add a source file to the root group
+macro(ADDFILEROOT file_list source_file)
+	list(APPEND ${file_list} ${source_file})
+	source_group("" FILES ${source_file})
+endmacro()
 
-# Core
-file(GLOB CORE_SOURCE *.cpp)
-file(GLOB CORE_HEADERS *.h)
-source_group(Core FILES ${CORE_SOURCE})
-source_group(Core FILES ${CORE_HEADERS})
+# Macro to add a source file to a source group
+macro(ADDFILEGROUP file_list group source_file)
+	list(APPEND ${file_list} ${source_file})
+	source_group(${group} FILES ${source_file})
+endmacro()
 
+# Initialize empty file list
+set(FILE_LIST "")
 
-add_library(Engine STATIC
-	${SOURCE}
-	${HEADERS}
-	${CORE_SOURCE}
-	${CORE_HEADERS}
-)
+# Root files
+ADDFILEROOT(FILE_LIST Application.h)
+ADDFILEROOT(FILE_LIST Application.cpp)
+ADDFILEROOT(FILE_LIST Stdafx.h)
+ADDFILEROOT(FILE_LIST Stdafx.cpp)
+
+# Core files
+ADDFILEGROUP(FILE_LIST Core Core/BitmaskEnum.h)
+ADDFILEGROUP(FILE_LIST Core Core/CoreEnums.h)
+ADDFILEGROUP(FILE_LIST Core Core/Utility.h)
+ADDFILEGROUP(FILE_LIST Core Core/Utility.cpp)
+
+add_library(Engine STATIC ${FILE_LIST})
 
 if (MSVC)
 	set_target_properties(Engine PROPERTIES COMPILE_FLAGS "/YuStdafx.h")
