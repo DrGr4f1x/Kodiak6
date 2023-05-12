@@ -50,7 +50,7 @@ void Filesystem::SetDefaultRootPath()
 	{
 		defRootPath = defRootPath.parent_path();
 	}
-	assert(!defRootPath.empty());;
+	assert(!defRootPath.empty());
 	assert(defRootPath.filename() == m_appName);
 
 	SetRootPath(defRootPath);
