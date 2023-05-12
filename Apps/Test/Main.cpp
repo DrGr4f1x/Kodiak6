@@ -19,12 +19,7 @@ int wmain(int argc, char** argv)
 {
 	GraphicsApi api = GetGraphicsApiFromCommandline(argc, argv);
 
-	ApplicationDesc desc{
-		"Test",
-		1920,
-		1080,
-		api
-	};
+	ApplicationDesc desc{ /*DO NOT MODIFY*/ s_appName, 1920, 1080, api };
 
 	TestApp app(desc);
 	app.Run();

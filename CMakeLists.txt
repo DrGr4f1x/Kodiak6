@@ -10,6 +10,8 @@
 
 cmake_minimum_required(VERSION 3.24)
 
+include(SetupConfigurations.cmake)
+
 set(NAME Main)
 
 project(${NAME} VERSION 6.0.0)

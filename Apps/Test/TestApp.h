@@ -12,49 +12,6 @@
 
 #include "Application.h"
 
-#include <iostream>
-
-class A
-{
-public:
-	A()
-	{
-		std::cout << "A ctor" << std::endl;
-	}
-	~A()
-	{
-		std::cout << "A dtor" << std::endl;
-	}
-};
-
-
-class B
-{
-public:
-	B()
-	{
-		std::cout << "B ctor" << std::endl;
-	}
-	~B()
-	{
-		std::cout << "B dtor" << std::endl;
-	}
-};
-
-
-class C
-{
-public:
-	C()
-	{
-		std::cout << "C ctor" << std::endl;
-	}
-	~C()
-	{
-		std::cout << "C dtor" << std::endl;
-	}
-};
-
 
 class TestApp : public Kodiak::Application
 {

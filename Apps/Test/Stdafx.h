@@ -33,3 +33,6 @@
 #include "Core\NonMovable.h"
 #include "Core\Utility.h"
 #include "Core\VectorMath.h"
+
+// App name
+static const std::string s_appName{ "Test" };

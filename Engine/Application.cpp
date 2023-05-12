@@ -108,7 +108,7 @@ void Application::Configure()
 void Application::Initialize()
 {
 	// Create engine systems
-	m_filesystem = make_unique<Filesystem>();
+	m_filesystem = make_unique<Filesystem>(m_name);
 
 	Configure();
 

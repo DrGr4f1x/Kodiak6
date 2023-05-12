@@ -28,7 +28,8 @@ Filesystem* g_filesystem{ nullptr };
 } // anonymous namespace
 
 
-Filesystem::Filesystem()
+Filesystem::Filesystem(const string& appName)
+	: m_appName(appName)
 {
 	Initialize();
 	g_filesystem = this;
@@ -43,7 +44,16 @@ Filesystem::~Filesystem()
 
 void Filesystem::SetDefaultRootPath()
 {
-	SetRootPath(m_binaryPath.parent_path());
+	filesystem::path defRootPath = m_binaryPath;
+
+	while (!defRootPath.empty() && defRootPath.filename() != m_appName)
+	{
+		defRootPath = defRootPath.parent_path();
+	}
+	assert(!defRootPath.empty());;
+	assert(defRootPath.filename() == m_appName);
+
+	SetRootPath(defRootPath);
 }
 
 

@@ -16,7 +16,7 @@ namespace Kodiak
 class Filesystem : NonCopyable, NonMovable
 {
 public:
-	Filesystem();
+	explicit Filesystem(const std::string& appName);
 	~Filesystem();
 
 	const std::filesystem::path& GetBinaryPath() const { return m_binaryPath; }
@@ -47,6 +47,8 @@ private:
 	void RemoveAllSearchPaths();
 
 private:
+	std::string m_appName;
+
 	std::filesystem::path m_binaryPath;
 	std::filesystem::path m_binarySubpath;
 
