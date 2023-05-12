@@ -12,6 +12,8 @@
 
 #include "Application.h"
 
+#include "Filesystem.h"
+
 #pragma comment(lib, "runtimeobject.lib")
 
 using namespace Kodiak;
@@ -96,12 +98,20 @@ void Application::Run()
 
 void Application::Configure()
 {
+	// Setup file system
+	auto filesystem = GetFilesystem();
 
+	filesystem->SetDefaultRootPath();
 }
 
 
 void Application::Initialize()
 {
+	// Create engine systems
+	m_filesystem = make_unique<Filesystem>();
+
+	Configure();
+
 	Startup();
 
 	m_isRunning = true;

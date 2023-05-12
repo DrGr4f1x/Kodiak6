@@ -19,6 +19,7 @@ using namespace std;
 void TestApp::Configure()
 {
 	// Application config, before device creation
+	Application::Configure();
 }
 
 

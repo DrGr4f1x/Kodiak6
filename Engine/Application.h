@@ -14,6 +14,9 @@
 namespace Kodiak
 {
 
+// Forward declarations
+class Filesystem;
+
 struct ApplicationDesc
 {
 	const std::string name{ "Unnamed" };
@@ -69,6 +72,9 @@ protected:
 
 	HINSTANCE	m_hinst{ 0 };
 	HWND		m_hwnd{ 0 };
+
+	// Engine systems
+	std::unique_ptr<Filesystem> m_filesystem;
 
 private:
 	void Initialize();
