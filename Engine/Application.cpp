@@ -13,6 +13,7 @@
 #include "Application.h"
 
 #include "Filesystem.h"
+#include "LogSystem.h"
 
 #pragma comment(lib, "runtimeobject.lib")
 
@@ -107,10 +108,15 @@ void Application::Configure()
 
 void Application::Initialize()
 {
-	// Create engine systems
+	// Create filesystem first
 	m_filesystem = make_unique<Filesystem>(m_name);
 
 	Configure();
+
+	// Create other systems
+	m_logSystem = make_unique<LogSystem>();
+
+	LOG_INFO << "Systems initialized";
 
 	Startup();
 

@@ -16,6 +16,8 @@ namespace Kodiak
 
 // Forward declarations
 class Filesystem;
+class LogSystem;
+
 
 struct ApplicationDesc
 {
@@ -75,6 +77,7 @@ protected:
 
 	// Engine systems
 	std::unique_ptr<Filesystem> m_filesystem;
+	std::unique_ptr<LogSystem> m_logSystem;
 
 private:
 	void Initialize();
