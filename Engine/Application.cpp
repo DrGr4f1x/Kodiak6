@@ -108,15 +108,17 @@ void Application::Configure()
 
 void Application::Initialize()
 {
-	// Create filesystem first
+	// Create core engine systems
 	m_filesystem = make_unique<FileSystem>(m_name);
-
-	Configure();
-
-	// Create other systems
+	m_filesystem->SetDefaultRootPath();
 	m_logSystem = make_unique<LogSystem>();
 
 	LOG_INFO << "Systems initialized";
+
+	Configure();
+
+	// Create graphics device here, after (optional) user configuration
+	//...
 
 	Startup();
 
