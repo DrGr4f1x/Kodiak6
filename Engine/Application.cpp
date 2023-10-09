@@ -12,7 +12,7 @@
 
 #include "Application.h"
 
-#include "Filesystem.h"
+#include "FileSystem.h"
 #include "LogSystem.h"
 
 #pragma comment(lib, "runtimeobject.lib")
@@ -100,7 +100,7 @@ void Application::Run()
 void Application::Configure()
 {
 	// Setup file system
-	auto filesystem = GetFilesystem();
+	auto filesystem = GetFileSystem();
 
 	filesystem->SetDefaultRootPath();
 }
@@ -109,7 +109,7 @@ void Application::Configure()
 void Application::Initialize()
 {
 	// Create filesystem first
-	m_filesystem = make_unique<Filesystem>(m_name);
+	m_filesystem = make_unique<FileSystem>(m_name);
 
 	Configure();
 

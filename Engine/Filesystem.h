@@ -13,11 +13,11 @@
 namespace Kodiak
 {
 
-class Filesystem : NonCopyable, NonMovable
+class FileSystem : NonCopyable, NonMovable
 {
 public:
-	explicit Filesystem(const std::string& appName);
-	~Filesystem();
+	explicit FileSystem(const std::string& appName);
+	~FileSystem();
 
 	const std::filesystem::path& GetBinaryPath() const { return m_binaryPath; }
 	const std::filesystem::path& GetRootPath() const { return m_rootPath; }
@@ -64,6 +64,6 @@ private:
 	PathDesc* m_searchPaths{ nullptr };
 };
 
-Filesystem* GetFilesystem();
+FileSystem* GetFileSystem();
 
 } // namespace Kodiak

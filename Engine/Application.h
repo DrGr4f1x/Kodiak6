@@ -15,7 +15,7 @@ namespace Kodiak
 {
 
 // Forward declarations
-class Filesystem;
+class FileSystem;
 class LogSystem;
 
 
@@ -76,7 +76,7 @@ protected:
 	HWND		m_hwnd{ 0 };
 
 	// Engine systems
-	std::unique_ptr<Filesystem> m_filesystem;
+	std::unique_ptr<FileSystem> m_filesystem;
 	std::unique_ptr<LogSystem> m_logSystem;
 
 private:

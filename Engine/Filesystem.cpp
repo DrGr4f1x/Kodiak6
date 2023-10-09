@@ -10,7 +10,7 @@
 
 #include "Stdafx.h"
 
-#include "Filesystem.h"
+#include "FileSystem.h"
 
 
 using namespace Kodiak;
@@ -23,12 +23,12 @@ namespace
 constexpr uint32_t s_maxPathLength = 4096;
 shared_mutex s_mutex;
 
-Filesystem* g_filesystem{ nullptr };
+FileSystem* g_filesystem{ nullptr };
 
 } // anonymous namespace
 
 
-Filesystem::Filesystem(const string& appName)
+FileSystem::FileSystem(const string& appName)
 	: m_appName(appName)
 {
 	Initialize();
@@ -36,13 +36,13 @@ Filesystem::Filesystem(const string& appName)
 }
 
 
-Filesystem::~Filesystem()
+FileSystem::~FileSystem()
 {
 	g_filesystem = nullptr;
 }
 
 
-void Filesystem::SetDefaultRootPath()
+void FileSystem::SetDefaultRootPath()
 {
 	filesystem::path defRootPath = m_binaryPath;
 
@@ -57,7 +57,7 @@ void Filesystem::SetDefaultRootPath()
 }
 
 
-void Filesystem::SetRootPath(const string& rootPathStr)
+void FileSystem::SetRootPath(const string& rootPathStr)
 {
 	unique_lock<shared_mutex> CS(s_mutex);
 
@@ -73,7 +73,7 @@ void Filesystem::SetRootPath(const string& rootPathStr)
 }
 
 
-void Filesystem::SetRootPath(const filesystem::path& rootPath)
+void FileSystem::SetRootPath(const filesystem::path& rootPath)
 {
 	unique_lock<shared_mutex> CS(s_mutex);
 
@@ -89,7 +89,7 @@ void Filesystem::SetRootPath(const filesystem::path& rootPath)
 }
 
 
-void Filesystem::AddSearchPath(const string& searchPathStr, bool appendPath)
+void FileSystem::AddSearchPath(const string& searchPathStr, bool appendPath)
 {
 	PathDesc* pathPtr = nullptr;
 	PathDesc* cur = m_searchPaths;
@@ -146,7 +146,7 @@ void Filesystem::AddSearchPath(const string& searchPathStr, bool appendPath)
 }
 
 
-void Filesystem::RemoveSearchPath(const string& searchPathStr)
+void FileSystem::RemoveSearchPath(const string& searchPathStr)
 {
 	const filesystem::path searchPath{ searchPathStr };
 
@@ -181,7 +181,7 @@ void Filesystem::RemoveSearchPath(const string& searchPathStr)
 }
 
 
-vector<filesystem::path> Filesystem::GetSearchPaths() const
+vector<filesystem::path> FileSystem::GetSearchPaths() const
 {
 	shared_lock<shared_mutex> CS(s_mutex);
 
@@ -198,7 +198,7 @@ vector<filesystem::path> Filesystem::GetSearchPaths() const
 }
 
 
-bool Filesystem::Exists(const string& fname) const
+bool FileSystem::Exists(const string& fname) const
 {
 	const filesystem::path filePath{ fname };
 
@@ -218,7 +218,7 @@ bool Filesystem::Exists(const string& fname) const
 }
 
 
-bool Filesystem::IsRegularFile(const string& fname) const
+bool FileSystem::IsRegularFile(const string& fname) const
 {
 	const filesystem::path filePath{ fname };
 
@@ -233,7 +233,7 @@ bool Filesystem::IsRegularFile(const string& fname) const
 }
 
 
-bool Filesystem::IsDirectory(const string& dname) const
+bool FileSystem::IsDirectory(const string& dname) const
 {
 	const filesystem::path dirPath{ dname };
 
@@ -247,7 +247,7 @@ bool Filesystem::IsDirectory(const string& dname) const
 	return false;
 }
 
-string Filesystem::GetFullPath(const string& fname)
+string FileSystem::GetFullPath(const string& fname)
 {
 	const filesystem::path filePath{ fname };
 
@@ -267,7 +267,7 @@ string Filesystem::GetFullPath(const string& fname)
 }
 
 
-string Filesystem::GetFileExtension(const string& fname)
+string FileSystem::GetFileExtension(const string& fname)
 {
 	string extension = filesystem::path(fname).extension().string();
 
@@ -277,7 +277,7 @@ string Filesystem::GetFileExtension(const string& fname)
 }
 
 
-bool Filesystem::EnsureDirectory(const string& pathStr)
+bool FileSystem::EnsureDirectory(const string& pathStr)
 {
 	shared_lock<shared_mutex> CS(s_mutex);
 
@@ -290,13 +290,13 @@ bool Filesystem::EnsureDirectory(const string& pathStr)
 }
 
 
-bool Filesystem::EnsureLogDirectory()
+bool FileSystem::EnsureLogDirectory()
 {
 	return EnsureDirectory(m_logPath.string());
 }
 
 
-void Filesystem::Initialize()
+void FileSystem::Initialize()
 {
 	unique_lock<shared_mutex> CS(s_mutex);
 
@@ -317,7 +317,7 @@ void Filesystem::Initialize()
 }
 
 
-void Filesystem::RemoveAllSearchPaths()
+void FileSystem::RemoveAllSearchPaths()
 {
 	PathDesc* cur = m_searchPaths;
 	while (cur)
@@ -330,7 +330,7 @@ void Filesystem::RemoveAllSearchPaths()
 }
 
 
-Kodiak::Filesystem* Kodiak::GetFilesystem()
+Kodiak::FileSystem* Kodiak::GetFileSystem()
 {
 	return g_filesystem;
 }

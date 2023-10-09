@@ -10,7 +10,7 @@
 
 #include "Stdafx.h"
 
-#include "Filesystem.h"
+#include "FileSystem.h"
 
 #include <iostream>
 
@@ -77,7 +77,7 @@ void LogSystem::PostLogMessage(const LogMessage& message)
 void LogSystem::CreateLogFile()
 {
 	// Get the log directory path
-	Filesystem* fs = GetFilesystem();
+	FileSystem* fs = GetFileSystem();
 	fs->EnsureLogDirectory();
 	auto logPath = fs->GetLogPath();
 
