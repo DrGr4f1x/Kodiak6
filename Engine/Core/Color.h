@@ -13,6 +13,9 @@
 
 #pragma once
 
+#include <DirectXMath.h>
+#include <intrin.h>
+
 using namespace DirectX;
 
 namespace Kodiak

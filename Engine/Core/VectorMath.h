@@ -52,6 +52,7 @@
 #pragma once
 
 #include "Math\CommonMath.h"
+#include "Color.h"
 #include "Math\Scalar.h"
 #include "Math\Vector.h"
 #include "Math\Quaternion.h"
