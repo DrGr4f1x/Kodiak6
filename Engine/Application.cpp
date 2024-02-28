@@ -33,7 +33,7 @@ Application::Application(const ApplicationDesc& desc)
 	: m_name(desc.name)
 	, m_displayWidth(desc.width)
 	, m_displayHeight(desc.height)
-	, m_api{desc.api}
+	, m_api(desc.api)
 {}
 
 

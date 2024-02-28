@@ -35,6 +35,8 @@ ADDFILEROOT(FILE_LIST Stdafx.cpp)
 
 # Core files
 ADDFILEGROUP(FILE_LIST Core Core/BitmaskEnum.h)
+ADDFILEGROUP(FILE_LIST Core Core/Color.h)
+ADDFILEGROUP(FILE_LIST Core Core/Color.cpp)
 ADDFILEGROUP(FILE_LIST Core Core/CoreEnums.h)
 ADDFILEGROUP(FILE_LIST Core Core/Hash.h)
 ADDFILEGROUP(FILE_LIST Core Core/Hash.cpp)
