@@ -85,6 +85,7 @@
 
 // Engine headers
 #include "Core\BitmaskEnum.h"
+#include "Core\Color.h"
 #include "Core\CoreEnums.h"
 #include "Core\NonCopyable.h"
 #include "Core\NonMovable.h"
