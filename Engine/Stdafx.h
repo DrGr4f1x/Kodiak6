@@ -91,6 +91,7 @@
 #include "Core\NonMovable.h"
 #include "Core\Utility.h"
 #include "Core\VectorMath.h"
+#include "LogSystem.h"
 
 // Engine info
 #define KODIAK_MAKE_VERSION(major, minor, patch) \

@@ -16,6 +16,7 @@ namespace Kodiak
 
 // Forward declarations
 class FileSystem;
+class InputSystem;
 class LogSystem;
 
 
@@ -78,6 +79,7 @@ protected:
 	// Engine systems
 	std::unique_ptr<FileSystem> m_filesystem;
 	std::unique_ptr<LogSystem> m_logSystem;
+	std::unique_ptr<InputSystem> m_inputSystem;
 
 private:
 	void Initialize();
@@ -85,6 +87,8 @@ private:
 	bool Tick();
 };
 
+
+Application* GetApplication();
 
 GraphicsApi GetGraphicsApiFromCommandline(int argc, const char* const* argv);
 

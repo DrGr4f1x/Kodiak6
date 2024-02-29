@@ -13,7 +13,7 @@
 #include "Application.h"
 
 #include "FileSystem.h"
-#include "LogSystem.h"
+#include "InputSystem.h"
 
 #pragma comment(lib, "runtimeobject.lib")
 
@@ -23,10 +23,14 @@ using namespace std;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
+static Kodiak::Application* g_application = nullptr;
+
 
 Application::Application()
 	: m_name("Unnamed")
-{}
+{
+	g_application = this;
+}
 
 
 Application::Application(const ApplicationDesc& desc)
@@ -34,11 +38,14 @@ Application::Application(const ApplicationDesc& desc)
 	, m_displayWidth(desc.width)
 	, m_displayHeight(desc.height)
 	, m_api(desc.api)
-{}
+{
+	g_application = this;
+}
 
 
 Application::~Application()
 {
+	g_application = nullptr;
 	Finalize();
 }
 
@@ -112,6 +119,7 @@ void Application::Initialize()
 	m_filesystem = make_unique<FileSystem>(m_name);
 	m_filesystem->SetDefaultRootPath();
 	m_logSystem = make_unique<LogSystem>();
+	m_inputSystem = make_unique<InputSystem>(m_hwnd);
 
 	LOG_INFO << "Systems initialized";
 
@@ -135,6 +143,12 @@ void Application::Finalize()
 bool Application::Tick()
 {
 	return true;
+}
+
+
+Kodiak::Application* Kodiak::GetApplication()
+{
+	return g_application;
 }
 
 

@@ -23,7 +23,10 @@
 // Standard library headers
 #include <chrono>
 #include <cstdarg>
+#include <fstream>
+#include <future>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <variant>
 
@@ -35,6 +38,7 @@
 #include "Core\NonMovable.h"
 #include "Core\Utility.h"
 #include "Core\VectorMath.h"
+#include "LogSystem.h"
 
 // App name
 static const std::string s_appName{ "Test" };
