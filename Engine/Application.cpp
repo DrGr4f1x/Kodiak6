@@ -29,6 +29,7 @@ static Kodiak::Application* g_application = nullptr;
 Application::Application()
 	: m_name("Unnamed")
 {
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
 	g_application = this;
 }
 
@@ -39,6 +40,7 @@ Application::Application(const ApplicationDesc& desc)
 	, m_displayHeight(desc.height)
 	, m_api(desc.api)
 {
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
 	g_application = this;
 }
 
@@ -183,6 +185,19 @@ bool Application::GetCaptureMouse() const
 }
 
 
+string Application::GetWindowTitle() const
+{
+	if (m_showUI)
+	{
+		return format("{}", m_appNameWithApi);
+	}
+	else
+	{
+		return format("{} - {} fps", m_appNameWithApi, m_frameCounter);
+	}
+}
+
+
 void Application::Initialize()
 {
 	// Create core engine systems
@@ -212,7 +227,62 @@ void Application::Finalize()
 
 bool Application::Tick()
 {
-	return true;
+	if (!m_isRunning)
+		return false;
+
+	auto timeStart = chrono::high_resolution_clock::now();
+
+	m_inputSystem->Update(m_frameTimer);
+
+	// Close on Escape key
+	if (IsFirstPressed(DigitalInput::kKey_escape))
+		return false;
+
+	bool res = Update();
+	if (res)
+	{
+		/*m_grid->Update(m_camera);
+
+		Render();
+
+		m_graphicsDevice->SubmitFrame();*/
+	}
+
+	++m_frameCounter;
+
+	// Elapsed time for this frame
+	auto timeEnd = chrono::high_resolution_clock::now();
+	auto timeDiff = chrono::duration<double, std::milli>(timeEnd - timeStart).count();
+	m_frameTimer = static_cast<float>(timeDiff) / 1000.0f;
+
+	if (!m_isPaused)
+	{
+		m_timer += m_timerSpeed * m_frameTimer;
+		if (m_timer > 1.0f)
+		{
+			m_timer -= 1.0f;
+		}
+
+		// Global elapsed time since application start
+		auto globalTimeDiff = chrono::duration<double, std::milli>(timeEnd - m_appStartTime).count();
+		m_appElapsedTime = static_cast<float>(globalTimeDiff) / 1000.0f;
+	}
+
+	float fpsTimer = (float)(std::chrono::duration<double, std::milli>(timeEnd - m_lastTimestamp).count());
+	if (fpsTimer > 1000.0f)
+	{
+		m_lastFps = static_cast<uint32_t>((float)m_frameCounter * (1000.0f / fpsTimer));
+
+		std::string windowTitle = GetWindowTitle();
+		SetWindowText(m_hwnd, windowTitle.c_str());
+
+		m_frameCounter = 0;
+		m_lastTimestamp = timeEnd;
+	}
+
+	//PrepareUI();
+
+	return res;
 }
 
 

@@ -74,8 +74,11 @@ public:
 	void SetCaptureMouse(bool capture);
 	bool GetCaptureMouse() const;
 
+	std::string GetWindowTitle() const;
+
 protected:
 	const std::string m_name;
+	std::string m_appNameWithApi;
 	
 	uint32_t m_displayWidth{ 1920 };
 	uint32_t m_displayHeight{ 1080 };
@@ -85,7 +88,16 @@ protected:
 	// Application state
 	bool m_isRunning{ false };
 	bool m_isPaused{ false };
+	bool m_showUI{ false };
+	bool m_showGrid{ false };
+	float m_frameTimer{ 0.0f };
+	float m_appElapsedTime{ 0.0f };
+	float m_timer{ 0.0f };
+	float m_timerSpeed{ 1.0f };
+	uint32_t m_lastFps{ 0 };
+	uint32_t m_frameCounter{ 0 };
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_appStartTime;
+	std::chrono::time_point<std::chrono::high_resolution_clock> m_lastTimestamp;
 
 	HINSTANCE	m_hinst{ 0 };
 	HWND		m_hwnd{ 0 };
