@@ -25,11 +25,12 @@
 #include <cstdarg>
 #include <memory>
 #include <string>
+#include <variant>
 
 // Engine headers
 #include "Core\BitmaskEnum.h"
-#include "Core\Color.h"
 #include "Core\CoreEnums.h"
+#include "Core\DWParam.h"
 #include "Core\NonCopyable.h"
 #include "Core\NonMovable.h"
 #include "Core\Utility.h"
