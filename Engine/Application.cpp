@@ -113,6 +113,76 @@ void Application::Configure()
 }
 
 
+bool Application::IsAnyPressed() const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->IsAnyPressed();
+}
+
+
+bool Application::IsPressed(DigitalInput di) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->IsPressed(di);
+}
+
+
+bool Application::IsFirstPressed(DigitalInput di) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->IsFirstPressed(di);
+}
+
+
+bool Application::IsReleased(DigitalInput di) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->IsReleased(di);
+}
+
+
+bool Application::IsFirstReleased(DigitalInput di) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->IsFirstReleased(di);
+}
+
+
+float Application::GetDurationPressed(DigitalInput di) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->GetDurationPressed(di);
+}
+
+
+float Application::GetAnalogInput(AnalogInput ai) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->GetAnalogInput(ai);
+}
+
+
+float Application::GetTimeCorrectedAnalogInput(AnalogInput ai) const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->GetTimeCorrectedAnalogInput(ai);
+}
+
+
+void Application::SetCaptureMouse(bool capture)
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	m_inputSystem->SetCaptureMouse(capture);
+}
+
+
+bool Application::GetCaptureMouse() const
+{
+	assert_msg(m_inputSystem, "Input system not initialized.");
+	return m_inputSystem->GetCaptureMouse();
+}
+
+
 void Application::Initialize()
 {
 	// Create core engine systems

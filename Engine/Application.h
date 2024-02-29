@@ -18,6 +18,8 @@ namespace Kodiak
 class FileSystem;
 class InputSystem;
 class LogSystem;
+enum class DigitalInput;
+enum class AnalogInput;
 
 
 struct ApplicationDesc
@@ -59,6 +61,18 @@ public:
 	void Unpause() { m_isPaused = false; }
 	void TogglePause() { m_isPaused = !m_isPaused; }
 	void Stop() { m_isRunning = false; }
+
+	// Input system state
+	bool IsAnyPressed() const;
+	bool IsPressed(DigitalInput di) const;
+	bool IsFirstPressed(DigitalInput di) const;
+	bool IsReleased(DigitalInput di) const;
+	bool IsFirstReleased(DigitalInput di) const;
+	float GetDurationPressed(DigitalInput di) const;
+	float GetAnalogInput(AnalogInput ai) const;
+	float GetTimeCorrectedAnalogInput(AnalogInput ai) const;
+	void SetCaptureMouse(bool capture);
+	bool GetCaptureMouse() const;
 
 protected:
 	const std::string m_name;
