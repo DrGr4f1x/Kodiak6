@@ -212,6 +212,10 @@ void Application::Initialize()
 
 	// Create graphics device here, after (optional) user configuration
 	//...
+	GraphicsDeviceDesc desc;
+	desc.api = m_api;
+
+	m_graphicsDevice = CreateDevice(desc);
 
 	Startup();
 

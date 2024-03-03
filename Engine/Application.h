@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "Graphics\GraphicsDevice.h"
 
 namespace Kodiak
 {
@@ -106,6 +107,7 @@ protected:
 	std::unique_ptr<FileSystem> m_filesystem;
 	std::unique_ptr<LogSystem> m_logSystem;
 	std::unique_ptr<InputSystem> m_inputSystem;
+	DeviceHandle m_graphicsDevice;
 
 private:
 	void Initialize();

@@ -41,6 +41,8 @@ ADDFILEGROUP(FILE_LIST Core Core/Color.h)
 ADDFILEGROUP(FILE_LIST Core Core/Color.cpp)
 ADDFILEGROUP(FILE_LIST Core Core/CoreEnums.h)
 ADDFILEGROUP(FILE_LIST Core Core/DWParam.h)
+ADDFILEGROUP(FILE_LIST Core Core/GUIDs.h)
+ADDFILEGROUP(FILE_LIST Core Core/GUIDs.cpp)
 ADDFILEGROUP(FILE_LIST Core Core/Hash.h)
 ADDFILEGROUP(FILE_LIST Core Core/Hash.cpp)
 ADDFILEGROUP(FILE_LIST Core Core/NonCopyable.h)
@@ -67,6 +69,18 @@ ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Random.cpp)
 ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Scalar.h)
 ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Transform.h)
 ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Vector.h)
+
+# Graphics files
+ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsDevice.h)
+ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsDevice.cpp)
+
+# Graphics\DX12 files
+ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsDevice12.h)
+ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsDevice12.cpp)
+
+# Graphics\VK files
+ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsDeviceVK.h)
+ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsDeviceVK.cpp)
 
 add_library(Engine STATIC ${FILE_LIST})
 

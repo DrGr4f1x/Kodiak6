@@ -47,7 +47,7 @@ template <class T>
 class TRefCount : public T
 {
 private:
-	std::atomic<unsigned long> m_refCount = 1;
+	std::atomic<unsigned long> m_refCount = 0;
 public:
 	HRESULT QueryInterface(REFIID riid, LPVOID* ppvObj) final
 	{
