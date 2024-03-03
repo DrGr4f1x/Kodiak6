@@ -57,6 +57,16 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
+// DirectX 12 headers
+#include <dxgi.h>
+#include <d3d12.h>
+
+// Vulkan headers
+#define VK_USE_PLATFORM_WIN32_KHR
+#define VK_NO_PROTOTYPES 1
+#include <vulkan/vulkan.h>
+#pragma comment(lib, "vulkan-1.lib")
+
 // Standard library headers
 #include <array>
 #include <chrono>

@@ -15,7 +15,17 @@ namespace Kodiak
 
 struct GraphicsDeviceDesc
 {
-	GraphicsApi api;
+	GraphicsApi api{ GraphicsApi::Unknown };
+
+	std::string appName;
+
+	HINSTANCE hinst{ 0 };
+	HWND hwnd{ 0 };
+
+	uint32_t width{ 0 };
+	uint32_t height{ 0 };
+	bool vsync{ false };
+
 };
 
 class IGraphicsDevice : public IObject

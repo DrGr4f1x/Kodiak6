@@ -210,12 +210,7 @@ void Application::Initialize()
 
 	Configure();
 
-	// Create graphics device here, after (optional) user configuration
-	//...
-	GraphicsDeviceDesc desc;
-	desc.api = m_api;
-
-	m_graphicsDevice = CreateDevice(desc);
+	CreateGraphicsDevice();
 
 	Startup();
 
@@ -287,6 +282,20 @@ bool Application::Tick()
 	//PrepareUI();
 
 	return res;
+}
+
+
+void Application::CreateGraphicsDevice()
+{
+	GraphicsDeviceDesc desc;
+	desc.api = m_api;
+	desc.appName = m_name;
+	desc.hinst = m_hinst;
+	desc.hwnd = m_hwnd;
+	desc.width = m_displayWidth;
+	desc.height = m_displayHeight;
+
+	m_graphicsDevice = CreateDevice(desc);
 }
 
 

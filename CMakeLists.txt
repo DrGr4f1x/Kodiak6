@@ -23,6 +23,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Use FindVulkan module added with CMAKE 3.7
+if (NOT CMAKE_VERSION VERSION_LESS 3.7.0)
+	message(STATUS "Using module to find Vulkan")
+	find_package(Vulkan)
+endif()
+
 add_subdirectory(External)
 add_subdirectory(Engine)
 add_subdirectory(Apps)

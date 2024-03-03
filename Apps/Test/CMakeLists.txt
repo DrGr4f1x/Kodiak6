@@ -34,7 +34,7 @@ if (MSVC)
 	set_source_files_properties(Stdafx.cpp PROPERTIES COMPILE_FLAGS "/YcStdafx.h")
 endif(MSVC)
 
-target_link_libraries(${APP_NAME} Engine ${WINLIBS})
+target_link_libraries(${APP_NAME} Engine ${WINLIBS} ${Vulkan_LIBRARIES})
 
 set_target_properties(${APP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Bin")
 set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Bin)
@@ -44,6 +44,8 @@ set_target_properties(${APP_NAME} PROPERTIES
 	LINK_FLAGS_RELEASE "/SUBSYSTEM:CONSOLE"
 	LINK_FLAGS_PROFILE "/SUBSYSTEM:CONSOLE"
 )
+
+target_link_directories(${APP_NAME} PUBLIC ${Vulkan_LIBRARY})
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:RELEASE,_CONSOLE>)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Profile>:PROFILE,_CONSOLE>)

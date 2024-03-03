@@ -113,6 +113,8 @@ private:
 	void Initialize();
 	void Finalize();
 	bool Tick();
+
+	void CreateGraphicsDevice();
 };
 
 
