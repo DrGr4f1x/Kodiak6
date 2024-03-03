@@ -89,6 +89,7 @@
 #include "Core\DWParam.h"
 #include "Core\NonCopyable.h"
 #include "Core\NonMovable.h"
+#include "Core\RefCount.h"
 #include "Core\Utility.h"
 #include "Core\VectorMath.h"
 #include "LogSystem.h"

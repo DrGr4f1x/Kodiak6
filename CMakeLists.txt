@@ -10,11 +10,11 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-include(SetupConfigurations.cmake)
-
 set(NAME Main)
 
-project(${NAME} VERSION 6.0.0)
+project(${NAME} VERSION 6.0.0 LANGUAGES CXX CSharp)
+
+include(SetupConfigurations.cmake)
 
 include_directories(Engine)
 
@@ -26,3 +26,4 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(External)
 add_subdirectory(Engine)
 add_subdirectory(Apps)
+add_subdirectory(Programs)
