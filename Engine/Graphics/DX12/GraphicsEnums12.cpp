@@ -376,4 +376,23 @@ D3D12_DESCRIPTOR_RANGE_TYPE DescriptorTypeToDX12(DescriptorType type)
 	}
 }
 
+
+D3D12_ROOT_SIGNATURE_FLAGS RootSignatureFlagsToDX12(RootSignatureFlags rootSignatureFlags)
+{
+	uint32_t result = 0;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::AllowInputAssemblerInputLayout))			result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyVertexShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyHullShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyDomainShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyGeometryShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyPixelShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::AllowStreamOutput))							result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyAmplificationShaderRootAccess))			result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::DenyMeshShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::CbvSrvUavHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
+	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, RootSignatureFlags::SamplerHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+	
+	return (D3D12_ROOT_SIGNATURE_FLAGS)result;
+}
+
 } // namespace Kodiak::DX12

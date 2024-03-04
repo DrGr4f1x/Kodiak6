@@ -43,4 +43,6 @@ D3D12_SHADER_VISIBILITY ShaderStageToDX12(ShaderStage shaderStage);
 
 D3D12_DESCRIPTOR_RANGE_TYPE DescriptorTypeToDX12(DescriptorType descriptorType);
 
+D3D12_ROOT_SIGNATURE_FLAGS RootSignatureFlagsToDX12(RootSignatureFlags rootSignatureFlags);
+
 } // namespace Kodiak::DX12
