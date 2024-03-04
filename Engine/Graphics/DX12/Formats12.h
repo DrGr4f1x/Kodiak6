@@ -23,6 +23,6 @@ struct DxgiFormatMapping
 	DXGI_FORMAT rtvFormat;
 };
 
-const DxgiFormatMapping& EngineFormatToDxgi(Format engineFormat);
+const DxgiFormatMapping& FormatToDxgi(Format engineFormat);
 
 } // namespace Kodiak::DX12

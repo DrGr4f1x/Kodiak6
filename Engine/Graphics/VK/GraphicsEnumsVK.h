@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "Graphics\Formats.h"
+#include "Graphics\GraphicsEnums.h"
 
 namespace Kodiak::VK
 {
 
-VkFormat FormatToVulkan(Format engineFormat);
+VkBlendFactor BlendToVulkan(Blend blend);
 
 } // namespace Kodiak::VK

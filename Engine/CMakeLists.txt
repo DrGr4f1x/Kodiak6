@@ -73,19 +73,24 @@ ADDFILEGROUP(FILE_LIST Core/Math Core/Math/Vector.h)
 # Graphics files
 ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsDevice.h)
 ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsDevice.cpp)
+ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsEnums.h)
 ADDFILEGROUP(FILE_LIST Graphics Graphics/Formats.h)
 
 # Graphics\DX12 files
-ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsDevice12.h)
-ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsDevice12.cpp)
 ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/Formats12.h)
 ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/Formats12.cpp)
+ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsDevice12.h)
+ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsDevice12.cpp)
+ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsEnums12.h)
+ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/GraphicsEnums12.cpp)
 
 # Graphics\VK files
 ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/FormatsVk.h)
 ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/FormatsVK.cpp)
 ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsDeviceVK.h)
 ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsDeviceVK.cpp)
+ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsEnumsVK.h)
+ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsEnumsVK.cpp)
 
 add_library(Engine STATIC ${FILE_LIST})
 

@@ -99,7 +99,7 @@ static const std::array<VkFormatMapping, (size_t)Kodiak::Format::Count> s_format
 } };
 
 
-VkFormat EngineFormatToVulkan(Format engineFormat)
+VkFormat FormatToVulkan(Format engineFormat)
 {
 	assert(engineFormat < Format::Count);
 	assert(s_formatMap[(uint32_t)engineFormat].engineFormat == engineFormat);

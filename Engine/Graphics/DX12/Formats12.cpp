@@ -89,7 +89,7 @@ static const std::array<DxgiFormatMapping, (size_t)Kodiak::Format::Count> s_form
 }};
 
 
-const DxgiFormatMapping& EngineFormatToDxgi(Format engineFormat)
+const DxgiFormatMapping& FormatToDxgi(Format engineFormat)
 {
 	assert(engineFormat < Format::Count);
 	assert(s_formatMap[(uint32_t)engineFormat].engineFormat == engineFormat);
