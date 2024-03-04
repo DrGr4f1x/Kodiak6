@@ -275,6 +275,20 @@ uint32_t GetControlPointCount(PrimitiveTopology primitiveTopology)
 }
 
 
+VkVertexInputRate InputClassificationToVulkan(InputClassification inputClassification)
+{
+	switch (inputClassification)
+	{
+	case InputClassification::PerVertexData:	return VK_VERTEX_INPUT_RATE_VERTEX; break;
+	case InputClassification::PerInstanceData:	return VK_VERTEX_INPUT_RATE_INSTANCE; break;
+	default:
+		assert(false);
+		return VK_VERTEX_INPUT_RATE_VERTEX;
+		break;
+	}
+}
+
+
 VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage)
 {
 	if (shaderStage == ShaderStage::All)
@@ -304,6 +318,27 @@ VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage)
 	if (HasFlag<ShaderStage>(shaderStage, ShaderStage::Callable))		result |= VK_SHADER_STAGE_CALLABLE_BIT_KHR;
 
 	return (VkShaderStageFlags)result;
+}
+
+
+VkDescriptorType DescriptorTypeToVulkan(DescriptorType descriptorType)
+{
+	switch (descriptorType)
+	{
+	case DescriptorType::CBV:					return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; break;
+	case DescriptorType::DynamicCBV:			return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC; break;
+	case DescriptorType::Sampler:				return VK_DESCRIPTOR_TYPE_SAMPLER; break;
+	case DescriptorType::TextureSRV:			return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE; break;
+	case DescriptorType::StructuredBufferSRV:	return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; break;
+	case DescriptorType::StructuredBufferUAV:	return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; break;
+	case DescriptorType::TextureUAV:			return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE; break;
+	case DescriptorType::TypedBufferSRV:		return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER; break;
+	case DescriptorType::TypedBufferUAV:		return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER; break;
+	default:
+		assert(false);
+		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		break;
+	}
 }
 
 } // namespace Kodiak::VK

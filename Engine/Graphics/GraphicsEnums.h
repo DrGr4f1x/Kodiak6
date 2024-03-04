@@ -180,6 +180,13 @@ enum class PrimitiveTopology : uint8_t
 };
 
 
+enum class InputClassification : uint8_t
+{
+	PerVertexData,
+	PerInstanceData
+};
+
+
 enum class ShaderStage : uint16_t
 {
 	None =				0x0000,
@@ -207,5 +214,19 @@ enum class ShaderStage : uint16_t
 };
 
 template <> struct EnableBitmaskOperators<ShaderStage> { static const bool enable = true; };
+
+
+enum class DescriptorType
+{
+	CBV,
+	DynamicCBV,
+	Sampler,
+	TextureSRV,
+	TypedBufferSRV,
+	StructuredBufferSRV,
+	TextureUAV,
+	TypedBufferUAV,
+	StructuredBufferUAV
+};
 
 } // namespace Kodiak

@@ -35,6 +35,10 @@ VkPrimitiveTopology PrimitiveTopologyToVulkan(PrimitiveTopology primitiveTopolog
 
 uint32_t GetControlPointCount(PrimitiveTopology primitiveTopology);
 
+VkVertexInputRate InputClassificationToVulkan(InputClassification inputClassification);
+
 VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage);
+
+VkDescriptorType DescriptorTypeToVulkan(DescriptorType descriptorType);
 
 } // namespace Kodiak::VK

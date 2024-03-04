@@ -41,4 +41,6 @@ D3D12_PRIMITIVE_TOPOLOGY_TYPE PrimitiveTopologyToPrimitiveTopologyTypeDX12(Primi
 
 D3D12_SHADER_VISIBILITY ShaderStageToDX12(ShaderStage shaderStage);
 
+D3D12_DESCRIPTOR_RANGE_TYPE DescriptorTypeToDX12(DescriptorType descriptorType);
+
 } // namespace Kodiak::DX12

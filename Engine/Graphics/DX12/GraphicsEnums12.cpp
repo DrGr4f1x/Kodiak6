@@ -102,9 +102,13 @@ D3D12_COLOR_WRITE_ENABLE ColorWriteToDX12(ColorWrite colorWrite)
 	case ColorWrite::Alpha:		return D3D12_COLOR_WRITE_ENABLE_ALPHA; break;
 	case ColorWrite::All:		return D3D12_COLOR_WRITE_ENABLE_ALL; break;
 	default:
-		assert(false);
-		return D3D12_COLOR_WRITE_ENABLE_ALL;
-		break;
+		uint32_t result = 0;
+		if (HasFlag<ColorWrite>(colorWrite, ColorWrite::Red))	result |= D3D12_COLOR_WRITE_ENABLE_RED;
+		if (HasFlag<ColorWrite>(colorWrite, ColorWrite::Green))	result |= D3D12_COLOR_WRITE_ENABLE_GREEN;
+		if (HasFlag<ColorWrite>(colorWrite, ColorWrite::Blue))	result |= D3D12_COLOR_WRITE_ENABLE_BLUE;
+		if (HasFlag<ColorWrite>(colorWrite, ColorWrite::Alpha))	result |= D3D12_COLOR_WRITE_ENABLE_ALPHA;
+
+		return (D3D12_COLOR_WRITE_ENABLE)result;
 	}
 }
 
@@ -339,6 +343,35 @@ D3D12_SHADER_VISIBILITY ShaderStageToDX12(ShaderStage shaderStage)
 	default:
 		// Some combinations are unrepresentable in DX12
 		return D3D12_SHADER_VISIBILITY_ALL;
+		break;
+	}
+}
+
+
+D3D12_DESCRIPTOR_RANGE_TYPE DescriptorTypeToDX12(DescriptorType type)
+{
+	switch (type)
+	{
+	case DescriptorType::CBV:
+	case DescriptorType::DynamicCBV:
+		return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+		break;
+	case DescriptorType::Sampler:
+		return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+		break;
+	case DescriptorType::TextureSRV:
+	case DescriptorType::TypedBufferSRV:
+	case DescriptorType::StructuredBufferSRV:
+		return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		break;
+	case DescriptorType::TextureUAV:
+	case DescriptorType::TypedBufferUAV:
+	case DescriptorType::StructuredBufferUAV:
+		return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+		break;
+	default:
+		assert(false);
+		return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		break;
 	}
 }
