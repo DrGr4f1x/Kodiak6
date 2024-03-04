@@ -21,4 +21,20 @@ VkBlendOp BlendOpToVulkan(BlendOp blendOp);
 
 VkLogicOp LogicOpToVulkan(LogicOp logicOp);
 
+VkColorComponentFlags ColorWriteToVulkan(ColorWrite colorWrite);
+
+VkCullModeFlags CullModeToVulkan(CullMode cullMode);
+
+VkPolygonMode FillModeToVulkan(FillMode fillMode);
+
+VkCompareOp ComparisonFuncToVulkan(ComparisonFunc comparisonFunc);
+
+VkStencilOp StencilOpToVulkan(StencilOp stencilOp);
+
+VkPrimitiveTopology PrimitiveTopologyToVulkan(PrimitiveTopology primitiveTopology);
+
+uint32_t GetControlPointCount(PrimitiveTopology primitiveTopology);
+
+VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage);
+
 } // namespace Kodiak::VK

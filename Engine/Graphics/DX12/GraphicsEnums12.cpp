@@ -113,11 +113,232 @@ D3D12_DEPTH_WRITE_MASK DepthWriteToDX12(DepthWrite depthWrite)
 {
 	switch (depthWrite)
 	{
-	case DepthWrite::Zero: return D3D12_DEPTH_WRITE_MASK_ZERO; break;
-	case DepthWrite::All: return D3D12_DEPTH_WRITE_MASK_ALL; break;
+	case DepthWrite::Zero:	return D3D12_DEPTH_WRITE_MASK_ZERO; break;
+	case DepthWrite::All:	return D3D12_DEPTH_WRITE_MASK_ALL; break;
 	default:
 		assert(false);
 		return D3D12_DEPTH_WRITE_MASK_ALL;
+		break;
+	}
+}
+
+
+D3D12_CULL_MODE CullModeToDX12(CullMode cullMode)
+{
+	switch (cullMode)
+	{
+	case CullMode::None:	return D3D12_CULL_MODE_NONE; break;
+	case CullMode::Front:	return D3D12_CULL_MODE_FRONT; break;
+	case CullMode::Back:	return D3D12_CULL_MODE_BACK; break;
+	default:
+		assert(false);
+		return D3D12_CULL_MODE_BACK;
+		break;
+	}
+}
+
+
+D3D12_FILL_MODE FillModeToDX12(FillMode fillMode)
+{
+	switch (fillMode)
+	{
+	case FillMode::Wireframe: return D3D12_FILL_MODE_WIREFRAME; break;
+	case FillMode::Solid: return D3D12_FILL_MODE_SOLID; break;
+	default:
+		assert(false);
+		return D3D12_FILL_MODE_SOLID;
+		break;
+	}
+}
+
+
+D3D12_COMPARISON_FUNC ComparisonFuncToDX12(ComparisonFunc comparisonFunc)
+{
+	switch (comparisonFunc)
+	{
+	case ComparisonFunc::Never: return D3D12_COMPARISON_FUNC_NEVER; break;
+	case ComparisonFunc::Less: return D3D12_COMPARISON_FUNC_LESS; break;
+	case ComparisonFunc::LessEqual: return D3D12_COMPARISON_FUNC_LESS_EQUAL; break;
+	case ComparisonFunc::Greater: return D3D12_COMPARISON_FUNC_GREATER; break;
+	case ComparisonFunc::NotEqual: return D3D12_COMPARISON_FUNC_NOT_EQUAL; break;
+	case ComparisonFunc::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL; break;
+	case ComparisonFunc::Always: return D3D12_COMPARISON_FUNC_ALWAYS; break;
+	default:
+		assert(false);
+		return D3D12_COMPARISON_FUNC_ALWAYS;
+		break;
+	}
+}
+
+
+D3D12_STENCIL_OP StencilOpToDX12(StencilOp stencilOp)
+{
+	switch (stencilOp)
+	{
+	case StencilOp::Keep:		return D3D12_STENCIL_OP_KEEP; break;
+	case StencilOp::Zero:		return D3D12_STENCIL_OP_ZERO; break;
+	case StencilOp::Replace:	return D3D12_STENCIL_OP_REPLACE; break;
+	case StencilOp::IncrSat:	return D3D12_STENCIL_OP_INCR_SAT; break;
+	case StencilOp::DecrSat:	return D3D12_STENCIL_OP_DECR_SAT; break;
+	case StencilOp::Invert:		return D3D12_STENCIL_OP_INVERT; break;
+	case StencilOp::Incr:		return D3D12_STENCIL_OP_INCR; break;
+	case StencilOp::Decr:		return D3D12_STENCIL_OP_DECR; break;
+	default:
+		assert(false);
+		return D3D12_STENCIL_OP_KEEP;
+		break;
+
+	}
+}
+
+
+D3D12_INDEX_BUFFER_STRIP_CUT_VALUE IndexBufferStripCutValueToDX12(IndexBufferStripCutValue indexBufferStripCutValue)
+{
+	switch (indexBufferStripCutValue)
+	{
+	case IndexBufferStripCutValue::Disabled:			return D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED; break;
+	case IndexBufferStripCutValue::Value_0xFFFF:		return D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_0xFFFF; break;
+	case IndexBufferStripCutValue::Value_0xFFFFFFFF:	return D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_0xFFFFFFFF; break;
+	default:
+		assert(false);
+		return D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
+		break;
+	}
+}
+
+
+D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopologyToDX12(PrimitiveTopology primitiveTopology)
+{
+	switch (primitiveTopology)
+	{
+	case PrimitiveTopology::PointList:						return D3D_PRIMITIVE_TOPOLOGY_POINTLIST; break;
+	case PrimitiveTopology::LineList:						return D3D_PRIMITIVE_TOPOLOGY_LINELIST; break;
+	case PrimitiveTopology::LineStrip:						return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP; break;
+	case PrimitiveTopology::TriangleList:					return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST; break;
+	case PrimitiveTopology::TriangleStrip:					return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP; break;
+	case PrimitiveTopology::LineListWithAdjacency:			return D3D_PRIMITIVE_TOPOLOGY_LINELIST_ADJ; break;
+	case PrimitiveTopology::LineStripWithAdjacency:			return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ; break;
+	case PrimitiveTopology::TriangleListWithAdjacency:		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ; break;
+	case PrimitiveTopology::TriangleStripWithAdjacency:		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ; break;
+	case PrimitiveTopology::PatchList_1_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_2_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_2_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_3_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_4_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_5_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_5_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_6_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_6_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_7_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_7_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_8_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_8_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_9_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_9_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_10_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_10_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_11_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_11_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_12_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_12_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_13_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_13_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_14_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_14_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_15_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_15_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_16_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_16_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_17_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_17_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_18_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_18_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_19_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_19_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_20_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_20_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_21_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_21_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_22_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_22_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_23_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_23_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_24_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_24_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_25_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_25_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_26_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_26_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_27_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_27_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_28_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_28_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_29_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_29_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_30_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_30_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_31_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_31_CONTROL_POINT_PATCHLIST; break;
+	case PrimitiveTopology::PatchList_32_ControlPoint:		return D3D_PRIMITIVE_TOPOLOGY_32_CONTROL_POINT_PATCHLIST; break;
+	default:
+		assert(false);
+		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		break;
+	}
+}
+
+
+D3D12_PRIMITIVE_TOPOLOGY_TYPE PrimitiveTopologyToPrimitiveTopologyTypeDX12(PrimitiveTopology primitiveTopology)
+{
+	switch (primitiveTopology)
+	{
+	case PrimitiveTopology::PointList: 
+		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT; 
+		break;
+
+	case PrimitiveTopology::LineList:
+	case PrimitiveTopology::LineStrip:
+	case PrimitiveTopology::LineListWithAdjacency:
+	case PrimitiveTopology::LineStripWithAdjacency:
+		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		break;
+
+	case PrimitiveTopology::TriangleList:
+	case PrimitiveTopology::TriangleStrip:
+	case PrimitiveTopology::TriangleListWithAdjacency:
+	case PrimitiveTopology::TriangleStripWithAdjacency:
+		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		break;
+
+	case PrimitiveTopology::PatchList_1_ControlPoint:
+	case PrimitiveTopology::PatchList_2_ControlPoint:
+	case PrimitiveTopology::PatchList_3_ControlPoint:
+	case PrimitiveTopology::PatchList_4_ControlPoint:
+	case PrimitiveTopology::PatchList_5_ControlPoint:
+	case PrimitiveTopology::PatchList_6_ControlPoint:
+	case PrimitiveTopology::PatchList_7_ControlPoint:
+	case PrimitiveTopology::PatchList_8_ControlPoint:
+	case PrimitiveTopology::PatchList_9_ControlPoint:
+	case PrimitiveTopology::PatchList_10_ControlPoint:
+	case PrimitiveTopology::PatchList_11_ControlPoint:
+	case PrimitiveTopology::PatchList_12_ControlPoint:
+	case PrimitiveTopology::PatchList_13_ControlPoint:
+	case PrimitiveTopology::PatchList_14_ControlPoint:
+	case PrimitiveTopology::PatchList_15_ControlPoint:
+	case PrimitiveTopology::PatchList_16_ControlPoint:
+	case PrimitiveTopology::PatchList_17_ControlPoint:
+	case PrimitiveTopology::PatchList_18_ControlPoint:
+	case PrimitiveTopology::PatchList_19_ControlPoint:
+	case PrimitiveTopology::PatchList_20_ControlPoint:
+	case PrimitiveTopology::PatchList_21_ControlPoint:
+	case PrimitiveTopology::PatchList_22_ControlPoint:
+	case PrimitiveTopology::PatchList_23_ControlPoint:
+	case PrimitiveTopology::PatchList_24_ControlPoint:
+	case PrimitiveTopology::PatchList_25_ControlPoint:
+	case PrimitiveTopology::PatchList_26_ControlPoint:
+	case PrimitiveTopology::PatchList_27_ControlPoint:
+	case PrimitiveTopology::PatchList_28_ControlPoint:
+	case PrimitiveTopology::PatchList_29_ControlPoint:
+	case PrimitiveTopology::PatchList_30_ControlPoint:
+	case PrimitiveTopology::PatchList_31_ControlPoint:
+	case PrimitiveTopology::PatchList_32_ControlPoint:
+		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
+		break;
+
+	default:
+		assert(false);
+		return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		break;
+	}
+}
+
+
+D3D12_SHADER_VISIBILITY ShaderStageToDX12(ShaderStage shaderStage)
+{
+	switch (shaderStage)
+	{
+	case ShaderStage::Vertex:			return D3D12_SHADER_VISIBILITY_VERTEX; break;
+	case ShaderStage::Hull:				return D3D12_SHADER_VISIBILITY_HULL; break;
+	case ShaderStage::Domain:			return D3D12_SHADER_VISIBILITY_DOMAIN; break;
+	case ShaderStage::Geometry:			return D3D12_SHADER_VISIBILITY_GEOMETRY; break;
+	case ShaderStage::Pixel:			return D3D12_SHADER_VISIBILITY_PIXEL; break;
+	case ShaderStage::Amplification:	return D3D12_SHADER_VISIBILITY_AMPLIFICATION; break;
+	case ShaderStage::Mesh:				return D3D12_SHADER_VISIBILITY_MESH; break;
+	default:
+		// Some combinations are unrepresentable in DX12
+		return D3D12_SHADER_VISIBILITY_ALL;
 		break;
 	}
 }
