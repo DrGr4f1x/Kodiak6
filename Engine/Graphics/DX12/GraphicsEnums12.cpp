@@ -48,4 +48,78 @@ D3D12_BLEND BlendToDX12(Blend blend)
 	}
 }
 
+
+D3D12_BLEND_OP BlendOpToDX12(BlendOp blendOp)
+{
+	switch (blendOp)
+	{
+	case BlendOp::Add:			return D3D12_BLEND_OP_ADD; break;
+	case BlendOp::Subtract:		return D3D12_BLEND_OP_SUBTRACT; break;
+	case BlendOp::RevSubtract:	return D3D12_BLEND_OP_REV_SUBTRACT; break;
+	case BlendOp::Min:			return D3D12_BLEND_OP_MIN; break;
+	case BlendOp::Max:			return D3D12_BLEND_OP_MAX; break;
+	default:
+		assert(false);
+		return D3D12_BLEND_OP_ADD;
+		break;
+	}
+}
+
+
+D3D12_LOGIC_OP LogicOpToDX12(LogicOp logicOp)
+{
+	switch (logicOp)
+	{
+	case LogicOp::Clear:			return D3D12_LOGIC_OP_CLEAR; break;
+	case LogicOp::Set:				return D3D12_LOGIC_OP_SET; break;
+	case LogicOp::Copy:				return D3D12_LOGIC_OP_COPY; break;
+	case LogicOp::CopyInverted:		return D3D12_LOGIC_OP_COPY_INVERTED; break;
+	case LogicOp::Noop:				return D3D12_LOGIC_OP_NOOP; break;
+	case LogicOp::Invert:			return D3D12_LOGIC_OP_INVERT; break;
+	case LogicOp::And:				return D3D12_LOGIC_OP_AND; break;
+	case LogicOp::Nand:				return D3D12_LOGIC_OP_NAND; break;
+	case LogicOp::Or:				return D3D12_LOGIC_OP_OR; break;
+	case LogicOp::Nor:				return D3D12_LOGIC_OP_NOR; break;
+	case LogicOp::Xor:				return D3D12_LOGIC_OP_XOR; break;
+	case LogicOp::Equiv:			return D3D12_LOGIC_OP_EQUIV; break;
+	case LogicOp::AndReverse:		return D3D12_LOGIC_OP_AND_REVERSE; break;
+	case LogicOp::OrReverse:		return D3D12_LOGIC_OP_OR_REVERSE; break;
+	case LogicOp::OrInverted:		return D3D12_LOGIC_OP_OR_INVERTED; break;
+	default:
+		assert(false);
+		return D3D12_LOGIC_OP_NOOP;
+		break;
+	}
+}
+
+D3D12_COLOR_WRITE_ENABLE ColorWriteToDX12(ColorWrite colorWrite)
+{
+	switch (colorWrite)
+	{
+	case ColorWrite::Red:		return D3D12_COLOR_WRITE_ENABLE_RED; break;
+	case ColorWrite::Green:		return D3D12_COLOR_WRITE_ENABLE_GREEN; break;
+	case ColorWrite::Blue:		return D3D12_COLOR_WRITE_ENABLE_BLUE; break;
+	case ColorWrite::Alpha:		return D3D12_COLOR_WRITE_ENABLE_ALPHA; break;
+	case ColorWrite::All:		return D3D12_COLOR_WRITE_ENABLE_ALL; break;
+	default:
+		assert(false);
+		return D3D12_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+}
+
+
+D3D12_DEPTH_WRITE_MASK DepthWriteToDX12(DepthWrite depthWrite)
+{
+	switch (depthWrite)
+	{
+	case DepthWrite::Zero: return D3D12_DEPTH_WRITE_MASK_ZERO; break;
+	case DepthWrite::All: return D3D12_DEPTH_WRITE_MASK_ALL; break;
+	default:
+		assert(false);
+		return D3D12_DEPTH_WRITE_MASK_ALL;
+		break;
+	}
+}
+
 } // namespace Kodiak::DX12

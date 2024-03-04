@@ -17,4 +17,8 @@ namespace Kodiak::VK
 
 VkBlendFactor BlendToVulkan(Blend blend);
 
+VkBlendOp BlendOpToVulkan(BlendOp blendOp);
+
+VkLogicOp LogicOpToVulkan(LogicOp logicOp);
+
 } // namespace Kodiak::VK

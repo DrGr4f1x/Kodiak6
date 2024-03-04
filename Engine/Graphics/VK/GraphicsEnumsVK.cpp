@@ -48,4 +48,48 @@ VkBlendFactor BlendToVulkan(Blend blend)
 	}
 }
 
+
+VkBlendOp BlendOpToVulkan(BlendOp blendOp)
+{
+	switch (blendOp)
+	{
+	case BlendOp::Add:			return VK_BLEND_OP_ADD; break;
+	case BlendOp::Subtract:		return VK_BLEND_OP_SUBTRACT; break;
+	case BlendOp::RevSubtract:	return VK_BLEND_OP_REVERSE_SUBTRACT; break;
+	case BlendOp::Min:			return VK_BLEND_OP_MIN; break;
+	case BlendOp::Max:			return VK_BLEND_OP_MAX; break;
+	default:
+		assert(false);
+		return VK_BLEND_OP_ADD;
+		break;
+	}
+}
+
+
+VkLogicOp LogicOpToVulkan(LogicOp logicOp)
+{
+	switch (logicOp)
+	{
+	case LogicOp::Clear:			return VK_LOGIC_OP_CLEAR; break;
+	case LogicOp::Set:				return VK_LOGIC_OP_SET; break;
+	case LogicOp::Copy:				return VK_LOGIC_OP_COPY; break;
+	case LogicOp::CopyInverted:		return VK_LOGIC_OP_COPY_INVERTED; break;
+	case LogicOp::Noop:				return VK_LOGIC_OP_NO_OP; break;
+	case LogicOp::Invert:			return VK_LOGIC_OP_INVERT; break;
+	case LogicOp::And:				return VK_LOGIC_OP_AND; break;
+	case LogicOp::Nand:				return VK_LOGIC_OP_NAND; break;
+	case LogicOp::Or:				return VK_LOGIC_OP_OR; break;
+	case LogicOp::Nor:				return VK_LOGIC_OP_NOR; break;
+	case LogicOp::Xor:				return VK_LOGIC_OP_XOR; break;
+	case LogicOp::Equiv:			return VK_LOGIC_OP_EQUIVALENT; break;
+	case LogicOp::AndReverse:		return VK_LOGIC_OP_AND_REVERSE; break;
+	case LogicOp::OrReverse:		return VK_LOGIC_OP_OR_REVERSE; break;
+	case LogicOp::OrInverted:		return VK_LOGIC_OP_OR_INVERTED; break;
+	default:
+		assert(false);
+		return VK_LOGIC_OP_NO_OP;
+		break;
+	}
+}
+
 } // namespace Kodiak::VK
