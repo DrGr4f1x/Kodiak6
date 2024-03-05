@@ -91,4 +91,9 @@ enum class Format : uint8_t
 	Count
 };
 
+
+uint32_t BitsPerPixel(Format format);
+
+uint32_t BlockSize(Format format);
+
 } // namespace Kodiak
