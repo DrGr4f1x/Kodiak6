@@ -413,4 +413,58 @@ D3D12_ROOT_SIGNATURE_FLAGS RootSignatureFlagsToDX12(RootSignatureFlags rootSigna
 	return (D3D12_ROOT_SIGNATURE_FLAGS)result;
 }
 
+
+D3D12_FILTER TextureFilterToDX12(TextureFilter textureFilter)
+{
+	using enum TextureFilter;
+
+	switch (textureFilter)
+	{
+		case MinMagMipPoint:						return D3D12_FILTER_MIN_MAG_MIP_POINT; break;
+		case MinMagPointMipLinear:					return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR; break;
+		case MinPointMagLinearMipPoint:				return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT; break;
+		case MinPointMagMipLinear:					return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR; break;
+		case MinLinearMagMipPoint:					return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT; break;
+		case MinLinearMagPointMipLinear:			return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR; break;
+		case MinMagLinearMipPoint:					return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT; break;
+		case MinMagMipLinear:						return D3D12_FILTER_MIN_MAG_MIP_LINEAR; break;
+		case Anisotropic:							return D3D12_FILTER_ANISOTROPIC; break;
+
+		case ComparisonMinMagMipPoint:				return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT; break;
+		case ComparisonMinMagPointMipLinear:		return D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR; break;
+		case ComparisonMinPointMagLinearMipPoint:	return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT; break;
+		case ComparisonMinPointMagMipLinear:		return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR; break;
+		case ComparisonMinLinearMagMipPoint:		return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT; break;
+		case ComparisonMinLinearMagPointMipLinear:	return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR; break;
+		case ComparisonMinMagLinearMipPoint:		return D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT; break;
+		case ComparisonMinMagMipLinear:				return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR; break;
+		case ComparisonAnisotropic:					return D3D12_FILTER_COMPARISON_ANISOTROPIC; break;
+
+		case MinimumMinMagMipPoint:					return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT; break;
+		case MinimumMinMagPointMipLinear:			return D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR; break;
+		case MinimumMinPointMagLinearMipPoint:		return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT; break;
+		case MinimumMinPointMagMipLinear:			return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR; break;
+		case MinimumMinLinearMagMipPoint:			return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT; break;
+		case MinimumMinLinearMagPointMipLinear:		return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR; break;
+		case MinimumMinMagLinearMipPoint:			return D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT; break;
+		case MinimumMinMagMipLinear:				return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR; break;
+		case MinimumAnisotropic:					return D3D12_FILTER_MINIMUM_ANISOTROPIC; break;
+
+		case MaximumMinMagMipPoint:					return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT; break;
+		case MaximumMinMagPointMipLinear:			return D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR; break;
+		case MaximumMinPointMagLinearMipPoint:		return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT; break;
+		case MaximumMinPointMagMipLinear:			return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR; break;
+		case MaximumMinLinearMagMipPoint:			return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT; break;
+		case MaximumMinLinearMagPointMipLinear:		return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR; break;
+		case MaximumMinMagLinearMipPoint:			return D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT; break;
+		case MaximumMinMagMipLinear:				return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR; break;
+		case MaximumAnisotropic:					return D3D12_FILTER_MAXIMUM_ANISOTROPIC; break;
+
+		default:
+			assert(false);
+			return D3D12_FILTER_MIN_MAG_MIP_POINT;
+			break;
+	}
+}
+
 } // namespace Kodiak::DX12

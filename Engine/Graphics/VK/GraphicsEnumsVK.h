@@ -41,4 +41,25 @@ VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage);
 
 VkDescriptorType DescriptorTypeToVulkan(DescriptorType descriptorType);
 
+
+enum class SamplerReductionMode
+{
+	None,
+	Min,
+	Max
+};
+
+struct VkTextureFilterMapping
+{
+	TextureFilter engineFilter;
+	VkFilter minFilter;
+	VkFilter magFilter;
+	VkSamplerMipmapMode mipFilter;
+	SamplerReductionMode reductionMode;
+	VkBool32 isAnisotropic;
+	VkBool32 isComparisonEnabled;
+};
+
+VkTextureFilterMapping TextureFilterToVulkan(TextureFilter textureFilter);
+
 } // namespace Kodiak::VK

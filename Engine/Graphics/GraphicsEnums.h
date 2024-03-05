@@ -180,13 +180,6 @@ enum class PrimitiveTopology : uint8_t
 };
 
 
-enum class InputClassification : uint8_t
-{
-	PerVertexData,
-	PerInstanceData
-};
-
-
 enum class ShaderStage : uint16_t
 {
 	None =				0x0000,
@@ -248,5 +241,57 @@ enum class RootSignatureFlags
 };
 
 template <> struct EnableBitmaskOperators<RootSignatureFlags> { static const bool enable = true; };
+
+
+enum class TextureFilter
+{
+	MinMagMipPoint,
+	MinMagPointMipLinear,
+	MinPointMagLinearMipPoint,
+	MinPointMagMipLinear,
+	MinLinearMagMipPoint,
+	MinLinearMagPointMipLinear,
+	MinMagLinearMipPoint,
+	MinMagMipLinear,
+	Anisotropic,
+
+	ComparisonMinMagMipPoint,
+	ComparisonMinMagPointMipLinear,
+	ComparisonMinPointMagLinearMipPoint,
+	ComparisonMinPointMagMipLinear,
+	ComparisonMinLinearMagMipPoint,
+	ComparisonMinLinearMagPointMipLinear,
+	ComparisonMinMagLinearMipPoint,
+	ComparisonMinMagMipLinear,
+	ComparisonAnisotropic,
+
+	MinimumMinMagMipPoint,
+	MinimumMinMagPointMipLinear,
+	MinimumMinPointMagLinearMipPoint,
+	MinimumMinPointMagMipLinear,
+	MinimumMinLinearMagMipPoint,
+	MinimumMinLinearMagPointMipLinear,
+	MinimumMinMagLinearMipPoint,
+	MinimumMinMagMipLinear,
+	MinimumAnisotropic,
+
+	MaximumMinMagMipPoint,
+	MaximumMinMagPointMipLinear,
+	MaximumMinPointMagLinearMipPoint,
+	MaximumMinPointMagMipLinear,
+	MaximumMinLinearMagMipPoint,
+	MaximumMinLinearMagPointMipLinear,
+	MaximumMinMagLinearMipPoint,
+	MaximumMinMagMipLinear,
+	MaximumAnisotropic,
+
+	Count
+};
+
+enum class InputClassification : uint8_t
+{
+	PerVertexData,
+	PerInstanceData
+};
 
 } // namespace Kodiak

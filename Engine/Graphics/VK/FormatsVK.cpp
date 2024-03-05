@@ -25,7 +25,7 @@ struct VkFormatMapping
 };
 
 static const std::array<VkFormatMapping, (size_t)Kodiak::Format::Count> s_formatMap = { {
-	{ Format::Unknown, VK_FORMAT_UNDEFINED },
+	{ Format::Unknown,				VK_FORMAT_UNDEFINED },
 
 	{ Format::R8_UInt,				VK_FORMAT_R8_UINT },
 	{ Format::R8_SInt,				VK_FORMAT_R8_SINT },

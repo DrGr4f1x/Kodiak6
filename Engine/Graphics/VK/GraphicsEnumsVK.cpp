@@ -1,11 +1,11 @@
 //
-// This code is licensed under the MIT License (MIT).
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+// MinimumThis code is licensed under the MIT License (MIT).
+// MinimumTHIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// MinimumANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// MinimumIMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// MinimumPURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 //
-// Author:  David Elder
+// MinimumAuthor:  David Elder
 //
 
 #include "Stdafx.h"
@@ -362,4 +362,58 @@ VkDescriptorType DescriptorTypeToVulkan(DescriptorType descriptorType)
 	}
 }
 
-} // namespace Kodiak::VK
+
+static const std::array<VkTextureFilterMapping, (size_t)TextureFilter::Count> s_textureFilterMap = { {
+	{ TextureFilter::MinMagMipPoint,						VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None, VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinMagPointMipLinear,					VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinPointMagLinearMipPoint,				VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinPointMagMipLinear,					VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinLinearMagMipPoint,					VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinLinearMagPointMipLinear,			VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinMagLinearMipPoint,					VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinMagMipLinear,						VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::Anisotropic,							VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_TRUE,	VK_FALSE },
+
+	{ TextureFilter::ComparisonMinMagMipPoint,				VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None, VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinMagPointMipLinear,		VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinPointMagLinearMipPoint,	VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinPointMagMipLinear,		VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinLinearMagMipPoint,		VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinLinearMagPointMipLinear,	VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinMagLinearMipPoint,		VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonMinMagMipLinear,				VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_FALSE,	VK_TRUE },
+	{ TextureFilter::ComparisonAnisotropic,					VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::None,	VK_TRUE,	VK_TRUE },
+
+	{ TextureFilter::MinimumMinMagMipPoint,					VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Min, VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinMagPointMipLinear,			VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinPointMagLinearMipPoint,		VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinPointMagMipLinear,			VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinLinearMagMipPoint,			VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinLinearMagPointMipLinear,		VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinMagLinearMipPoint,			VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumMinMagMipLinear,				VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Min,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MinimumAnisotropic,					VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Min,	VK_TRUE,	VK_FALSE },
+
+	{ TextureFilter::MaximumMinMagMipPoint,					VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Max, VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinMagPointMipLinear,			VK_FILTER_NEAREST,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinPointMagLinearMipPoint,		VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinPointMagMipLinear,			VK_FILTER_NEAREST,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinLinearMagMipPoint,			VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinLinearMagPointMipLinear,		VK_FILTER_LINEAR,	VK_FILTER_NEAREST,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinMagLinearMipPoint,			VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_NEAREST,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumMinMagMipLinear,				VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Max,	VK_FALSE,	VK_FALSE },
+	{ TextureFilter::MaximumAnisotropic,					VK_FILTER_LINEAR,	VK_FILTER_LINEAR,	VK_SAMPLER_MIPMAP_MODE_LINEAR,	SamplerReductionMode::Max,	VK_TRUE,	VK_FALSE },
+} };
+
+
+VkTextureFilterMapping TextureFilterToVulkan(TextureFilter textureFilter)
+{
+	using enum TextureFilter;
+
+	assert(textureFilter < Count);
+	assert(textureFilter == s_textureFilterMap[(uint32_t)textureFilter].engineFilter);
+
+	return s_textureFilterMap[(uint32_t)textureFilter];
+}
+
+} // Minimumnamespace Kodiak::VK
