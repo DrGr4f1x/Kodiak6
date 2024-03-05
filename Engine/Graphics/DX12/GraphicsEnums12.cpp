@@ -100,11 +100,11 @@ D3D12_COLOR_WRITE_ENABLE ColorWriteToDX12(ColorWrite colorWrite)
 	using enum ColorWrite;
 
 	uint32_t result = 0;
-	if (HasFlag(colorWrite, Red))		result |= D3D12_COLOR_WRITE_ENABLE_RED;
-	if (HasFlag(colorWrite, Green))		result |= D3D12_COLOR_WRITE_ENABLE_GREEN;
-	if (HasFlag(colorWrite, Blue))		result |= D3D12_COLOR_WRITE_ENABLE_BLUE;
-	if (HasFlag(colorWrite, Alpha))		result |= D3D12_COLOR_WRITE_ENABLE_ALPHA;
-	
+	result |= HasFlag(colorWrite, Red) ? D3D12_COLOR_WRITE_ENABLE_RED : 0;
+	result |= HasFlag(colorWrite, Green) ? D3D12_COLOR_WRITE_ENABLE_GREEN : 0;
+	result |= HasFlag(colorWrite, Blue) ? D3D12_COLOR_WRITE_ENABLE_BLUE : 0;
+	result |= HasFlag(colorWrite, Alpha) ? D3D12_COLOR_WRITE_ENABLE_ALPHA : 0;
+
 	return (D3D12_COLOR_WRITE_ENABLE)result;
 }
 
@@ -398,17 +398,17 @@ D3D12_ROOT_SIGNATURE_FLAGS RootSignatureFlagsToDX12(RootSignatureFlags rootSigna
 	using enum RootSignatureFlags;
 
 	uint32_t result = 0;
-	if (HasFlag(rootSignatureFlags, AllowInputAssemblerInputLayout))			result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	if (HasFlag(rootSignatureFlags, DenyVertexShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, DenyHullShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, DenyDomainShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, DenyGeometryShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, DenyPixelShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, AllowStreamOutput))							result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
-	if (HasFlag(rootSignatureFlags, DenyAmplificationShaderRootAccess))			result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, DenyMeshShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
-	if (HasFlag(rootSignatureFlags, CbvSrvUavHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
-	if (HasFlag(rootSignatureFlags, SamplerHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+	result |= HasFlag(rootSignatureFlags, AllowInputAssemblerInputLayout) ? D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT : 0;
+	result |= HasFlag(rootSignatureFlags, DenyVertexShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, DenyHullShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, DenyDomainShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, DenyGeometryShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, DenyPixelShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, AllowStreamOutput) ? D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT : 0;
+	result |= HasFlag(rootSignatureFlags, DenyAmplificationShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, DenyMeshShaderRootAccess) ? D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS : 0;
+	result |= HasFlag(rootSignatureFlags, CbvSrvUavHeapDirectlyIndexed) ? D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED : 0;
+	result |= HasFlag(rootSignatureFlags, SamplerHeapDirectlyIndexed) ? D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED : 0;
 	
 	return (D3D12_ROOT_SIGNATURE_FLAGS)result;
 }
@@ -510,27 +510,27 @@ D3D12_RESOURCE_STATES ResourceStateToDX12(ResourceState resourceState)
 	using enum ResourceState;
 
 	uint32_t result = 0;
-	if (HasFlag(resourceState, Common))								result |= D3D12_RESOURCE_STATE_COMMON;
-	if (HasAnyFlag(resourceState, VertexBuffer | ConstantBuffer))	result |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-	if (HasFlag(resourceState, IndexBuffer))							result |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
-	if (HasFlag(resourceState, RenderTarget))						result |= D3D12_RESOURCE_STATE_RENDER_TARGET;
-	if (HasFlag(resourceState, UnorderedAccess))						result |= D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-	if (HasFlag(resourceState, ResourceState::DepthWrite))			result |= D3D12_RESOURCE_STATE_DEPTH_WRITE;
-	if (HasFlag(resourceState, DepthRead))							result |= D3D12_RESOURCE_STATE_DEPTH_READ;
-	if (HasFlag(resourceState, NonPixelShaderResource))				result |= D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-	if (HasFlag(resourceState, PixelShaderResource))					result |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	if (HasFlag(resourceState, ShaderResource))						result |= (D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	if (HasFlag(resourceState, StreamOut))							result |= D3D12_RESOURCE_STATE_STREAM_OUT;
-	if (HasFlag(resourceState, IndirectArgument))					result |= D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT;
-	if (HasFlag(resourceState, CopyDest))							result |= D3D12_RESOURCE_STATE_COPY_DEST;
-	if (HasFlag(resourceState, CopySource))							result |= D3D12_RESOURCE_STATE_COPY_SOURCE;
-	if (HasFlag(resourceState, ResolveDest))							result |= D3D12_RESOURCE_STATE_RESOLVE_DEST;
-	if (HasFlag(resourceState, ResolveSource))						result |= D3D12_RESOURCE_STATE_RESOLVE_SOURCE;
-	if (HasFlag(resourceState, GenericRead))							result |= D3D12_RESOURCE_STATE_GENERIC_READ;
-	if (HasFlag(resourceState, Present))								result |= D3D12_RESOURCE_STATE_PRESENT;
-	if (HasFlag(resourceState, Predication))							result |= D3D12_RESOURCE_STATE_PREDICATION;
-	if (HasFlag(resourceState, RayTracingAccelerationStructure))		result |= D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	if (HasFlag(resourceState, ShadingRateSource))					result |= D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE;
+	result |= HasFlag(resourceState, Common) ? D3D12_RESOURCE_STATE_COMMON : 0;
+	result |= HasAnyFlag(resourceState, VertexBuffer | ConstantBuffer) ? D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER : 0;
+	result |= HasFlag(resourceState, IndexBuffer) ? D3D12_RESOURCE_STATE_INDEX_BUFFER : 0;
+	result |= HasFlag(resourceState, RenderTarget) ? D3D12_RESOURCE_STATE_RENDER_TARGET : 0;
+	result |= HasFlag(resourceState, UnorderedAccess) ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS : 0;
+	result |= HasFlag(resourceState, ResourceState::DepthWrite) ? D3D12_RESOURCE_STATE_DEPTH_WRITE : 0;
+	result |= HasFlag(resourceState, DepthRead) ? D3D12_RESOURCE_STATE_DEPTH_READ : 0;
+	result |= HasFlag(resourceState, NonPixelShaderResource) ? D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE : 0;
+	result |= HasFlag(resourceState, PixelShaderResource) ? D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE : 0;
+	result |= HasFlag(resourceState, ShaderResource) ? result |= (D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE) : 0;
+	result |= HasFlag(resourceState, StreamOut) ? D3D12_RESOURCE_STATE_STREAM_OUT : 0;
+	result |= HasFlag(resourceState, IndirectArgument) ? D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT : 0;
+	result |= HasFlag(resourceState, CopyDest) ? D3D12_RESOURCE_STATE_COPY_DEST : 0;
+	result |= HasFlag(resourceState, CopySource) ? D3D12_RESOURCE_STATE_COPY_SOURCE : 0;
+	result |= HasFlag(resourceState, ResolveDest) ? D3D12_RESOURCE_STATE_RESOLVE_DEST : 0;
+	result |= HasFlag(resourceState, ResolveSource) ? D3D12_RESOURCE_STATE_RESOLVE_SOURCE : 0;
+	result |= HasFlag(resourceState, GenericRead) ? D3D12_RESOURCE_STATE_GENERIC_READ : 0;
+	result |= HasFlag(resourceState, Present) ? D3D12_RESOURCE_STATE_PRESENT : 0;
+	result |= HasFlag(resourceState, Predication) ? D3D12_RESOURCE_STATE_PREDICATION : 0;
+	result |= HasFlag(resourceState, RayTracingAccelerationStructure) ? D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE : 0;
+	result |= HasFlag(resourceState, ShadingRateSource) ? D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE : 0;
 
 	return (D3D12_RESOURCE_STATES)result;
 }

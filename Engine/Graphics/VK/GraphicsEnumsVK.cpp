@@ -104,10 +104,10 @@ VkColorComponentFlags ColorWriteToVulkan(ColorWrite colorWrite)
 	using enum ColorWrite;
 
 	uint32_t result = 0;
-	if (HasFlag(colorWrite, Red))		result |= VK_COLOR_COMPONENT_R_BIT;
-	if (HasFlag(colorWrite, Green))		result |= VK_COLOR_COMPONENT_G_BIT;
-	if (HasFlag(colorWrite, Blue))		result |= VK_COLOR_COMPONENT_B_BIT;
-	if (HasFlag(colorWrite, Alpha))		result |= VK_COLOR_COMPONENT_A_BIT;
+	result |= HasFlag(colorWrite, Red) ? VK_COLOR_COMPONENT_R_BIT : 0;
+	result |= HasFlag(colorWrite, Green) ? VK_COLOR_COMPONENT_G_BIT : 0;
+	result |= HasFlag(colorWrite, Blue) ? VK_COLOR_COMPONENT_B_BIT : 0;
+	result |= HasFlag(colorWrite, Alpha) ? VK_COLOR_COMPONENT_A_BIT : 0;
 
 	return (VkColorComponentFlags)result;
 }
@@ -321,20 +321,20 @@ VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage)
 	}
 
 	uint32_t result = 0;
-	if (HasFlag(shaderStage, Compute))			result |= VK_SHADER_STAGE_COMPUTE_BIT;
-	if (HasFlag(shaderStage, Vertex))			result |= VK_SHADER_STAGE_VERTEX_BIT;
-	if (HasFlag(shaderStage, Hull))				result |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-	if (HasFlag(shaderStage, Domain))			result |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-	if (HasFlag(shaderStage, Geometry))			result |= VK_SHADER_STAGE_GEOMETRY_BIT;
-	if (HasFlag(shaderStage, Pixel))			result |= VK_SHADER_STAGE_FRAGMENT_BIT;
-	if (HasFlag(shaderStage, Amplification))	result |= VK_SHADER_STAGE_TASK_BIT_EXT;
-	if (HasFlag(shaderStage, Mesh))				result |= VK_SHADER_STAGE_MESH_BIT_EXT;
-	if (HasFlag(shaderStage, RayGeneration))	result |= VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-	if (HasFlag(shaderStage, Miss))				result |= VK_SHADER_STAGE_MISS_BIT_KHR;
-	if (HasFlag(shaderStage, ClosestHit))		result |= VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-	if (HasFlag(shaderStage, AnyHit))			result |= VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-	if (HasFlag(shaderStage, Intersection))		result |= VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
-	if (HasFlag(shaderStage, Callable))			result |= VK_SHADER_STAGE_CALLABLE_BIT_KHR;
+	result |= HasFlag(shaderStage, Compute) ? VK_SHADER_STAGE_COMPUTE_BIT : 0;
+	result |= HasFlag(shaderStage, Vertex) ? VK_SHADER_STAGE_VERTEX_BIT : 0;
+	result |= HasFlag(shaderStage, Hull) ? VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT : 0;
+	result |= HasFlag(shaderStage, Domain) ? VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT : 0;
+	result |= HasFlag(shaderStage, Geometry) ? VK_SHADER_STAGE_GEOMETRY_BIT : 0;
+	result |= HasFlag(shaderStage, Pixel) ? VK_SHADER_STAGE_FRAGMENT_BIT : 0;
+	result |= HasFlag(shaderStage, Amplification) ? VK_SHADER_STAGE_TASK_BIT_EXT : 0;
+	result |= HasFlag(shaderStage, Mesh) ? VK_SHADER_STAGE_MESH_BIT_EXT : 0;
+	result |= HasFlag(shaderStage, RayGeneration) ? VK_SHADER_STAGE_RAYGEN_BIT_KHR : 0;
+	result |= HasFlag(shaderStage, Miss) ? VK_SHADER_STAGE_MISS_BIT_KHR : 0;
+	result |= HasFlag(shaderStage, ClosestHit) ? VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR : 0;
+	result |= HasFlag(shaderStage, AnyHit) ? VK_SHADER_STAGE_ANY_HIT_BIT_KHR : 0;
+	result |= HasFlag(shaderStage, Intersection) ? VK_SHADER_STAGE_INTERSECTION_BIT_KHR : 0;
+	result |= HasFlag(shaderStage, Callable) ? VK_SHADER_STAGE_CALLABLE_BIT_KHR : 0;
 
 	return (VkShaderStageFlags)result;
 }
@@ -445,19 +445,19 @@ VkAccessFlags ResourceStateToVulkan(ResourceState resourceState)
 	constexpr ResourceState AnyReadSource = (CopySource | ResolveSource | GenericRead);
 
 	uint32_t result = 0;
-	if (HasFlag(resourceState, VertexBuffer))						result |= VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-	if (HasFlag(resourceState, IndexBuffer))						result |= VK_ACCESS_INDEX_READ_BIT;
-	if (HasFlag(resourceState, ConstantBuffer))						result |= VK_ACCESS_UNIFORM_READ_BIT;
-	if (HasFlag(resourceState, RenderTarget))						result |= (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-	if (HasFlag(resourceState, UnorderedAccess))					result |= VK_ACCESS_SHADER_WRITE_BIT;
-	if (HasFlag(resourceState, DepthRead))							result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-	if (HasFlag(resourceState, ResourceState::DepthWrite))			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	if (HasAnyFlag(resourceState, AnyShaderRead))					result |= VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
-	if (HasFlag(resourceState, IndirectArgument))					result |= VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
-	if (HasAnyFlag(resourceState, AnyWriteDest))					result |= VK_ACCESS_TRANSFER_WRITE_BIT;
-	if (HasAnyFlag(resourceState, AnyReadSource))					result |= VK_ACCESS_TRANSFER_READ_BIT;
-	if (HasFlag(resourceState, RayTracingAccelerationStructure))	result |= (VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR);
-	if (HasFlag(resourceState, ShadingRateSource))					result |= VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
+	result |= HasFlag(resourceState, VertexBuffer) ? VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT : 0;
+	result |= HasFlag(resourceState, IndexBuffer) ? VK_ACCESS_INDEX_READ_BIT : 0;
+	result |= HasFlag(resourceState, ConstantBuffer) ? VK_ACCESS_UNIFORM_READ_BIT : 0;
+	result |= HasFlag(resourceState, RenderTarget) ? (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT) : 0;
+	result |= HasFlag(resourceState, UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : 0;
+	result |= HasFlag(resourceState, DepthRead) ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT : 0;
+	result |= HasFlag(resourceState, ResourceState::DepthWrite) ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : 0;
+	result |= HasAnyFlag(resourceState, AnyShaderRead) ? VK_ACCESS_INPUT_ATTACHMENT_READ_BIT : 0;
+	result |= HasFlag(resourceState, IndirectArgument) ? VK_ACCESS_INDIRECT_COMMAND_READ_BIT : 0;
+	result |= HasAnyFlag(resourceState, AnyWriteDest) ? VK_ACCESS_TRANSFER_WRITE_BIT : 0;
+	result |= HasAnyFlag(resourceState, AnyReadSource) ? VK_ACCESS_TRANSFER_READ_BIT : 0;
+	result |= HasFlag(resourceState, RayTracingAccelerationStructure) ? (VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR) : 0;
+	result |= HasFlag(resourceState, ShadingRateSource) ? VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR : 0;
 
 	return (VkAccessFlags)result;
 }
