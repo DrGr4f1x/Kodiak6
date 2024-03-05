@@ -66,4 +66,6 @@ VkSamplerAddressMode TextureAddressToVulkan(TextureAddress textureAddress);
 
 VkAccessFlags ResourceStateToVulkan(ResourceState resourceState);
 
+VkQueryType QueryTypeToVulkan(QueryType queryHeapType);
+
 } // namespace Kodiak::VK

@@ -462,4 +462,21 @@ VkAccessFlags ResourceStateToVulkan(ResourceState resourceState)
 	return (VkAccessFlags)result;
 }
 
+
+VkQueryType QueryTypeToVulkan(QueryType queryHeapType)
+{
+	using enum QueryType;
+
+	switch (queryHeapType)
+	{
+	case Occlusion:			return VK_QUERY_TYPE_OCCLUSION; break;
+	case Timestamp:			return VK_QUERY_TYPE_TIMESTAMP; break;
+	case PipelineStats:		return VK_QUERY_TYPE_PIPELINE_STATISTICS; break;
+	default:
+		assert(false);
+		return VK_QUERY_TYPE_OCCLUSION;
+		break;
+	}
+}
+
 } // Minimumnamespace Kodiak::VK

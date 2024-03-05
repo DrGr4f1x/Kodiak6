@@ -535,4 +535,142 @@ D3D12_RESOURCE_STATES ResourceStateToDX12(ResourceState resourceState)
 	return (D3D12_RESOURCE_STATES)result;
 }
 
+
+D3D12_QUERY_HEAP_TYPE QueryTypeToDX12(QueryType queryHeapType)
+{
+	using enum QueryType;
+
+	switch (queryHeapType)
+	{
+	case Occlusion:			return D3D12_QUERY_HEAP_TYPE_OCCLUSION; break;
+	case Timestamp:			return D3D12_QUERY_HEAP_TYPE_TIMESTAMP; break;
+	case PipelineStats:		return D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS1; break;
+	default:
+		assert(false);
+		return D3D12_QUERY_HEAP_TYPE_OCCLUSION;
+		break;
+	}
+}
+
+
+D3D12_UAV_DIMENSION GetUAVDimension(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	switch (resourceType)
+	{
+	case Texture1D:
+		return D3D12_UAV_DIMENSION_TEXTURE1D;
+		break;
+
+	case Texture1D_Array:
+		return D3D12_UAV_DIMENSION_TEXTURE1D;
+		break;
+
+	case Texture2D:
+	case Texture2DMS:
+		return D3D12_UAV_DIMENSION_TEXTURE2D;
+		break;
+
+	case Texture2D_Array:
+	case Texture2DMS_Array:
+	case TextureCube:
+		return D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+		break;
+
+	case IndexBuffer:
+	case VertexBuffer:
+	case ConstantBuffer:
+	case ByteAddressBuffer:
+	case IndirectArgsBuffer:
+	case StructuredBuffer:
+	case TypedBuffer:
+	case ReadbackBuffer:
+		return D3D12_UAV_DIMENSION_BUFFER;
+		break;
+
+	default:
+		assert(false);
+		return D3D12_UAV_DIMENSION_UNKNOWN;
+		break;
+	}
+}
+
+
+D3D12_SRV_DIMENSION GetSRVDimension(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	switch (resourceType)
+	{
+	case Texture1D:				return D3D12_SRV_DIMENSION_TEXTURE1D; break;
+	case Texture1D_Array:		return D3D12_SRV_DIMENSION_TEXTURE1DARRAY; break;
+	case Texture2D:				return D3D12_SRV_DIMENSION_TEXTURE2D; break;
+	case Texture2D_Array:		return D3D12_SRV_DIMENSION_TEXTURE2DARRAY; break;
+	case Texture2DMS:			return D3D12_SRV_DIMENSION_TEXTURE2DMS; break;
+	case Texture2DMS_Array:		return D3D12_SRV_DIMENSION_TEXTURE2DMSARRAY; break;
+	case Texture3D:				return D3D12_SRV_DIMENSION_TEXTURE3D; break;
+	case TextureCube:			return D3D12_SRV_DIMENSION_TEXTURECUBE; break;
+	case TextureCube_Array:		return D3D12_SRV_DIMENSION_TEXTURECUBEARRAY; break;
+
+	case IndexBuffer:
+	case VertexBuffer:
+	case ConstantBuffer:
+	case ByteAddressBuffer:
+	case IndirectArgsBuffer:
+	case StructuredBuffer:
+	case TypedBuffer:
+	case ReadbackBuffer:
+		return D3D12_SRV_DIMENSION_BUFFER;
+		break;
+
+	default:
+		assert(false);
+		return D3D12_SRV_DIMENSION_UNKNOWN;
+		break;
+	}
+}
+
+
+D3D12_RESOURCE_DIMENSION GetResourceDimension(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	switch (resourceType)
+	{
+	case Texture1D:
+	case Texture1D_Array:
+		return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		break;
+
+	case Texture2D:
+	case Texture2D_Array:
+	case Texture2DMS:
+	case Texture2DMS_Array:
+	case TextureCube:
+	case TextureCube_Array:
+		return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		break;
+
+	case Texture3D:
+		return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		break;
+
+	case IndexBuffer:
+	case VertexBuffer:
+	case ConstantBuffer:
+	case ByteAddressBuffer:
+	case IndirectArgsBuffer:
+	case StructuredBuffer:
+	case TypedBuffer:
+	case ReadbackBuffer:
+		return D3D12_RESOURCE_DIMENSION_BUFFER;
+		break;
+
+	default:
+		assert(false);
+		return D3D12_RESOURCE_DIMENSION_UNKNOWN;
+	}
+}
+
 } // namespace Kodiak::DX12

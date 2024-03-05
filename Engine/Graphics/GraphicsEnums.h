@@ -342,4 +342,125 @@ enum class ResourceState : uint32_t
 
 template <> struct EnableBitmaskOperators<ResourceState> { static const bool enable = true; };
 
+
+enum class QueryType : uint8_t
+{
+	Occlusion,
+	Timestamp,
+	PipelineStats
+};
+
+
+enum class RootParameterType : uint8_t
+{
+	Invalid,
+	DescriptorTable,
+	RootConstants,
+	RootCBV,
+	DynamicRootCBV
+};
+
+
+enum class ResourceType : uint32_t
+{
+	Unknown =				0x0000,
+	Texture1D =				0x0001,
+	Texture1D_Array =		0x0002,
+	Texture2D =				0x0004,
+	Texture2D_Array =		0x0008,
+	Texture2DMS =			0x0010,
+	Texture2DMS_Array =		0x0020,
+	TextureCube =			0x0040,
+	TextureCube_Array =		0x0080,
+	Texture3D =				0x0100,
+	IndexBuffer =			0x0200,
+	VertexBuffer =			0x0400,
+	ConstantBuffer =		0x0800,
+	ByteAddressBuffer =		0x1000,
+	IndirectArgsBuffer =	0x2000,
+	StructuredBuffer =		0x4000,
+	TypedBuffer =			0x8000,
+	ReadbackBuffer =		0x010000
+};
+
+template <> struct EnableBitmaskOperators<ResourceType> { static const bool enable = true; };
+
+
+inline bool IsTextureResource(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	return (resourceType >= Texture1D) && (resourceType <= Texture3D);
+}
+
+
+inline bool IsTextureArray(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	return
+		resourceType == Texture1D_Array ||
+		resourceType == Texture2D_Array ||
+		resourceType == Texture2DMS_Array ||
+		resourceType == TextureCube ||
+		resourceType == TextureCube_Array;
+}
+
+
+inline bool IsBufferResource(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	return (resourceType > Texture3D);
+}
+
+
+enum class HardwareVendor
+{
+	Unknown,
+	AMD,
+	Intel,
+	NVIDIA
+};
+
+inline std::string HardwareVendorToString(HardwareVendor hardwareVendor)
+{
+	using enum HardwareVendor;
+
+	switch (hardwareVendor)
+	{
+	case AMD:		return std::string("AMD");			break;
+	case Intel:		return std::string("Intel");		break;
+	case NVIDIA:	return std::string("NVIDIA");		break;
+	default:		return std::string("<Unknown>");	break;
+	}
+}
+
+inline HardwareVendor VendorIdToHardwareVendor(uint32_t vendorId)
+{
+	using enum HardwareVendor;
+
+	switch (vendorId)
+	{
+	case 0x10de:
+		return NVIDIA;
+		break;
+
+	case 0x1002:
+	case 0x1022:
+		return AMD;
+		break;
+
+	case 0x163c:
+	case 0x8086:
+	case 0x8087:
+		return Intel;
+		break;
+
+	default:
+		return Unknown;
+		break;
+	}
+}
+
 } // namespace Kodiak
