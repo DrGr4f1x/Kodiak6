@@ -75,6 +75,7 @@ ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsDevice.h)
 ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsDevice.cpp)
 ADDFILEGROUP(FILE_LIST Graphics Graphics/GraphicsEnums.h)
 ADDFILEGROUP(FILE_LIST Graphics Graphics/Formats.h)
+ADDFILEGROUP(FILE_LIST Graphics Graphics/Formats.cpp)
 
 # Graphics\DX12 files
 ADDFILEGROUP(FILE_LIST Graphics/DX12 Graphics/DX12/Formats12.h)
