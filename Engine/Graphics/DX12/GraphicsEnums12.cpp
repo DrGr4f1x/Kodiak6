@@ -100,10 +100,10 @@ D3D12_COLOR_WRITE_ENABLE ColorWriteToDX12(ColorWrite colorWrite)
 	using enum ColorWrite;
 
 	uint32_t result = 0;
-	if (HasFlag<ColorWrite>(colorWrite, Red))		result |= D3D12_COLOR_WRITE_ENABLE_RED;
-	if (HasFlag<ColorWrite>(colorWrite, Green))		result |= D3D12_COLOR_WRITE_ENABLE_GREEN;
-	if (HasFlag<ColorWrite>(colorWrite, Blue))		result |= D3D12_COLOR_WRITE_ENABLE_BLUE;
-	if (HasFlag<ColorWrite>(colorWrite, Alpha))		result |= D3D12_COLOR_WRITE_ENABLE_ALPHA;
+	if (HasFlag(colorWrite, Red))		result |= D3D12_COLOR_WRITE_ENABLE_RED;
+	if (HasFlag(colorWrite, Green))		result |= D3D12_COLOR_WRITE_ENABLE_GREEN;
+	if (HasFlag(colorWrite, Blue))		result |= D3D12_COLOR_WRITE_ENABLE_BLUE;
+	if (HasFlag(colorWrite, Alpha))		result |= D3D12_COLOR_WRITE_ENABLE_ALPHA;
 	
 	return (D3D12_COLOR_WRITE_ENABLE)result;
 }
@@ -398,17 +398,17 @@ D3D12_ROOT_SIGNATURE_FLAGS RootSignatureFlagsToDX12(RootSignatureFlags rootSigna
 	using enum RootSignatureFlags;
 
 	uint32_t result = 0;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, AllowInputAssemblerInputLayout))			result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyVertexShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyHullShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyDomainShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyGeometryShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyPixelShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, AllowStreamOutput))							result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyAmplificationShaderRootAccess))			result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, DenyMeshShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, CbvSrvUavHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
-	if (HasFlag<RootSignatureFlags>(rootSignatureFlags, SamplerHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+	if (HasFlag(rootSignatureFlags, AllowInputAssemblerInputLayout))			result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	if (HasFlag(rootSignatureFlags, DenyVertexShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, DenyHullShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, DenyDomainShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, DenyGeometryShaderRootAccess))				result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, DenyPixelShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, AllowStreamOutput))							result |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
+	if (HasFlag(rootSignatureFlags, DenyAmplificationShaderRootAccess))			result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, DenyMeshShaderRootAccess))					result |= D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
+	if (HasFlag(rootSignatureFlags, CbvSrvUavHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
+	if (HasFlag(rootSignatureFlags, SamplerHeapDirectlyIndexed))				result |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
 	
 	return (D3D12_ROOT_SIGNATURE_FLAGS)result;
 }
@@ -465,6 +465,74 @@ D3D12_FILTER TextureFilterToDX12(TextureFilter textureFilter)
 			return D3D12_FILTER_MIN_MAG_MIP_POINT;
 			break;
 	}
+}
+
+
+D3D12_TEXTURE_ADDRESS_MODE TextureAddressToDX12(TextureAddress textureAddress)
+{
+	using enum TextureAddress;
+
+	switch (textureAddress)
+	{
+	case Wrap:			return D3D12_TEXTURE_ADDRESS_MODE_WRAP; break;
+	case Mirror:		return D3D12_TEXTURE_ADDRESS_MODE_MIRROR; break;
+	case Clamp:			return D3D12_TEXTURE_ADDRESS_MODE_CLAMP; break;
+	case Border:		return D3D12_TEXTURE_ADDRESS_MODE_BORDER; break;
+	case MirrorOnce:	return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE; break;
+	default:
+		assert(false);
+		return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		break;
+	}
+}
+
+
+D3D12_COMMAND_LIST_TYPE CommandListTypeToDX12(CommandListType commandListType)
+{
+	using enum CommandListType;
+
+	switch (commandListType)
+	{
+	case Direct:	return D3D12_COMMAND_LIST_TYPE_DIRECT; break;
+	case Bundle:	return D3D12_COMMAND_LIST_TYPE_BUNDLE; break;
+	case Compute:	return D3D12_COMMAND_LIST_TYPE_BUNDLE; break;
+	case Copy:		return D3D12_COMMAND_LIST_TYPE_COPY; break;
+	default:
+		assert(false);
+		return D3D12_COMMAND_LIST_TYPE_DIRECT;
+		break;
+	}
+}
+
+
+D3D12_RESOURCE_STATES ResourceStateToDX12(ResourceState resourceState)
+{
+	using enum ResourceState;
+
+	uint32_t result = 0;
+	if (HasFlag(resourceState, Common))								result |= D3D12_RESOURCE_STATE_COMMON;
+	if (HasAnyFlag(resourceState, VertexBuffer | ConstantBuffer))	result |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	if (HasFlag(resourceState, IndexBuffer))							result |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
+	if (HasFlag(resourceState, RenderTarget))						result |= D3D12_RESOURCE_STATE_RENDER_TARGET;
+	if (HasFlag(resourceState, UnorderedAccess))						result |= D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	if (HasFlag(resourceState, ResourceState::DepthWrite))			result |= D3D12_RESOURCE_STATE_DEPTH_WRITE;
+	if (HasFlag(resourceState, DepthRead))							result |= D3D12_RESOURCE_STATE_DEPTH_READ;
+	if (HasFlag(resourceState, NonPixelShaderResource))				result |= D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+	if (HasFlag(resourceState, PixelShaderResource))					result |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	if (HasFlag(resourceState, ShaderResource))						result |= (D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	if (HasFlag(resourceState, StreamOut))							result |= D3D12_RESOURCE_STATE_STREAM_OUT;
+	if (HasFlag(resourceState, IndirectArgument))					result |= D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT;
+	if (HasFlag(resourceState, CopyDest))							result |= D3D12_RESOURCE_STATE_COPY_DEST;
+	if (HasFlag(resourceState, CopySource))							result |= D3D12_RESOURCE_STATE_COPY_SOURCE;
+	if (HasFlag(resourceState, ResolveDest))							result |= D3D12_RESOURCE_STATE_RESOLVE_DEST;
+	if (HasFlag(resourceState, ResolveSource))						result |= D3D12_RESOURCE_STATE_RESOLVE_SOURCE;
+	if (HasFlag(resourceState, GenericRead))							result |= D3D12_RESOURCE_STATE_GENERIC_READ;
+	if (HasFlag(resourceState, Present))								result |= D3D12_RESOURCE_STATE_PRESENT;
+	if (HasFlag(resourceState, Predication))							result |= D3D12_RESOURCE_STATE_PREDICATION;
+	if (HasFlag(resourceState, RayTracingAccelerationStructure))		result |= D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+	if (HasFlag(resourceState, ShadingRateSource))					result |= D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE;
+
+	return (D3D12_RESOURCE_STATES)result;
 }
 
 } // namespace Kodiak::DX12

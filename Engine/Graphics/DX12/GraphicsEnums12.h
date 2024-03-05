@@ -47,4 +47,10 @@ D3D12_ROOT_SIGNATURE_FLAGS RootSignatureFlagsToDX12(RootSignatureFlags rootSigna
 
 D3D12_FILTER TextureFilterToDX12(TextureFilter textureFilter);
 
+D3D12_TEXTURE_ADDRESS_MODE TextureAddressToDX12(TextureAddress textureAddress);
+
+D3D12_COMMAND_LIST_TYPE CommandListTypeToDX12(CommandListType commandListType);
+
+D3D12_RESOURCE_STATES ResourceStateToDX12(ResourceState resourceState);
+
 } // namespace Kodiak::DX12

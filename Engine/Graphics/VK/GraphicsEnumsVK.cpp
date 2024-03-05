@@ -104,10 +104,10 @@ VkColorComponentFlags ColorWriteToVulkan(ColorWrite colorWrite)
 	using enum ColorWrite;
 
 	uint32_t result = 0;
-	if (HasFlag<ColorWrite>(colorWrite, Red))		result |= VK_COLOR_COMPONENT_R_BIT;
-	if (HasFlag<ColorWrite>(colorWrite, Green))		result |= VK_COLOR_COMPONENT_G_BIT;
-	if (HasFlag<ColorWrite>(colorWrite, Blue))		result |= VK_COLOR_COMPONENT_B_BIT;
-	if (HasFlag<ColorWrite>(colorWrite, Alpha))		result |= VK_COLOR_COMPONENT_A_BIT;
+	if (HasFlag(colorWrite, Red))		result |= VK_COLOR_COMPONENT_R_BIT;
+	if (HasFlag(colorWrite, Green))		result |= VK_COLOR_COMPONENT_G_BIT;
+	if (HasFlag(colorWrite, Blue))		result |= VK_COLOR_COMPONENT_B_BIT;
+	if (HasFlag(colorWrite, Alpha))		result |= VK_COLOR_COMPONENT_A_BIT;
 
 	return (VkColorComponentFlags)result;
 }
@@ -321,20 +321,20 @@ VkShaderStageFlags ShaderStageToVulkan(ShaderStage shaderStage)
 	}
 
 	uint32_t result = 0;
-	if (HasFlag<ShaderStage>(shaderStage, Compute))			result |= VK_SHADER_STAGE_COMPUTE_BIT;
-	if (HasFlag<ShaderStage>(shaderStage, Vertex))			result |= VK_SHADER_STAGE_VERTEX_BIT;
-	if (HasFlag<ShaderStage>(shaderStage, Hull))			result |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-	if (HasFlag<ShaderStage>(shaderStage, Domain))			result |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-	if (HasFlag<ShaderStage>(shaderStage, Geometry))		result |= VK_SHADER_STAGE_GEOMETRY_BIT;
-	if (HasFlag<ShaderStage>(shaderStage, Pixel))			result |= VK_SHADER_STAGE_FRAGMENT_BIT;
-	if (HasFlag<ShaderStage>(shaderStage, Amplification))	result |= VK_SHADER_STAGE_TASK_BIT_EXT;
-	if (HasFlag<ShaderStage>(shaderStage, Mesh))			result |= VK_SHADER_STAGE_MESH_BIT_EXT;
-	if (HasFlag<ShaderStage>(shaderStage, RayGeneration))	result |= VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-	if (HasFlag<ShaderStage>(shaderStage, Miss))			result |= VK_SHADER_STAGE_MISS_BIT_KHR;
-	if (HasFlag<ShaderStage>(shaderStage, ClosestHit))		result |= VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-	if (HasFlag<ShaderStage>(shaderStage, AnyHit))			result |= VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-	if (HasFlag<ShaderStage>(shaderStage, Intersection))	result |= VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
-	if (HasFlag<ShaderStage>(shaderStage, Callable))		result |= VK_SHADER_STAGE_CALLABLE_BIT_KHR;
+	if (HasFlag(shaderStage, Compute))			result |= VK_SHADER_STAGE_COMPUTE_BIT;
+	if (HasFlag(shaderStage, Vertex))			result |= VK_SHADER_STAGE_VERTEX_BIT;
+	if (HasFlag(shaderStage, Hull))				result |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+	if (HasFlag(shaderStage, Domain))			result |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+	if (HasFlag(shaderStage, Geometry))			result |= VK_SHADER_STAGE_GEOMETRY_BIT;
+	if (HasFlag(shaderStage, Pixel))			result |= VK_SHADER_STAGE_FRAGMENT_BIT;
+	if (HasFlag(shaderStage, Amplification))	result |= VK_SHADER_STAGE_TASK_BIT_EXT;
+	if (HasFlag(shaderStage, Mesh))				result |= VK_SHADER_STAGE_MESH_BIT_EXT;
+	if (HasFlag(shaderStage, RayGeneration))	result |= VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+	if (HasFlag(shaderStage, Miss))				result |= VK_SHADER_STAGE_MISS_BIT_KHR;
+	if (HasFlag(shaderStage, ClosestHit))		result |= VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+	if (HasFlag(shaderStage, AnyHit))			result |= VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+	if (HasFlag(shaderStage, Intersection))		result |= VK_SHADER_STAGE_INTERSECTION_BIT_KHR;
+	if (HasFlag(shaderStage, Callable))			result |= VK_SHADER_STAGE_CALLABLE_BIT_KHR;
 
 	return (VkShaderStageFlags)result;
 }
@@ -414,6 +414,52 @@ VkTextureFilterMapping TextureFilterToVulkan(TextureFilter textureFilter)
 	assert(textureFilter == s_textureFilterMap[(uint32_t)textureFilter].engineFilter);
 
 	return s_textureFilterMap[(uint32_t)textureFilter];
+}
+
+
+VkSamplerAddressMode TextureAddressToVulkan(TextureAddress textureAddress)
+{
+	using enum TextureAddress;
+
+	switch (textureAddress)
+	{
+	case Wrap:			return VK_SAMPLER_ADDRESS_MODE_REPEAT; break;
+	case Mirror:		return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT; break;
+	case Clamp:			return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; break;
+	case Border:		return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER; break;
+	case MirrorOnce:	return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE; break;
+	default:
+		assert(false);
+		return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+		break;
+	}
+}
+
+
+VkAccessFlags ResourceStateToVulkan(ResourceState resourceState)
+{
+	using enum ResourceState;
+
+	constexpr ResourceState AnyShaderRead = (NonPixelShaderResource | PixelShaderResource | ShaderResource);
+	constexpr ResourceState AnyWriteDest = (CopyDest | ResolveDest);
+	constexpr ResourceState AnyReadSource = (CopySource | ResolveSource | GenericRead);
+
+	uint32_t result = 0;
+	if (HasFlag(resourceState, VertexBuffer))						result |= VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+	if (HasFlag(resourceState, IndexBuffer))						result |= VK_ACCESS_INDEX_READ_BIT;
+	if (HasFlag(resourceState, ConstantBuffer))						result |= VK_ACCESS_UNIFORM_READ_BIT;
+	if (HasFlag(resourceState, RenderTarget))						result |= (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+	if (HasFlag(resourceState, UnorderedAccess))					result |= VK_ACCESS_SHADER_WRITE_BIT;
+	if (HasFlag(resourceState, DepthRead))							result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+	if (HasFlag(resourceState, ResourceState::DepthWrite))			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	if (HasAnyFlag(resourceState, AnyShaderRead))					result |= VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+	if (HasFlag(resourceState, IndirectArgument))					result |= VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
+	if (HasAnyFlag(resourceState, AnyWriteDest))					result |= VK_ACCESS_TRANSFER_WRITE_BIT;
+	if (HasAnyFlag(resourceState, AnyReadSource))					result |= VK_ACCESS_TRANSFER_READ_BIT;
+	if (HasFlag(resourceState, RayTracingAccelerationStructure))	result |= (VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR);
+	if (HasFlag(resourceState, ShadingRateSource))					result |= VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR;
+
+	return (VkAccessFlags)result;
 }
 
 } // Minimumnamespace Kodiak::VK

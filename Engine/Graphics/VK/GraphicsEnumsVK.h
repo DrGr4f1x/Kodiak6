@@ -62,4 +62,8 @@ struct VkTextureFilterMapping
 
 VkTextureFilterMapping TextureFilterToVulkan(TextureFilter textureFilter);
 
+VkSamplerAddressMode TextureAddressToVulkan(TextureAddress textureAddress);
+
+VkAccessFlags ResourceStateToVulkan(ResourceState resourceState);
+
 } // namespace Kodiak::VK

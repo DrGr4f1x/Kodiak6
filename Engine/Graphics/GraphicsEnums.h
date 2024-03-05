@@ -288,10 +288,58 @@ enum class TextureFilter
 	Count
 };
 
+enum class TextureAddress : uint8_t
+{
+	Wrap,
+	Mirror,
+	Clamp,
+	Border,
+	MirrorOnce
+};
+
 enum class InputClassification : uint8_t
 {
 	PerVertexData,
 	PerInstanceData
 };
+
+
+enum class CommandListType : uint8_t
+{
+	Direct,
+	Bundle,
+	Compute,
+	Copy
+};
+
+
+enum class ResourceState : uint32_t
+{
+	Undefined =							0x0000,
+	Common =							0x0001,
+	VertexBuffer =						0x0002,
+	IndexBuffer =						0x0004,
+	ConstantBuffer =					0x0008,
+	RenderTarget =						0x0010,
+	UnorderedAccess =					0x0020,
+	DepthWrite =						0x0040,
+	DepthRead =							0x0080,
+	NonPixelShaderResource =			0x0100,
+	PixelShaderResource =				0x0200,
+	ShaderResource =					0x0400,
+	StreamOut =							0x0800,
+	IndirectArgument =					0x1000,
+	CopyDest =							0x2000,
+	CopySource =						0x4000,
+	ResolveDest =						0x8000,
+	ResolveSource =						0x010000,
+	GenericRead =						0x020000,
+	Present =							0x040000,
+	Predication =						0x080000,
+	RayTracingAccelerationStructure =	0x100000,
+	ShadingRateSource =					0x200000
+};
+
+template <> struct EnableBitmaskOperators<ResourceState> { static const bool enable = true; };
 
 } // namespace Kodiak
