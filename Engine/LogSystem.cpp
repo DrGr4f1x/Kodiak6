@@ -144,6 +144,7 @@ void LogSystem::Initialize()
 
 					if (outputToFile)
 					{
+						m_file.flush();
 						m_file << message.messageStr;
 					}
 
@@ -166,6 +167,7 @@ void LogSystem::Initialize()
 
 					if (message.level == LogLevel::Fatal)
 					{
+						m_file.close();
 						Utility::ExitFatal(message.messageStr, "Fatal Error");
 					}
 				}

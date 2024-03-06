@@ -25,12 +25,15 @@ ADDFILEROOT(FILE_LIST Stdafx.h)
 ADDFILEROOT(FILE_LIST Stdafx.cpp)
 ADDFILEROOT(FILE_LIST TestApp.h)
 ADDFILEROOT(FILE_LIST TestApp.cpp)
+ADDFILEROOT(FILE_LIST packages.config)
 
 # Target executable
 add_executable(${APP_NAME} WIN32 ${FILE_LIST})
 add_compile_definitions($<$<CONFIG:Release>:RELEASE> $<$<CONFIG:Release>:_RELEASE> $<$<CONFIG:Release>:NDEBUG>)
 add_compile_definitions($<$<CONFIG:Profile>:PROFILE> $<$<CONFIG:Profile>:_PROFILE> $<$<CONFIG:Profile>:BDEBUG>)
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG> $<$<CONFIG:Debug>:_DEBUG>)
+
+set_property(TARGET ${APP_NAME} PROPERTY VS_PACKAGE_REFERENCES "Microsoft.Direct3D.D3D12_1.611.2")
 
 if (MSVC)
 	set_target_properties(${APP_NAME} PROPERTIES COMPILE_FLAGS "/YuStdafx.h")
