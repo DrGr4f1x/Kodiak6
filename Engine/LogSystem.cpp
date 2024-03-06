@@ -25,6 +25,10 @@ namespace
 
 LogSystem* g_logSystem = nullptr;
 
+bool outputToFile{ true };
+bool outputToConsole{ true };
+bool outputToDebug{ true };
+
 } // anonymous namespace
 
 
@@ -32,6 +36,7 @@ string Kodiak::LogLevelToString(LogLevel level)
 {
 	switch (level)
 	{
+	case LogLevel::Fatal:	return string("  Fatal");	break;
 	case LogLevel::Error:	return string("  Error");	break;
 	case LogLevel::Warning:	return string("Warning");	break;
 	case LogLevel::Debug:	return string("  Debug");	break;
@@ -41,12 +46,12 @@ string Kodiak::LogLevelToString(LogLevel level)
 }
 
 
-void Kodiak::PostLogMessage(const LogMessage& message)
+void Kodiak::PostLogMessage(const LogMessage&& message)
 {
 	auto* logSystem = GetLogSystem();
 	if (logSystem)
 	{
-		logSystem->PostLogMessage(message);
+		logSystem->PostLogMessage(move(message));
 	}
 }
 
@@ -68,10 +73,9 @@ LogSystem::~LogSystem()
 }
 
 
-void LogSystem::PostLogMessage(const LogMessage& message)
+void LogSystem::PostLogMessage(const LogMessage&& message)
 {
-	m_messageQueue.push(message);
-	m_stdOutQueue.push(message);
+	m_messageQueue.push(move(message));
 }
 
 
@@ -136,21 +140,34 @@ void LogSystem::Initialize()
 				LogMessage message;
 				if (m_messageQueue.try_pop(message))
 				{
-					m_file << message;
-				}
-			}
-		}
-	);
+					lock_guard<mutex> outputLock(m_outputMutex);
 
-	m_workerLookStdOut = async(launch::async,
-		[&]
-		{
-			while (!m_haltLogging)
-			{
-				LogMessage message;
-				if (m_stdOutQueue.try_pop(message))
-				{
-					cout << message;
+					if (outputToFile)
+					{
+						m_file << message.messageStr;
+					}
+
+					if (outputToConsole)
+					{
+						if (message.level == LogLevel::Fatal || message.level == LogLevel::Error)
+						{
+							cerr << message.messageStr;
+						}
+						else
+						{
+							cout << message.messageStr;
+						}
+					}
+
+					if (outputToDebug)
+					{
+						OutputDebugStringA(message.messageStr.c_str());
+					}
+
+					if (message.level == LogLevel::Fatal)
+					{
+						Utility::ExitFatal(message.messageStr, "Fatal Error");
+					}
 				}
 			}
 		}
@@ -172,7 +189,6 @@ void LogSystem::Shutdown()
 
 	m_haltLogging = true;
 	m_workerLoop.get();
-	m_workerLookStdOut.get();
 
 	m_file.flush();
 	m_file.close();

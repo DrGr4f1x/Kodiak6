@@ -15,12 +15,9 @@
 namespace Kodiak
 {
 
-// Type alias
-using LogMessage = std::string;
-
-
 enum class LogLevel
 {
+	Fatal,
 	Error,
 	Warning,
 	Notice,
@@ -29,8 +26,14 @@ enum class LogLevel
 };
 
 
+struct LogMessage
+{
+	std::string messageStr;
+	LogLevel level;
+};
+
 std::string LogLevelToString(LogLevel level);
-void PostLogMessage(const LogMessage& message);
+void PostLogMessage(const LogMessage&& message);
 
 
 class LogSystem : NonCopyable, NonMovable
@@ -41,7 +44,7 @@ public:
 
 	bool IsInitialized() const { return m_initialized; }
 
-	void PostLogMessage(const LogMessage& message);
+	void PostLogMessage(const LogMessage&& message);
 
 private:
 	void CreateLogFile();
@@ -50,12 +53,11 @@ private:
 
 private:
 	std::mutex m_initializationMutex;
+	std::mutex m_outputMutex;
 	std::ofstream m_file;
 	Concurrency::concurrent_queue<LogMessage> m_messageQueue;
-	Concurrency::concurrent_queue<LogMessage> m_stdOutQueue;
 	std::atomic<bool> m_haltLogging;
 	std::future<void> m_workerLoop;
-	std::future<void> m_workerLookStdOut;
 	std::atomic<bool> m_initialized;
 };
 
@@ -73,7 +75,7 @@ public:
 	{
 		m_stream << std::endl;
 
-		PostLogMessage(m_stream.str());
+		PostLogMessage({ m_stream.str(), TLevel });
 	}
 
 	std::ostringstream& MessageStream() { return m_stream; }
@@ -86,6 +88,7 @@ LogSystem* GetLogSystem();
 
 
 #define LOG(level) Logger<level>().MessageStream()
+#define LOG_FATAL Logger<LogLevel::Fatal>().MessageStream()
 #define LOG_ERROR Logger<LogLevel::Error>().MessageStream()
 #define LOG_WARNING Logger<LogLevel::Warning>().MessageStream()
 #define LOG_NOTICE Logger<LogLevel::Notice>().MessageStream()
