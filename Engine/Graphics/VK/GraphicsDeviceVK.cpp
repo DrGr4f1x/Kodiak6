@@ -29,8 +29,17 @@ GraphicsDevice::~GraphicsDevice()
 }
 
 
+void GraphicsDevice::Initialize(const GraphicsDeviceDesc& desc)
+{
+
+}
+
+
 Kodiak::VK::GraphicsDevice* Kodiak::VK::CreateDeviceVK(const Kodiak::GraphicsDeviceDesc& desc)
 {
 	GraphicsDevice* device = new GraphicsDevice;
+
+	device->Initialize(desc);
+
 	return device;
 }

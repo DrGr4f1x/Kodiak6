@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include "Formats.h"
+
+
 namespace Kodiak
 {
 
@@ -26,7 +29,10 @@ struct GraphicsDeviceDesc
 	uint32_t height{ 0 };
 	bool vsync{ false };
 
+	Format colorFormat{ Format::SRGBA8_UNorm };
+	Format depthFormat{ Format::D32S8 };
 };
+
 
 class IGraphicsDevice : public IObject
 {
@@ -38,6 +44,14 @@ public:
 
 using DeviceHandle = Microsoft::WRL::ComPtr<IGraphicsDevice>;
 
+
+extern IGraphicsDevice* g_graphicsDevice;
+
+
 DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc);
+
+bool IsDeveloperModeEnabled();
+
+bool IsRenderDocAvailable();
 
 } // namespace Kodiak

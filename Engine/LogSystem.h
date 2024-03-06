@@ -52,8 +52,10 @@ private:
 	std::mutex m_initializationMutex;
 	std::ofstream m_file;
 	Concurrency::concurrent_queue<LogMessage> m_messageQueue;
+	Concurrency::concurrent_queue<LogMessage> m_stdOutQueue;
 	std::atomic<bool> m_haltLogging;
 	std::future<void> m_workerLoop;
+	std::future<void> m_workerLookStdOut;
 	std::atomic<bool> m_initialized;
 };
 
@@ -89,5 +91,7 @@ LogSystem* GetLogSystem();
 #define LOG_NOTICE Logger<LogLevel::Notice>().MessageStream()
 #define LOG_INFO Logger<LogLevel::Info>().MessageStream()
 #define LOG_DEBUG Logger<LogLevel::Debug>().MessageStream()
+
+#define ENDL std::endl 
 
 } // namespace Kodiak

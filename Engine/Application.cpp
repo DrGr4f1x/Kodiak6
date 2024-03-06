@@ -204,9 +204,14 @@ void Application::Initialize()
 	m_filesystem = make_unique<FileSystem>(m_name);
 	m_filesystem->SetDefaultRootPath();
 	m_logSystem = make_unique<LogSystem>();
+
+	// This is the first place we can post a startup message
+	LOG_INFO << "App: " << m_name << " starting up";
+	LOG_INFO << "  API: " << GraphicsApiToString(m_api) << ENDL;
+
 	m_inputSystem = make_unique<InputSystem>(m_hwnd);
 
-	LOG_INFO << "Systems initialized";
+	LOG_INFO << "Engine systems initialized" << ENDL;
 
 	Configure();
 

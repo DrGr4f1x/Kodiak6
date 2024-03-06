@@ -58,8 +58,11 @@
 #pragma comment(lib, "dxguid.lib")
 
 // DirectX 12 headers
-#include <dxgi.h>
+#define FORCE_DX12_DEBUG_MARKUP 1
+#define ENABLE_DX12_DEBUG_MARKUP (_DEBUG || _PROFILE || FORCE_DX12_DEBUG_MARKUP)
 #include <d3d12.h>
+#include <dxgi1_4.h>
+#include <dxgiformat.h>
 
 // Vulkan headers
 #define VK_USE_PLATFORM_WIN32_KHR

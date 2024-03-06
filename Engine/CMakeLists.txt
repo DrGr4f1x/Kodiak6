@@ -94,6 +94,9 @@ ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsEnumsVK.h)
 ADDFILEGROUP(FILE_LIST Graphics/VK Graphics/VK/GraphicsEnumsVK.cpp)
 
 add_library(Engine STATIC ${FILE_LIST})
+add_compile_definitions($<$<CONFIG:Release>:RELEASE> $<$<CONFIG:Release>:_RELEASE> $<$<CONFIG:Release>:NDEBUG>)
+add_compile_definitions($<$<CONFIG:Profile>:PROFILE> $<$<CONFIG:Profile>:_PROFILE> $<$<CONFIG:Profile>:BDEBUG>)
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG> $<$<CONFIG:Debug>:_DEBUG>)
 
 if (MSVC)
 	set_target_properties(Engine PROPERTIES COMPILE_FLAGS "/YuStdafx.h")
@@ -105,7 +108,4 @@ set_target_properties(Engine PROPERTIES
 )
 
 target_include_directories(Engine PUBLIC "${Vulkan_INCLUDE_DIRS}")
-
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:RELEASE>)
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Profile>:PROFILE>)
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:DEBUG>)
+target_link_libraries(Engine PUBLIC d3d12 dxguid dxgi)

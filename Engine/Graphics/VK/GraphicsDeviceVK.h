@@ -20,6 +20,8 @@ class GraphicsDevice : public TRefCount<Kodiak::IGraphicsDevice>
 public:
 	GraphicsDevice();
 	~GraphicsDevice() final;
+
+	void Initialize(const GraphicsDeviceDesc& desc);
 };
 
 using DeviceHandle = Microsoft::WRL::ComPtr<GraphicsDevice>;

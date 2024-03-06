@@ -62,6 +62,9 @@ InputSystem::~InputSystem()
 
 void InputSystem::Update(float deltaT)
 {
+	using enum AnalogInput;
+	using enum DigitalInput;
+
 	memcpy(m_buttons[1], m_buttons[0], sizeof(m_buttons[0]));
 	memset(m_buttons[0], 0, sizeof(m_buttons[0]));
 	memset(m_analogs, 0, sizeof(m_analogs));
@@ -69,27 +72,27 @@ void InputSystem::Update(float deltaT)
 	XINPUT_STATE newInputState;
 	if (ERROR_SUCCESS == XInputGetState(0, &newInputState))
 	{
-		if (newInputState.Gamepad.wButtons & (1 << 0)) m_buttons[0][(int)DigitalInput::kDPadUp] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 1)) m_buttons[0][(int)DigitalInput::kDPadDown] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 2)) m_buttons[0][(int)DigitalInput::kDPadLeft] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 3)) m_buttons[0][(int)DigitalInput::kDPadRight] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 4)) m_buttons[0][(int)DigitalInput::kStartButton] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 5)) m_buttons[0][(int)DigitalInput::kBackButton] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 6)) m_buttons[0][(int)DigitalInput::kLThumbClick] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 7)) m_buttons[0][(int)DigitalInput::kRThumbClick] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 8)) m_buttons[0][(int)DigitalInput::kLShoulder] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 9)) m_buttons[0][(int)DigitalInput::kRShoulder] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 12)) m_buttons[0][(int)DigitalInput::kAButton] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 13)) m_buttons[0][(int)DigitalInput::kBButton] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 14)) m_buttons[0][(int)DigitalInput::kXButton] = true;
-		if (newInputState.Gamepad.wButtons & (1 << 15)) m_buttons[0][(int)DigitalInput::kYButton] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 0)) m_buttons[0][(int)kDPadUp] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 1)) m_buttons[0][(int)kDPadDown] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 2)) m_buttons[0][(int)kDPadLeft] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 3)) m_buttons[0][(int)kDPadRight] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 4)) m_buttons[0][(int)kStartButton] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 5)) m_buttons[0][(int)kBackButton] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 6)) m_buttons[0][(int)kLThumbClick] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 7)) m_buttons[0][(int)kRThumbClick] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 8)) m_buttons[0][(int)kLShoulder] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 9)) m_buttons[0][(int)kRShoulder] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 12)) m_buttons[0][(int)kAButton] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 13)) m_buttons[0][(int)kBButton] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 14)) m_buttons[0][(int)kXButton] = true;
+		if (newInputState.Gamepad.wButtons & (1 << 15)) m_buttons[0][(int)kYButton] = true;
 
-		SetAnalog(AnalogInput::kAnalogLeftTrigger, newInputState.Gamepad.bLeftTrigger / 255.0f);
-		SetAnalog(AnalogInput::kAnalogRightTrigger, newInputState.Gamepad.bRightTrigger / 255.0f);
-		SetAnalog(AnalogInput::kAnalogLeftStickX, FilterAnalogInput(newInputState.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE));
-		SetAnalog(AnalogInput::kAnalogLeftStickY, FilterAnalogInput(newInputState.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE));
-		SetAnalog(AnalogInput::kAnalogRightStickX, FilterAnalogInput(newInputState.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE));
-		SetAnalog(AnalogInput::kAnalogRightStickY, FilterAnalogInput(newInputState.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE));
+		SetAnalog(kAnalogLeftTrigger, newInputState.Gamepad.bLeftTrigger / 255.0f);
+		SetAnalog(kAnalogRightTrigger, newInputState.Gamepad.bRightTrigger / 255.0f);
+		SetAnalog(kAnalogLeftStickX, FilterAnalogInput(newInputState.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE));
+		SetAnalog(kAnalogLeftStickY, FilterAnalogInput(newInputState.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE));
+		SetAnalog(kAnalogRightStickX, FilterAnalogInput(newInputState.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE));
+		SetAnalog(kAnalogRightStickY, FilterAnalogInput(newInputState.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE));
 	}
 
 	KbmUpdate();
@@ -104,16 +107,16 @@ void InputSystem::Update(float deltaT)
 		if (m_mouseState.rgbButtons[i] > 0) m_buttons[0][(int)DigitalInput::kMouse0 + i] = true;
 	}
 
-	SetAnalog(AnalogInput::kAnalogMouseX, (float)m_mouseState.lX * .0018f);
-	SetAnalog(AnalogInput::kAnalogMouseY, (float)m_mouseState.lY * -.0018f);
+	SetAnalog(kAnalogMouseX, (float)m_mouseState.lX * .0018f);
+	SetAnalog(kAnalogMouseY, (float)m_mouseState.lY * -.0018f);
 
 	if (m_mouseState.lZ > 0)
 	{
-		SetAnalog(AnalogInput::kAnalogMouseScroll, 1.0f);
+		SetAnalog(kAnalogMouseScroll, 1.0f);
 	}
 	else if (m_mouseState.lZ < 0)
 	{
-		SetAnalog(AnalogInput::kAnalogMouseScroll, -1.0f);
+		SetAnalog(kAnalogMouseScroll, -1.0f);
 	}
 }
 
@@ -175,7 +178,7 @@ float InputSystem::GetTimeCorrectedAnalogInput(AnalogInput ai) const
 
 void InputSystem::Initialize()
 {
-	LOG_NOTICE << "  Initializing input device";
+	LOG_INFO << "Creating DirectInput device";
 
 	KbmBuildKeyMapping();
 
@@ -233,7 +236,7 @@ void InputSystem::Initialize()
 
 void InputSystem::Shutdown()
 {
-	LOG_NOTICE << "  Shutting down input device";
+	LOG_INFO << "Destroying DirectInput device";
 
 	if (m_keyboard)
 	{
@@ -259,110 +262,112 @@ void InputSystem::Shutdown()
 
 void InputSystem::KbmBuildKeyMapping()
 {
-	m_dxKeyMapping[(int)DigitalInput::kKey_escape] = 1;
-	m_dxKeyMapping[(int)DigitalInput::kKey_1] = 2;
-	m_dxKeyMapping[(int)DigitalInput::kKey_2] = 3;
-	m_dxKeyMapping[(int)DigitalInput::kKey_3] = 4;
-	m_dxKeyMapping[(int)DigitalInput::kKey_4] = 5;
-	m_dxKeyMapping[(int)DigitalInput::kKey_5] = 6;
-	m_dxKeyMapping[(int)DigitalInput::kKey_6] = 7;
-	m_dxKeyMapping[(int)DigitalInput::kKey_7] = 8;
-	m_dxKeyMapping[(int)DigitalInput::kKey_8] = 9;
-	m_dxKeyMapping[(int)DigitalInput::kKey_9] = 10;
-	m_dxKeyMapping[(int)DigitalInput::kKey_0] = 11;
-	m_dxKeyMapping[(int)DigitalInput::kKey_minus] = 12;
-	m_dxKeyMapping[(int)DigitalInput::kKey_equals] = 13;
-	m_dxKeyMapping[(int)DigitalInput::kKey_back] = 14;
-	m_dxKeyMapping[(int)DigitalInput::kKey_tab] = 15;
-	m_dxKeyMapping[(int)DigitalInput::kKey_q] = 16;
-	m_dxKeyMapping[(int)DigitalInput::kKey_w] = 17;
-	m_dxKeyMapping[(int)DigitalInput::kKey_e] = 18;
-	m_dxKeyMapping[(int)DigitalInput::kKey_r] = 19;
-	m_dxKeyMapping[(int)DigitalInput::kKey_t] = 20;
-	m_dxKeyMapping[(int)DigitalInput::kKey_y] = 21;
-	m_dxKeyMapping[(int)DigitalInput::kKey_u] = 22;
-	m_dxKeyMapping[(int)DigitalInput::kKey_i] = 23;
-	m_dxKeyMapping[(int)DigitalInput::kKey_o] = 24;
-	m_dxKeyMapping[(int)DigitalInput::kKey_p] = 25;
-	m_dxKeyMapping[(int)DigitalInput::kKey_lbracket] = 26;
-	m_dxKeyMapping[(int)DigitalInput::kKey_rbracket] = 27;
-	m_dxKeyMapping[(int)DigitalInput::kKey_return] = 28;
-	m_dxKeyMapping[(int)DigitalInput::kKey_lcontrol] = 29;
-	m_dxKeyMapping[(int)DigitalInput::kKey_a] = 30;
-	m_dxKeyMapping[(int)DigitalInput::kKey_s] = 31;
-	m_dxKeyMapping[(int)DigitalInput::kKey_d] = 32;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f] = 33;
-	m_dxKeyMapping[(int)DigitalInput::kKey_g] = 34;
-	m_dxKeyMapping[(int)DigitalInput::kKey_h] = 35;
-	m_dxKeyMapping[(int)DigitalInput::kKey_j] = 36;
-	m_dxKeyMapping[(int)DigitalInput::kKey_k] = 37;
-	m_dxKeyMapping[(int)DigitalInput::kKey_l] = 38;
-	m_dxKeyMapping[(int)DigitalInput::kKey_semicolon] = 39;
-	m_dxKeyMapping[(int)DigitalInput::kKey_apostrophe] = 40;
-	m_dxKeyMapping[(int)DigitalInput::kKey_grave] = 41;
-	m_dxKeyMapping[(int)DigitalInput::kKey_lshift] = 42;
-	m_dxKeyMapping[(int)DigitalInput::kKey_backslash] = 43;
-	m_dxKeyMapping[(int)DigitalInput::kKey_z] = 44;
-	m_dxKeyMapping[(int)DigitalInput::kKey_x] = 45;
-	m_dxKeyMapping[(int)DigitalInput::kKey_c] = 46;
-	m_dxKeyMapping[(int)DigitalInput::kKey_v] = 47;
-	m_dxKeyMapping[(int)DigitalInput::kKey_b] = 48;
-	m_dxKeyMapping[(int)DigitalInput::kKey_n] = 49;
-	m_dxKeyMapping[(int)DigitalInput::kKey_m] = 50;
-	m_dxKeyMapping[(int)DigitalInput::kKey_comma] = 51;
-	m_dxKeyMapping[(int)DigitalInput::kKey_period] = 52;
-	m_dxKeyMapping[(int)DigitalInput::kKey_slash] = 53;
-	m_dxKeyMapping[(int)DigitalInput::kKey_rshift] = 54;
-	m_dxKeyMapping[(int)DigitalInput::kKey_multiply] = 55;
-	m_dxKeyMapping[(int)DigitalInput::kKey_lalt] = 56;
-	m_dxKeyMapping[(int)DigitalInput::kKey_space] = 57;
-	m_dxKeyMapping[(int)DigitalInput::kKey_capital] = 58;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f1] = 59;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f2] = 60;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f3] = 61;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f4] = 62;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f5] = 63;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f6] = 64;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f7] = 65;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f8] = 66;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f9] = 67;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f10] = 68;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numlock] = 69;
-	m_dxKeyMapping[(int)DigitalInput::kKey_scroll] = 70;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad7] = 71;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad8] = 72;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad9] = 73;
-	m_dxKeyMapping[(int)DigitalInput::kKey_subtract] = 74;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad4] = 75;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad5] = 76;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad6] = 77;
-	m_dxKeyMapping[(int)DigitalInput::kKey_add] = 78;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad1] = 79;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad2] = 80;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad3] = 81;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpad0] = 82;
-	m_dxKeyMapping[(int)DigitalInput::kKey_decimal] = 83;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f11] = 87;
-	m_dxKeyMapping[(int)DigitalInput::kKey_f12] = 88;
-	m_dxKeyMapping[(int)DigitalInput::kKey_numpadenter] = 156;
-	m_dxKeyMapping[(int)DigitalInput::kKey_rcontrol] = 157;
-	m_dxKeyMapping[(int)DigitalInput::kKey_divide] = 181;
-	m_dxKeyMapping[(int)DigitalInput::kKey_sysrq] = 183;
-	m_dxKeyMapping[(int)DigitalInput::kKey_ralt] = 184;
-	m_dxKeyMapping[(int)DigitalInput::kKey_pause] = 197;
-	m_dxKeyMapping[(int)DigitalInput::kKey_home] = 199;
-	m_dxKeyMapping[(int)DigitalInput::kKey_up] = 200;
-	m_dxKeyMapping[(int)DigitalInput::kKey_pgup] = 201;
-	m_dxKeyMapping[(int)DigitalInput::kKey_left] = 203;
-	m_dxKeyMapping[(int)DigitalInput::kKey_right] = 205;
-	m_dxKeyMapping[(int)DigitalInput::kKey_end] = 207;
-	m_dxKeyMapping[(int)DigitalInput::kKey_down] = 208;
-	m_dxKeyMapping[(int)DigitalInput::kKey_pgdn] = 209;
-	m_dxKeyMapping[(int)DigitalInput::kKey_insert] = 210;
-	m_dxKeyMapping[(int)DigitalInput::kKey_delete] = 211;
-	m_dxKeyMapping[(int)DigitalInput::kKey_lwin] = 219;
-	m_dxKeyMapping[(int)DigitalInput::kKey_rwin] = 220;
-	m_dxKeyMapping[(int)DigitalInput::kKey_apps] = 221;
+	using enum DigitalInput;
+
+	m_dxKeyMapping[(int)kKey_escape] = 1;
+	m_dxKeyMapping[(int)kKey_1] = 2;
+	m_dxKeyMapping[(int)kKey_2] = 3;
+	m_dxKeyMapping[(int)kKey_3] = 4;
+	m_dxKeyMapping[(int)kKey_4] = 5;
+	m_dxKeyMapping[(int)kKey_5] = 6;
+	m_dxKeyMapping[(int)kKey_6] = 7;
+	m_dxKeyMapping[(int)kKey_7] = 8;
+	m_dxKeyMapping[(int)kKey_8] = 9;
+	m_dxKeyMapping[(int)kKey_9] = 10;
+	m_dxKeyMapping[(int)kKey_0] = 11;
+	m_dxKeyMapping[(int)kKey_minus] = 12;
+	m_dxKeyMapping[(int)kKey_equals] = 13;
+	m_dxKeyMapping[(int)kKey_back] = 14;
+	m_dxKeyMapping[(int)kKey_tab] = 15;
+	m_dxKeyMapping[(int)kKey_q] = 16;
+	m_dxKeyMapping[(int)kKey_w] = 17;
+	m_dxKeyMapping[(int)kKey_e] = 18;
+	m_dxKeyMapping[(int)kKey_r] = 19;
+	m_dxKeyMapping[(int)kKey_t] = 20;
+	m_dxKeyMapping[(int)kKey_y] = 21;
+	m_dxKeyMapping[(int)kKey_u] = 22;
+	m_dxKeyMapping[(int)kKey_i] = 23;
+	m_dxKeyMapping[(int)kKey_o] = 24;
+	m_dxKeyMapping[(int)kKey_p] = 25;
+	m_dxKeyMapping[(int)kKey_lbracket] = 26;
+	m_dxKeyMapping[(int)kKey_rbracket] = 27;
+	m_dxKeyMapping[(int)kKey_return] = 28;
+	m_dxKeyMapping[(int)kKey_lcontrol] = 29;
+	m_dxKeyMapping[(int)kKey_a] = 30;
+	m_dxKeyMapping[(int)kKey_s] = 31;
+	m_dxKeyMapping[(int)kKey_d] = 32;
+	m_dxKeyMapping[(int)kKey_f] = 33;
+	m_dxKeyMapping[(int)kKey_g] = 34;
+	m_dxKeyMapping[(int)kKey_h] = 35;
+	m_dxKeyMapping[(int)kKey_j] = 36;
+	m_dxKeyMapping[(int)kKey_k] = 37;
+	m_dxKeyMapping[(int)kKey_l] = 38;
+	m_dxKeyMapping[(int)kKey_semicolon] = 39;
+	m_dxKeyMapping[(int)kKey_apostrophe] = 40;
+	m_dxKeyMapping[(int)kKey_grave] = 41;
+	m_dxKeyMapping[(int)kKey_lshift] = 42;
+	m_dxKeyMapping[(int)kKey_backslash] = 43;
+	m_dxKeyMapping[(int)kKey_z] = 44;
+	m_dxKeyMapping[(int)kKey_x] = 45;
+	m_dxKeyMapping[(int)kKey_c] = 46;
+	m_dxKeyMapping[(int)kKey_v] = 47;
+	m_dxKeyMapping[(int)kKey_b] = 48;
+	m_dxKeyMapping[(int)kKey_n] = 49;
+	m_dxKeyMapping[(int)kKey_m] = 50;
+	m_dxKeyMapping[(int)kKey_comma] = 51;
+	m_dxKeyMapping[(int)kKey_period] = 52;
+	m_dxKeyMapping[(int)kKey_slash] = 53;
+	m_dxKeyMapping[(int)kKey_rshift] = 54;
+	m_dxKeyMapping[(int)kKey_multiply] = 55;
+	m_dxKeyMapping[(int)kKey_lalt] = 56;
+	m_dxKeyMapping[(int)kKey_space] = 57;
+	m_dxKeyMapping[(int)kKey_capital] = 58;
+	m_dxKeyMapping[(int)kKey_f1] = 59;
+	m_dxKeyMapping[(int)kKey_f2] = 60;
+	m_dxKeyMapping[(int)kKey_f3] = 61;
+	m_dxKeyMapping[(int)kKey_f4] = 62;
+	m_dxKeyMapping[(int)kKey_f5] = 63;
+	m_dxKeyMapping[(int)kKey_f6] = 64;
+	m_dxKeyMapping[(int)kKey_f7] = 65;
+	m_dxKeyMapping[(int)kKey_f8] = 66;
+	m_dxKeyMapping[(int)kKey_f9] = 67;
+	m_dxKeyMapping[(int)kKey_f10] = 68;
+	m_dxKeyMapping[(int)kKey_numlock] = 69;
+	m_dxKeyMapping[(int)kKey_scroll] = 70;
+	m_dxKeyMapping[(int)kKey_numpad7] = 71;
+	m_dxKeyMapping[(int)kKey_numpad8] = 72;
+	m_dxKeyMapping[(int)kKey_numpad9] = 73;
+	m_dxKeyMapping[(int)kKey_subtract] = 74;
+	m_dxKeyMapping[(int)kKey_numpad4] = 75;
+	m_dxKeyMapping[(int)kKey_numpad5] = 76;
+	m_dxKeyMapping[(int)kKey_numpad6] = 77;
+	m_dxKeyMapping[(int)kKey_add] = 78;
+	m_dxKeyMapping[(int)kKey_numpad1] = 79;
+	m_dxKeyMapping[(int)kKey_numpad2] = 80;
+	m_dxKeyMapping[(int)kKey_numpad3] = 81;
+	m_dxKeyMapping[(int)kKey_numpad0] = 82;
+	m_dxKeyMapping[(int)kKey_decimal] = 83;
+	m_dxKeyMapping[(int)kKey_f11] = 87;
+	m_dxKeyMapping[(int)kKey_f12] = 88;
+	m_dxKeyMapping[(int)kKey_numpadenter] = 156;
+	m_dxKeyMapping[(int)kKey_rcontrol] = 157;
+	m_dxKeyMapping[(int)kKey_divide] = 181;
+	m_dxKeyMapping[(int)kKey_sysrq] = 183;
+	m_dxKeyMapping[(int)kKey_ralt] = 184;
+	m_dxKeyMapping[(int)kKey_pause] = 197;
+	m_dxKeyMapping[(int)kKey_home] = 199;
+	m_dxKeyMapping[(int)kKey_up] = 200;
+	m_dxKeyMapping[(int)kKey_pgup] = 201;
+	m_dxKeyMapping[(int)kKey_left] = 203;
+	m_dxKeyMapping[(int)kKey_right] = 205;
+	m_dxKeyMapping[(int)kKey_end] = 207;
+	m_dxKeyMapping[(int)kKey_down] = 208;
+	m_dxKeyMapping[(int)kKey_pgdn] = 209;
+	m_dxKeyMapping[(int)kKey_insert] = 210;
+	m_dxKeyMapping[(int)kKey_delete] = 211;
+	m_dxKeyMapping[(int)kKey_lwin] = 219;
+	m_dxKeyMapping[(int)kKey_rwin] = 220;
+	m_dxKeyMapping[(int)kKey_apps] = 221;
 }
 
 

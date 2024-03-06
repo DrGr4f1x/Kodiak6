@@ -12,6 +12,8 @@ cmake_minimum_required(VERSION 3.24)
 
 set(NAME Main)
 
+option(ENABLE_VCPKG OFF)
+
 project(${NAME} VERSION 6.0.0 LANGUAGES CXX CSharp)
 
 include(SetupConfigurations.cmake)

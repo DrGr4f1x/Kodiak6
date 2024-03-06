@@ -71,6 +71,7 @@ LogSystem::~LogSystem()
 void LogSystem::PostLogMessage(const LogMessage& message)
 {
 	m_messageQueue.push(message);
+	m_stdOutQueue.push(message);
 }
 
 
@@ -141,6 +142,20 @@ void LogSystem::Initialize()
 		}
 	);
 
+	m_workerLookStdOut = async(launch::async,
+		[&]
+		{
+			while (!m_haltLogging)
+			{
+				LogMessage message;
+				if (m_stdOutQueue.try_pop(message))
+				{
+					cout << message;
+				}
+			}
+		}
+	);
+
 	m_initialized = true;
 }
 
@@ -157,6 +172,7 @@ void LogSystem::Shutdown()
 
 	m_haltLogging = true;
 	m_workerLoop.get();
+	m_workerLookStdOut.get();
 
 	m_file.flush();
 	m_file.close();

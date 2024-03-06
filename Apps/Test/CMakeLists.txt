@@ -28,6 +28,9 @@ ADDFILEROOT(FILE_LIST TestApp.cpp)
 
 # Target executable
 add_executable(${APP_NAME} WIN32 ${FILE_LIST})
+add_compile_definitions($<$<CONFIG:Release>:RELEASE> $<$<CONFIG:Release>:_RELEASE> $<$<CONFIG:Release>:NDEBUG>)
+add_compile_definitions($<$<CONFIG:Profile>:PROFILE> $<$<CONFIG:Profile>:_PROFILE> $<$<CONFIG:Profile>:BDEBUG>)
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG> $<$<CONFIG:Debug>:_DEBUG>)
 
 if (MSVC)
 	set_target_properties(${APP_NAME} PROPERTIES COMPILE_FLAGS "/YuStdafx.h")
@@ -46,7 +49,3 @@ set_target_properties(${APP_NAME} PROPERTIES
 )
 
 target_link_directories(${APP_NAME} PUBLIC ${Vulkan_LIBRARY})
-
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Release>:RELEASE,_CONSOLE>)
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Profile>:PROFILE,_CONSOLE>)
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:DEBUG,_CONSOLE>)
