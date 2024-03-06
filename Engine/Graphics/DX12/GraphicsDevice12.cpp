@@ -47,7 +47,7 @@ string D3DFeatureLevelToString(D3D_FEATURE_LEVEL featureLevel)
 	case D3D_FEATURE_LEVEL_11_1:		return "D3D_FEATURE_LEVEL_11_1"; break;
 	case D3D_FEATURE_LEVEL_12_0:		return "D3D_FEATURE_LEVEL_12_0"; break;
 	case D3D_FEATURE_LEVEL_12_1:		return "D3D_FEATURE_LEVEL_12_1"; break;
-	case D3D_FEATURE_LEVEL_12_2:		return "D3D_FEATURE_LEVEL_12_0"; break;
+	case D3D_FEATURE_LEVEL_12_2:		return "D3D_FEATURE_LEVEL_12_2"; break;
 	default:							return "D3D_FEATURE_LEVEL_1_0_CORE"; break;
 	}
 }
@@ -202,8 +202,6 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		}
 	}
 #endif
-
-	
 }
 
 
@@ -218,14 +216,6 @@ void GraphicsDevice::ReadCaps()
 	m_dataShaderModel.HighestShaderModel = m_bestShaderModel;
 	m_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &m_dataShaderModel, sizeof(m_dataShaderModel));
 	m_bestShaderModel = m_dataShaderModel.HighestShaderModel;
-
-	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0 };
-	D3D12_FEATURE_DATA_FEATURE_LEVELS d3dLevels = {};
-	d3dLevels.NumFeatureLevels = _countof(featureLevels);
-	d3dLevels.pFeatureLevelsRequested = featureLevels;
-	d3dLevels.MaxSupportedFeatureLevel = D3D_FEATURE_LEVEL_12_2;
-	m_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &d3dLevels, sizeof(d3dLevels));
-	m_bestFeatureLevel = d3dLevels.MaxSupportedFeatureLevel;
 
 	bool hasOptions = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &m_dataOptions, sizeof(m_dataOptions)));
 	bool hasOptions1 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS1, &m_dataOptions1, sizeof(m_dataOptions1)));
