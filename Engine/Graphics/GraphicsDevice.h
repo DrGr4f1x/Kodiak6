@@ -22,7 +22,7 @@ struct GraphicsDeviceDesc
 
 	std::string appName;
 
-	HINSTANCE hinst{ 0 };
+	HINSTANCE hinstance{ 0 };
 	HWND hwnd{ 0 };
 
 	uint32_t width{ 0 };
@@ -31,7 +31,27 @@ struct GraphicsDeviceDesc
 
 	Format colorFormat{ Format::SRGBA8_UNorm };
 	Format depthFormat{ Format::D32S8 };
+
+	// Setters
+	constexpr GraphicsDeviceDesc& SetAPI(GraphicsApi value) { api = value; return *this; }
+	GraphicsDeviceDesc& SetAppName(const std::string& value) { appName = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetHInstance(HINSTANCE value) { hinstance = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetHWnd(HWND value) { hwnd = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetWidth(uint32_t value) { width = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetHeight(uint32_t value) { height = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetVSync(bool value) { vsync = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetColorFormat(Format value) { colorFormat = value; return *this; }
+	constexpr GraphicsDeviceDesc& SetDepthFormat(Format value) { depthFormat = value; return *this; }
 };
+
+
+struct GraphicsDeviceOptions
+{
+	bool useDebugRuntime{ false };
+	bool logDeviceFeatures{ true };
+};
+
+extern GraphicsDeviceOptions g_graphicsDeviceOptions;
 
 
 class IGraphicsDevice : public IObject
