@@ -295,7 +295,7 @@ void Application::CreateGraphicsDevice()
 	GraphicsDeviceDesc desc;
 	desc.api = m_api;
 	desc.appName = m_name;
-	desc.hinst = m_hinst;
+	desc.hinstance = m_hinst;
 	desc.hwnd = m_hwnd;
 	desc.width = m_displayWidth;
 	desc.height = m_displayHeight;
