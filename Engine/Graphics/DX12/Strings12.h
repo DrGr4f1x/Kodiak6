@@ -13,6 +13,48 @@
 namespace Kodiak::DX12
 {
 
+inline std::string D3DCommandListSupportFlagsToString(D3D12_COMMAND_LIST_SUPPORT_FLAGS commandListSupportFlags)
+{
+	const uint32_t numFlags = __popcnt(commandListSupportFlags);
+
+	if (numFlags == 0)
+	{
+		assert(commandListSupportFlags == D3D12_COMMAND_LIST_SUPPORT_FLAG_NONE);
+		return "None";
+	}
+
+	static const std::string nameMap[] =
+	{
+		"None",
+		"Direct",
+		"Bundle",
+		"Compute",
+		"Copy",
+		"Video Decode",
+		"Video Process",
+		"Video Encode"
+	};
+
+	std::string result;
+	uint32_t testBit = 0;
+	uint32_t bitsCounted = 0;
+	for (uint32_t i = 1; i < _countof(nameMap); ++i)
+	{
+		if ((commandListSupportFlags & testBit) == testBit)
+		{
+			++bitsCounted;
+			result += nameMap[i];
+			if (bitsCounted != numFlags)
+			{
+				result += ", ";
+			}
+		}
+		testBit = (1 << i);
+	}
+
+	return result;
+}
+
 inline std::string D3DConservativeRasterizationTierToString(D3D12_CONSERVATIVE_RASTERIZATION_TIER conservativeRasterizationTier, bool bNumberOnly = false)
 {
 	switch (conservativeRasterizationTier)
@@ -54,6 +96,17 @@ inline std::string D3DFeatureLevelToString(D3D_FEATURE_LEVEL featureLevel)
 	case D3D_FEATURE_LEVEL_12_1:		return "D3D_FEATURE_LEVEL_12_1"; break;
 	case D3D_FEATURE_LEVEL_12_2:		return "D3D_FEATURE_LEVEL_12_2"; break;
 	default:							return "D3D_FEATURE_LEVEL_1_0_CORE"; break;
+	}
+}
+
+
+inline std::string D3DProgrammableSamplePositionsTierToString(D3D12_PROGRAMMABLE_SAMPLE_POSITIONS_TIER programmableSamplePositionsTier, bool bNumberOnly = false)
+{
+	switch (programmableSamplePositionsTier)
+	{
+	case D3D12_PROGRAMMABLE_SAMPLE_POSITIONS_TIER_1: return bNumberOnly ? "1" : "Tier 1"; break;
+	case D3D12_PROGRAMMABLE_SAMPLE_POSITIONS_TIER_2: return bNumberOnly ? "2" : "Tier 2"; break;
+	default: return "Not supported"; break;
 	}
 }
 
@@ -123,6 +176,18 @@ inline std::string D3DTiledResourcesTierToString(D3D12_TILED_RESOURCES_TIER tile
 	case D3D12_TILED_RESOURCES_TIER_3: return bNumberOnly ? "3" : "Tier 3"; break;
 	case D3D12_TILED_RESOURCES_TIER_4: return bNumberOnly ? "4" : "Tier 4"; break;
 	default: return "Not supported"; break;
+	}
+}
+
+
+inline std::string D3DViewInstancingTierToString(D3D12_VIEW_INSTANCING_TIER viewInstancingTier, bool bNumberOnly = false)
+{
+	switch (viewInstancingTier)
+	{
+	case D3D12_VIEW_INSTANCING_TIER_1: return bNumberOnly ? "1" : "Tier 1"; break;
+	case D3D12_VIEW_INSTANCING_TIER_2: return bNumberOnly ? "2" : "Tier 2"; break;
+	case D3D12_VIEW_INSTANCING_TIER_3: return bNumberOnly ? "3" : "Tier 3"; break;
+	default: return "Not supported";
 	}
 }
 

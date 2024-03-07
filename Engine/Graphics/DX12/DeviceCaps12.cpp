@@ -91,13 +91,53 @@ void DeviceCaps::LogCaps()
 
 	LOG_INFO << format("    {:50} {}", "Highest supported shader model:", D3DShaderModelToString(shaderModel.HighestShaderModel));
 
+	constexpr const char* formatStr = "      {:48} {}";
+
 	if (HasCaps(0))
 	{
 		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS";
-		LOG_INFO << format("      {:48} {}", "DoublePrecisionFloatShaderOps:", (caps.DoublePrecisionFloatShaderOps == TRUE ? true : false));
-		LOG_INFO << format("      {:48} {}", "OutputMergerLogicOp:", (caps.OutputMergerLogicOp == TRUE ? true : false));
-		LOG_INFO << format("      {:48} {}", "MinPrecisionSupport:", D3DShaderMinPrecisionSupportToString(caps.MinPrecisionSupport));
-		LOG_INFO << format("      {:48} {}", "TiledResourcesTier:", D3DTiledResourcesTierToString(caps.TiledResourcesTier));
+		LOG_INFO << format(formatStr, "DoublePrecisionFloatShaderOps:", caps.DoublePrecisionFloatShaderOps == TRUE);
+		LOG_INFO << format(formatStr, "OutputMergerLogicOp:", caps.OutputMergerLogicOp == TRUE);
+		LOG_INFO << format(formatStr, "MinPrecisionSupport:", D3DShaderMinPrecisionSupportToString(caps.MinPrecisionSupport));
+		LOG_INFO << format(formatStr, "TiledResourcesTier:", D3DTiledResourcesTierToString(caps.TiledResourcesTier));
+		LOG_INFO << format(formatStr, "PSSpecifiedStencilRefSupported:", caps.PSSpecifiedStencilRefSupported == TRUE);
+		LOG_INFO << format(formatStr, "TypedUAVLoadAdditionalFormats:", caps.TypedUAVLoadAdditionalFormats == TRUE);
+		LOG_INFO << format(formatStr, "ROVsSupported:", caps.ROVsSupported == TRUE);
+		LOG_INFO << format(formatStr, "ConservativeRasterizationTier:", D3DConservativeRasterizationTierToString(caps.ConservativeRasterizationTier));
+		LOG_INFO << format(formatStr, "MaxGPUVirtualAddressBitsPerResource:", caps.MaxGPUVirtualAddressBitsPerResource);
+		LOG_INFO << format(formatStr, "StandardSwizzle64KBSupported:", caps.StandardSwizzle64KBSupported == TRUE);
+		LOG_INFO << format(formatStr, "CrossNodeSharingTier:", D3DCrossNodeSharingTierToString(caps.CrossNodeSharingTier));
+		LOG_INFO << format(formatStr, "CrossAdapterRowMajorTextureSupported:", caps.CrossAdapterRowMajorTextureSupported == TRUE);
+		LOG_INFO << format("      {} {}", "VPAndRTArrayIndexFromAnyShaderFeedingRasterizerSupportedWithoutGSEmulation:", caps.VPAndRTArrayIndexFromAnyShaderFeedingRasterizerSupportedWithoutGSEmulation == TRUE);
+		LOG_INFO << format(formatStr, "ResourceHeapTier:", D3DResourceHeapTierToString(caps.ResourceHeapTier));
+	}
+
+	if (HasCaps(1))
+	{
+		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS1";
+		LOG_INFO << format(formatStr, "WaveOps:", caps1.WaveOps == TRUE);
+		LOG_INFO << format(formatStr, "WaveLaneCountMin:", caps1.WaveLaneCountMin);
+		LOG_INFO << format(formatStr, "WaveLaneCountMax:", caps1.WaveLaneCountMax);
+		LOG_INFO << format(formatStr, "TotalLaneCount:", caps1.TotalLaneCount);
+		LOG_INFO << format(formatStr, "ExpandedComputeResourceState:", caps1.ExpandedComputeResourceStates == TRUE);
+		LOG_INFO << format(formatStr, "Int64ShaderOps:", caps1.Int64ShaderOps);
+	}
+
+	if (HasCaps(2))
+	{
+		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS2";
+		LOG_INFO << format(formatStr, "DepthBoundsTestSupported:", caps2.DepthBoundsTestSupported == TRUE);
+		LOG_INFO << format(formatStr, "ProgrammableSamplePositionsTier:", D3DProgrammableSamplePositionsTierToString(caps2.ProgrammableSamplePositionsTier));
+	}
+
+	if (HasCaps(3))
+	{
+		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS3";
+		LOG_INFO << format(formatStr, "CopyQueueTimestampQueriesSupported:", caps3.CopyQueueTimestampQueriesSupported == TRUE);
+		LOG_INFO << format(formatStr, "CastingFullyTypedFormatSupported:", caps3.CastingFullyTypedFormatSupported == TRUE);
+		LOG_INFO << format(formatStr, "WriteBufferImmediateSupportFlags:", D3DCommandListSupportFlagsToString(caps3.WriteBufferImmediateSupportFlags));
+		LOG_INFO << format(formatStr, "ViewInstancingTier:", D3DViewInstancingTierToString(caps3.ViewInstancingTier));
+		LOG_INFO << format(formatStr, "BarycentricsSupported:", caps3.BarycentricsSupported == TRUE);
 	}
 }
 
