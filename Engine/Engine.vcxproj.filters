@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="LogSystem.cpp" />
+    <ClCompile Include="Stdafx.cpp" />
+    <ClCompile Include="Core\Color.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GUIDs.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Hash.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Utility.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Math\BoundingBox.cpp">
+      <Filter>Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Math\Frustum.cpp">
+      <Filter>Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Math\Random.cpp">
+      <Filter>Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Formats.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GraphicsDevice.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\DX12\Formats12.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\DX12\GraphicsDevice12.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\DX12\GraphicsEnums12.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\FormatsVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\GraphicsDeviceVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\GraphicsEnumsVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="LogSystem.h" />
+    <ClInclude Include="Stdafx.h" />
+    <ClInclude Include="Core\BitmaskEnum.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Color.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreEnums.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DWParam.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GUIDs.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Hash.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NonCopyable.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NonMovable.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\RefCount.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Utility.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\VectorMath.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\BoundingBox.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\BoundingPlane.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\BoundingSphere.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\CommonMath.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Frustum.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Matrix3.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Matrix4.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Quaternion.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Random.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Scalar.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Transform.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Vector.h">
+      <Filter>Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Formats.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GraphicsDevice.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GraphicsEnums.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\Formats12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\GraphicsDevice12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\GraphicsEnums12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\FormatsVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\GraphicsDeviceVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\GraphicsEnumsVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{4e41e052-a22a-454a-8bf8-0fb26633725f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Math">
+      <UniqueIdentifier>{bdc45c48-5599-4569-bef4-f7deef0f83eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{36ec3c2a-c68e-4698-89cd-4aaff153bb6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\DX12">
+      <UniqueIdentifier>{43bb422b-f8ee-4ced-a375-6672d6f805ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\VK">
+      <UniqueIdentifier>{6548dbab-f2e7-4d61-90b8-300558ea1af8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Core\Math\Functions.inl">
+      <Filter>Core\Math</Filter>
+    </None>
+  </ItemGroup>
+</Project>
