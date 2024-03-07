@@ -51,6 +51,9 @@
     <ClCompile Include="Graphics\VK\GraphicsEnumsVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -153,6 +156,12 @@
     </ClInclude>
     <ClInclude Include="Graphics\VK\GraphicsEnumsVK.h">
       <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\DeviceCaps12.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\Strings12.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

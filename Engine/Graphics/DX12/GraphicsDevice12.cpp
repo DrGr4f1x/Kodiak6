@@ -12,6 +12,11 @@
 
 #include "GraphicsDevice12.h"
 
+#include "Strings12.h"
+
+#include <format>
+
+
 using namespace Kodiak;
 using namespace Kodiak::DX12;
 using namespace std;
@@ -26,7 +31,6 @@ namespace
 
 Microsoft::WRL::ComPtr<ID3D12Device> g_device;
 
-
 #if ENABLE_DX12_DEBUG_MARKUP
 void SetDebugName(ID3D12Object* object, const string& name)
 {
@@ -37,41 +41,41 @@ void SetDebugName(ID3D12Object* object, const string& name) {}
 #endif
 
 
-string D3DFeatureLevelToString(D3D_FEATURE_LEVEL featureLevel)
+bool IsDirectXAgilitySDKAvailable()
 {
-	switch (featureLevel)
-	{
-	case D3D_FEATURE_LEVEL_1_0_CORE:	return "D3D_FEATURE_LEVEL_1_0_CORE"; break;
-	case D3D_FEATURE_LEVEL_9_1:			return "D3D_FEATURE_LEVEL_9_1"; break;
-	case D3D_FEATURE_LEVEL_9_2:			return "D3D_FEATURE_LEVEL_9_2"; break;
-	case D3D_FEATURE_LEVEL_9_3:			return "D3D_FEATURE_LEVEL_9_3"; break;
-	case D3D_FEATURE_LEVEL_10_0:		return "D3D_FEATURE_LEVEL_10_0"; break;
-	case D3D_FEATURE_LEVEL_10_1:		return "D3D_FEATURE_LEVEL_10_1"; break;
-	case D3D_FEATURE_LEVEL_11_0:		return "D3D_FEATURE_LEVEL_11_0"; break;
-	case D3D_FEATURE_LEVEL_11_1:		return "D3D_FEATURE_LEVEL_11_1"; break;
-	case D3D_FEATURE_LEVEL_12_0:		return "D3D_FEATURE_LEVEL_12_0"; break;
-	case D3D_FEATURE_LEVEL_12_1:		return "D3D_FEATURE_LEVEL_12_1"; break;
-	case D3D_FEATURE_LEVEL_12_2:		return "D3D_FEATURE_LEVEL_12_2"; break;
-	default:							return "D3D_FEATURE_LEVEL_1_0_CORE"; break;
-	}
+	HMODULE agilitySDKDllHandle = ::GetModuleHandle("D3D12Core.dll");
+	return agilitySDKDllHandle != nullptr;
 }
 
 
-string D3DShaderModelToString(D3D_SHADER_MODEL shaderModel)
+bool IsAdapterIntegrated(IDXGIAdapter1* adapter)
 {
-	switch (shaderModel)
+	Microsoft::WRL::ComPtr<IDXGIAdapter3> adapter3;
+	adapter->QueryInterface(IID_PPV_ARGS(adapter3.GetAddressOf()));
+
+	DXGI_QUERY_VIDEO_MEMORY_INFO nonLocalVideoMemoryInfo{};
+	if (adapter3 && SUCCEEDED(adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &nonLocalVideoMemoryInfo)))
 	{
-	case D3D_SHADER_MODEL_5_1:		return "D3D_SHADER_MODEL_5_1"; break;
-	case D3D_SHADER_MODEL_6_0:		return "D3D_SHADER_MODEL_6_0"; break;
-	case D3D_SHADER_MODEL_6_1:		return "D3D_SHADER_MODEL_6_1"; break;
-	case D3D_SHADER_MODEL_6_2:		return "D3D_SHADER_MODEL_6_2"; break;
-	case D3D_SHADER_MODEL_6_3:		return "D3D_SHADER_MODEL_6_3"; break;
-	case D3D_SHADER_MODEL_6_4:		return "D3D_SHADER_MODEL_6_4"; break;
-	case D3D_SHADER_MODEL_6_5:		return "D3D_SHADER_MODEL_6_5"; break;
-	case D3D_SHADER_MODEL_6_6:		return "D3D_SHADER_MODEL_6_6"; break;
-	case D3D_SHADER_MODEL_6_7:		return "D3D_SHADER_MODEL_6_7"; break;
-	default:						return "D3D_SHADER_MODEL_5_1"; break;
+		return nonLocalVideoMemoryInfo.Budget == 0;
 	}
+
+	return true;
+}
+
+
+bool TestCreateDevice(IDXGIAdapter* adapter, D3D_FEATURE_LEVEL minFeatureLevel, DeviceBasicCaps& deviceBasicCaps)
+{
+	ID3D12Device* device = nullptr;
+	if (SUCCEEDED(D3D12CreateDevice(adapter, minFeatureLevel, IID_PPV_ARGS(&device))))
+	{
+		DeviceCaps testCaps;
+		testCaps.ReadBasicCaps(device, minFeatureLevel);
+		deviceBasicCaps = testCaps.basicCaps;
+
+		device->Release();
+		return true;
+	}
+	return false;
 }
 
 } // anonymous namespace
@@ -121,7 +125,14 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	if (bIsDeveloperModeEnabled && !bIsRenderDocAvailable)
 	{
-		D3D12EnableExperimentalFeatures(1, &D3D12ExperimentalShaderModels, nullptr, nullptr);
+		if (SUCCEEDED(D3D12EnableExperimentalFeatures(1, &D3D12ExperimentalShaderModels, nullptr, nullptr)))
+		{
+			LOG_INFO << "  Enabled D3D12 experimental shader models";
+		}
+		else
+		{
+			LOG_WARNING << "  Unable to enable D3D12 experimental shader models";
+		}
 	}
 
 	// Obtain the DXGI factory
@@ -130,73 +141,144 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	// Create the D3D graphics device
 	Microsoft::WRL::ComPtr<IDXGIAdapter1> pAdapter;
 
-	static const bool bUseWarpDriver = false;
+	static const bool bUseWarpAdapter{ false };
+	static const bool bAllowSoftwareRendering{ false };
+	static const bool bFavorDiscreteAdapter{ true };
 
 	Microsoft::WRL::ComPtr<ID3D12Device> pDevice;
 
-	if (!bUseWarpDriver)
+	const D3D_FEATURE_LEVEL minRequiredLevel{ D3D_FEATURE_LEVEL_11_0 };
+
+	int32_t firstDiscreteAdapterIdx{ -1 };
+	int32_t bestMemoryAdapterIdx{ -1 };
+	int32_t firstAdapterIdx{ -1 };
+	int32_t warpAdapterIdx{ -1 };
+	int32_t chosenAdapter{ -1 };
+
+	size_t bestDedicatedVideoMemory{ 0 };
+
+	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != m_dxgiFactory->EnumAdapters1((UINT)idx, &pAdapter); ++idx)
 	{
-		size_t maxSize = 0;
+		DXGI_ADAPTER_DESC1 desc{};
+		pAdapter->GetDesc1(&desc);
+		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+			continue;
 
-		for (uint32_t idx = 0; DXGI_ERROR_NOT_FOUND != m_dxgiFactory->EnumAdapters1(idx, &pAdapter); ++idx)
+		DeviceBasicCaps basicCaps{};
+
+		if (TestCreateDevice(pAdapter.Get(), minRequiredLevel, basicCaps))
 		{
-			DXGI_ADAPTER_DESC1 desc;
-			pAdapter->GetDesc1(&desc);
-			if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-				continue;
+			string deviceName = MakeStr(desc.Description);
+			LOG_INFO << format("  Adapter {} is D3D12-capable: {} (VendorId: {:4x}, DeviceId: {:4x}, SubSysId: {:4x}, Revision: {:4x})",
+				idx,
+				deviceName,
+				desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision);
 
-			D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0 };
+			LOG_INFO << format("    Feature level: {}, shader model {}, binding tier {}, wave ops {}, atomic64 {}",
+				D3DFeatureLevelToString(basicCaps.maxFeatureLevel),
+				D3DShaderModelToString(basicCaps.maxShaderModel),
+				D3DResouceBindingTierToString(basicCaps.resourceBindingTier, true),
+				basicCaps.bSupportsWaveOps ? "supported" : "not supported",
+				basicCaps.bSupportsAtomic64 ? "supported" : "not supported");
 
-			for (int i = 0; i < _countof(featureLevels); ++i)
+			LOG_INFO << format("    Adapter memory: {}MB dedicated video memory, {}MB dedicated system memory, {}MB shared memory",
+				(uint32_t)(desc.DedicatedVideoMemory >> 20),
+				(uint32_t)(desc.DedicatedSystemMemory >> 20),
+				(uint32_t)(desc.SharedSystemMemory >> 20));
+
+			m_bestFeatureLevel = basicCaps.maxFeatureLevel;
+			m_bestShaderModel = basicCaps.maxShaderModel;
+
+			const bool bIsWarpAdapter = desc.VendorId == 0x1414;
+			if (bIsWarpAdapter && warpAdapterIdx == -1)
 			{
-				if (desc.DedicatedVideoMemory > maxSize && SUCCEEDED(D3D12CreateDevice(pAdapter.Get(), featureLevels[i], IID_PPV_ARGS(&pDevice))))
+				warpAdapterIdx = idx;
+			}
+
+			const bool bSkipWarp = (bUseWarpAdapter && !bIsWarpAdapter) || (!bUseWarpAdapter && bIsWarpAdapter && !bAllowSoftwareRendering);
+
+			const bool bSkipAdapter = bSkipWarp;
+
+			const bool bIsIntegrated = IsAdapterIntegrated(pAdapter.Get());
+
+			if (!bSkipAdapter)
+			{
+				if (!bIsWarpAdapter && !bIsIntegrated)
 				{
-					maxSize = desc.DedicatedVideoMemory;
-					m_bestFeatureLevel = featureLevels[i];
-					m_deviceName = MakeStr(desc.Description);
+					firstDiscreteAdapterIdx = idx;
+				}
 
-					LOG_INFO << "  D3D12-capable hardware found:  " << m_deviceName << " (" << (maxSize >> 20) << ")";
+				if (desc.DedicatedVideoMemory > bestDedicatedVideoMemory)
+				{
+					bestMemoryAdapterIdx = idx;
+					bestDedicatedVideoMemory = desc.DedicatedVideoMemory;
+				}
 
-					break;
+				if (firstAdapterIdx == -1)
+				{
+					firstAdapterIdx = idx;
 				}
 			}
 		}
 
-		if (maxSize > 0)
+		// Now chose our best adapter
+		if (bFavorDiscreteAdapter)
 		{
-			m_device = pDevice;
-
-			ReadCaps();
-
-			LOG_INFO << "  Selected adapter: " << m_deviceName << " (" << (maxSize >> 20) << ")";
-			LOG_INFO << "    Feature Level: " << D3DFeatureLevelToString(m_bestFeatureLevel);
-			LOG_INFO << "    Shader Model:  " << D3DShaderModelToString(m_bestShaderModel);
-		}
-	}
-
-	if (!m_device)
-	{
-		if (bUseWarpDriver)
-		{
-			LOG_NOTICE << "WARP software adapter requested.  Initializing...";
+			if (bestMemoryAdapterIdx != -1)
+			{
+				chosenAdapter = bestMemoryAdapterIdx;
+			}
+			else if (firstDiscreteAdapterIdx != -1)
+			{
+				chosenAdapter = firstDiscreteAdapterIdx;
+			}
+			else
+			{
+				chosenAdapter = firstAdapterIdx;
+			}
 		}
 		else
 		{
-			LOG_WARNING << "Failed to find a hardware adapter.  Falling back to WARP.\n";
+			chosenAdapter = firstAdapterIdx;
 		}
 
-		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pAdapter)));
-		assert_succeeded(D3D12CreateDevice(pAdapter.Get(), m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
-		m_device = pDevice;
+		if (chosenAdapter == -1)
+		{
+			LOG_FATAL << "Unable to chose a D3D12 adapter, exiting.";
+		}
+
+		// Create device, either WARP or hardware
+		if (chosenAdapter == warpAdapterIdx)
+		{
+			assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pAdapter)));
+			assert_succeeded(D3D12CreateDevice(pAdapter.Get(), m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+			m_device = pDevice;
+			m_adapter = pAdapter;
+			m_bIsWarpAdapter = true;
+
+			if (bUseWarpAdapter)
+			{
+				LOG_NOTICE << "  WARP software adapter requested.  Initializing...";
+			}
+			else
+			{
+				LOG_WARNING << "  Failed to find a hardware adapter.  Falling back to WARP.\n";
+			}
+		}
+		else
+		{
+			assert_succeeded(m_dxgiFactory->EnumAdapters1((UINT)chosenAdapter, &pAdapter));
+			assert_succeeded(D3D12CreateDevice(pAdapter.Get(), m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+			m_device = pDevice;
+			m_adapter = pAdapter;
+
+			LOG_INFO << "  Selected D3D12 adapter " << chosenAdapter;
+		}
 
 		ReadCaps();
-
-		LOG_INFO << "  Selected WARP software adapter";
-		LOG_INFO << "    Feature Level: " << D3DFeatureLevelToString(m_bestFeatureLevel);
-		LOG_INFO << "    Shader Model:  " << D3DShaderModelToString(m_bestShaderModel);
 	}
 #ifndef _RELEASE
-	else
+	if (!m_bIsWarpAdapter)
 	{
 		// Prevent the GPU from overclocking or underclocking to get consistent timings
 		if (bIsDeveloperModeEnabled && !bIsRenderDocAvailable)
@@ -210,25 +292,17 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 void GraphicsDevice::ReadCaps()
 {
-	if (m_capsRead)
+	const D3D_FEATURE_LEVEL minFeatureLevel{ D3D_FEATURE_LEVEL_12_0 };
+	const D3D_SHADER_MODEL maxShaderModel{ D3D_SHADER_MODEL_6_7 };
+
+	m_caps.ReadFullCaps(m_device.Get(), minFeatureLevel, maxShaderModel);
+
+	m_bestShaderModel = m_caps.shaderModel.HighestShaderModel;
+
+	if (g_graphicsDeviceOptions.logDeviceFeatures)
 	{
-		return;
+		m_caps.LogCaps();
 	}
-
-
-	m_dataShaderModel.HighestShaderModel = m_bestShaderModel;
-	m_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &m_dataShaderModel, sizeof(m_dataShaderModel));
-	m_bestShaderModel = m_dataShaderModel.HighestShaderModel;
-
-	bool hasOptions = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &m_dataOptions, sizeof(m_dataOptions)));
-	bool hasOptions1 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS1, &m_dataOptions1, sizeof(m_dataOptions1)));
-	bool hasOptions2 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &m_dataOptions2, sizeof(m_dataOptions2)));
-	bool hasOptions3 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS3, &m_dataOptions3, sizeof(m_dataOptions3)));
-	bool hasOptions4 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS4, &m_dataOptions4, sizeof(m_dataOptions4)));
-	bool hasOptions5 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &m_dataOptions5, sizeof(m_dataOptions5)));
-	bool hasOptions6 = SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &m_dataOptions6, sizeof(m_dataOptions6)));
-
-	m_capsRead = true;
 }
 
 
