@@ -9,4 +9,7 @@
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="TestApp.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>
