@@ -16,9 +16,6 @@ using namespace Kodiak;
 using namespace Kodiak::DX12;
 using namespace std;
 
-extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 611; }
-extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12\\"; }
-
 namespace
 {
 
@@ -70,7 +67,6 @@ string D3DShaderModelToString(D3D_SHADER_MODEL shaderModel)
 	case D3D_SHADER_MODEL_6_7:		return "D3D_SHADER_MODEL_6_7"; break;
 	default:						return "D3D_SHADER_MODEL_5_1"; break;
 	}
-	
 }
 
 } // anonymous namespace

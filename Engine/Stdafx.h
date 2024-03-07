@@ -64,10 +64,13 @@
 #include <dxgi1_4.h>
 #include <dxgiformat.h>
 
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+
 // Vulkan headers
 #define VK_USE_PLATFORM_WIN32_KHR
 #define VK_NO_PROTOTYPES 1
-#include <vulkan/vulkan.h>
+#include <vulkan.h>
 #pragma comment(lib, "vulkan-1.lib")
 
 // Standard library headers

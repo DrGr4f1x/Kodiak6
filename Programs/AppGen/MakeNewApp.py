@@ -42,7 +42,8 @@ def copy_app_template(project, guid):
     copy_template_file('TEMPLATEApp.h', project, guid)
     copy_template_file('TEMPLATEApp.cpp', project, guid)
     copy_template_file('Main.cpp', project, guid)
-    copy_template_file('CMakeLists.txt', project, guid)
+    copy_template_file('TEMPLATE.vcxproj', project, guid)
+    copy_template_file('TEMPLATE.vcxproj.filters', project, guid)
 
 
 def create_project():
