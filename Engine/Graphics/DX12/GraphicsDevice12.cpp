@@ -164,7 +164,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != EnumAdapters((UINT)idx, gpuPreference, dxgiFactory6.Get(), &pAdapter); ++idx)
 	{
 		Microsoft::WRL::ComPtr<IDXGIAdapter> adapter{ pAdapter };
-		
+
 		DXGI_ADAPTER_DESC desc{};
 		adapter->GetDesc(&desc);
 
@@ -173,7 +173,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		if (TestCreateDevice(adapter.Get(), minRequiredLevel, basicCaps))
 		{
 			string deviceName = MakeStr(desc.Description);
-			LOG_INFO << format("  Adapter {} is D3D12-capable: {} (VendorId: {:4x}, DeviceId: {:4x}, SubSysId: {:4x}, Revision: {:4x})",
+			LOG_INFO << format("  Adapter {} is D3D12-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, SubSysId: {:#x}, Revision: {:#x})",
 				idx,
 				deviceName,
 				desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision);
@@ -224,64 +224,65 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 				}
 			}
 		}
+	}
 
-		// Now chose our best adapter
-		if (bFavorDiscreteAdapter)
+	// Now chose our best adapter
+	if (bFavorDiscreteAdapter)
+	{
+		if (bestMemoryAdapterIdx != -1)
 		{
-			if (bestMemoryAdapterIdx != -1)
-			{
-				chosenAdapter = bestMemoryAdapterIdx;
-			}
-			else if (firstDiscreteAdapterIdx != -1)
-			{
-				chosenAdapter = firstDiscreteAdapterIdx;
-			}
-			else
-			{
-				chosenAdapter = firstAdapterIdx;
-			}
+			chosenAdapter = bestMemoryAdapterIdx;
+		}
+		else if (firstDiscreteAdapterIdx != -1)
+		{
+			chosenAdapter = firstDiscreteAdapterIdx;
 		}
 		else
 		{
 			chosenAdapter = firstAdapterIdx;
 		}
+	}
+	else
+	{
+		chosenAdapter = firstAdapterIdx;
+	}
 
-		if (chosenAdapter == -1)
+	if (chosenAdapter == -1)
+	{
+		LOG_FATAL << "Unable to chose a D3D12 adapter, exiting.";
+	}
+
+	// Create device, either WARP or hardware
+	if (chosenAdapter == warpAdapterIdx)
+	{
+		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pAdapter)));
+		assert_succeeded(D3D12CreateDevice(pAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+
+		m_device = pDevice;
+		m_adapter = pAdapter;
+		m_bIsWarpAdapter = true;
+
+		if (bUseWarpAdapter)
 		{
-			LOG_FATAL << "Unable to chose a D3D12 adapter, exiting.";
-		}
-
-		// Create device, either WARP or hardware
-		if (chosenAdapter == warpAdapterIdx)
-		{
-			assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pAdapter)));
-			assert_succeeded(D3D12CreateDevice(pAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
-
-			m_device = pDevice;
-			m_adapter = pAdapter;
-			m_bIsWarpAdapter = true;
-
-			if (bUseWarpAdapter)
-			{
-				LOG_NOTICE << "  WARP software adapter requested.  Initializing...";
-			}
-			else
-			{
-				LOG_WARNING << "  Failed to find a hardware adapter.  Falling back to WARP.\n";
-			}
+			LOG_NOTICE << "  WARP software adapter requested.  Initializing...";
 		}
 		else
 		{
-			assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapter, &pAdapter));
-			assert_succeeded(D3D12CreateDevice(pAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
-			m_device = pDevice;
-			m_adapter = pAdapter;
-
-			LOG_INFO << "  Selected D3D12 adapter " << chosenAdapter;
+			LOG_WARNING << "  Failed to find a hardware adapter.  Falling back to WARP.\n";
 		}
-
-		ReadCaps();
 	}
+	else
+	{
+		assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapter, &pAdapter));
+		assert_succeeded(D3D12CreateDevice(pAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+		m_device = pDevice;
+		m_adapter = pAdapter;
+
+		LOG_INFO << "  Selected D3D12 adapter " << chosenAdapter;
+	}
+
+	ReadCaps();
+
 #ifndef _RELEASE
 	if (!m_bIsWarpAdapter)
 	{
