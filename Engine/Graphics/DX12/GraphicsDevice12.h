@@ -28,6 +28,7 @@ public:
 
 private:
 	void ReadCaps();
+	HRESULT EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
 
 private:
 	// Device info
@@ -38,7 +39,7 @@ private:
 
 	// DirectX 12 objects
 	Microsoft::WRL::ComPtr<IDXGIFactory4> m_dxgiFactory;
-	Microsoft::WRL::ComPtr<IDXGIAdapter1> m_adapter;
+	Microsoft::WRL::ComPtr<IDXGIAdapter> m_adapter;
 	Microsoft::WRL::ComPtr<ID3D12Device> m_device;
 	Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
 	bool m_bIsWarpAdapter{ false };

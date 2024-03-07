@@ -62,6 +62,7 @@
 #define ENABLE_DX12_DEBUG_MARKUP (_DEBUG || _PROFILE || FORCE_DX12_DEBUG_MARKUP)
 #include <d3d12.h>
 #include <dxgi1_4.h>
+#include <dxgi1_6.h>
 #include <dxgiformat.h>
 
 #pragma comment(lib, "d3d12.lib")

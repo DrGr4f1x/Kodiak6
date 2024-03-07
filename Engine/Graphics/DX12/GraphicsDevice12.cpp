@@ -48,7 +48,7 @@ bool IsDirectXAgilitySDKAvailable()
 }
 
 
-bool IsAdapterIntegrated(IDXGIAdapter1* adapter)
+bool IsAdapterIntegrated(IDXGIAdapter* adapter)
 {
 	Microsoft::WRL::ComPtr<IDXGIAdapter3> adapter3;
 	adapter->QueryInterface(IID_PPV_ARGS(adapter3.GetAddressOf()));
@@ -138,8 +138,11 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	// Obtain the DXGI factory
 	assert_succeeded(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_dxgiFactory)));
 
+	Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory6;
+	m_dxgiFactory->QueryInterface(IID_PPV_ARGS(dxgiFactory6.GetAddressOf()));
+
 	// Create the D3D graphics device
-	Microsoft::WRL::ComPtr<IDXGIAdapter1> pAdapter;
+	IDXGIAdapter* pAdapter{ nullptr };
 
 	static const bool bUseWarpAdapter{ false };
 	static const bool bAllowSoftwareRendering{ false };
@@ -148,6 +151,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	Microsoft::WRL::ComPtr<ID3D12Device> pDevice;
 
 	const D3D_FEATURE_LEVEL minRequiredLevel{ D3D_FEATURE_LEVEL_11_0 };
+	const DXGI_GPU_PREFERENCE gpuPreference{ DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE };
 
 	int32_t firstDiscreteAdapterIdx{ -1 };
 	int32_t bestMemoryAdapterIdx{ -1 };
@@ -157,16 +161,16 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	size_t bestDedicatedVideoMemory{ 0 };
 
-	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != m_dxgiFactory->EnumAdapters1((UINT)idx, &pAdapter); ++idx)
+	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != EnumAdapters((UINT)idx, gpuPreference, dxgiFactory6.Get(), &pAdapter); ++idx)
 	{
-		DXGI_ADAPTER_DESC1 desc{};
-		pAdapter->GetDesc1(&desc);
-		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-			continue;
+		Microsoft::WRL::ComPtr<IDXGIAdapter> adapter{ pAdapter };
+		
+		DXGI_ADAPTER_DESC desc{};
+		adapter->GetDesc(&desc);
 
 		DeviceBasicCaps basicCaps{};
 
-		if (TestCreateDevice(pAdapter.Get(), minRequiredLevel, basicCaps))
+		if (TestCreateDevice(adapter.Get(), minRequiredLevel, basicCaps))
 		{
 			string deviceName = MakeStr(desc.Description);
 			LOG_INFO << format("  Adapter {} is D3D12-capable: {} (VendorId: {:4x}, DeviceId: {:4x}, SubSysId: {:4x}, Revision: {:4x})",
@@ -199,7 +203,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 			const bool bSkipAdapter = bSkipWarp;
 
-			const bool bIsIntegrated = IsAdapterIntegrated(pAdapter.Get());
+			const bool bIsIntegrated = IsAdapterIntegrated(adapter.Get());
 
 			if (!bSkipAdapter)
 			{
@@ -251,7 +255,8 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		if (chosenAdapter == warpAdapterIdx)
 		{
 			assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pAdapter)));
-			assert_succeeded(D3D12CreateDevice(pAdapter.Get(), m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+			assert_succeeded(D3D12CreateDevice(pAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+
 			m_device = pDevice;
 			m_adapter = pAdapter;
 			m_bIsWarpAdapter = true;
@@ -267,8 +272,8 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		}
 		else
 		{
-			assert_succeeded(m_dxgiFactory->EnumAdapters1((UINT)chosenAdapter, &pAdapter));
-			assert_succeeded(D3D12CreateDevice(pAdapter.Get(), m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
+			assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapter, &pAdapter));
+			assert_succeeded(D3D12CreateDevice(pAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&pDevice)));
 			m_device = pDevice;
 			m_adapter = pAdapter;
 
@@ -302,6 +307,18 @@ void GraphicsDevice::ReadCaps()
 	if (g_graphicsDeviceOptions.logDeviceFeatures)
 	{
 		m_caps.LogCaps();
+	}
+}
+
+HRESULT GraphicsDevice::EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter)
+{
+	if (!dxgiFactory6 || gpuPreference == DXGI_GPU_PREFERENCE_UNSPECIFIED)
+	{
+		return m_dxgiFactory->EnumAdapters((UINT)adapterIdx, adapter);
+	}
+	else
+	{
+		return dxgiFactory6->EnumAdapterByGpuPreference((UINT)adapterIdx, gpuPreference, IID_PPV_ARGS(adapter));
 	}
 }
 

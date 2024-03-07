@@ -77,16 +77,21 @@ inline std::string D3DResourceHeapTierToString(D3D12_RESOURCE_HEAP_TIER resource
 
 inline std::string D3DShaderMinPrecisionSupportToString(D3D12_SHADER_MIN_PRECISION_SUPPORT shaderMinPrecisionSupport)
 {
-	switch (shaderMinPrecisionSupport)
+	if (shaderMinPrecisionSupport == D3D12_SHADER_MIN_PRECISION_SUPPORT_10_BIT)
 	{
-	case D3D12_SHADER_MIN_PRECISION_SUPPORT_10_BIT: return "10-bit"; break;
-	case D3D12_SHADER_MIN_PRECISION_SUPPORT_16_BIT: return "16-bit"; break;
-	case (D3D12_SHADER_MIN_PRECISION_SUPPORT_10_BIT | D3D12_SHADER_MIN_PRECISION_SUPPORT_16_BIT):
+		return "10-bit";
+	}
+	else if (shaderMinPrecisionSupport == D3D12_SHADER_MIN_PRECISION_SUPPORT_16_BIT)
+	{
+		return "16-bit";
+	}
+	else if (shaderMinPrecisionSupport == (D3D12_SHADER_MIN_PRECISION_SUPPORT_10_BIT | D3D12_SHADER_MIN_PRECISION_SUPPORT_16_BIT))
+	{
 		return "10-bit, 16-bit";
-		break;
-	default:
+	}
+	else
+	{
 		return "None";
-		break;
 	}
 }
 
