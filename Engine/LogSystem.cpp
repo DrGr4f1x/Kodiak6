@@ -23,7 +23,7 @@ using namespace Kodiak;
 namespace
 {
 
-LogSystem* g_logSystem = nullptr;
+LogSystem* g_logSystem{ nullptr };
 
 bool outputToFile{ true };
 bool outputToConsole{ true };

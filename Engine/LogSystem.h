@@ -84,6 +84,7 @@ public:
 	}
 
 	std::ostringstream& MessageStream() { return m_stream; }
+	//operator std::ostringstream& () { return m_stream; }
 
 private:
 	std::ostringstream m_stream;
