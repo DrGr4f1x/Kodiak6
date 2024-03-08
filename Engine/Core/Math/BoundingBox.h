@@ -26,11 +26,11 @@ public:
 		, m_extents(extents)
 	{}
 
-	Vector3 GetCenter() const { return m_center; }
-	Vector3 GetExtents() const { return m_extents; }
+	Vector3 GetCenter() const noexcept { return m_center; }
+	Vector3 GetExtents() const noexcept { return m_extents; }
 
-	Vector3 GetMin() const { return m_center - m_extents; }
-	Vector3 GetMax() const { return m_center + m_extents; }
+	Vector3 GetMin() const noexcept { return m_center - m_extents; }
+	Vector3 GetMax() const noexcept { return m_center + m_extents; }
 
 private:
 	Vector3 m_center{ Math::kZero };
@@ -38,7 +38,7 @@ private:
 };
 
 
-inline BoundingBox BoundingBoxFromMinMax(Vector3 minExtents, Vector3 maxExtents)
+inline BoundingBox BoundingBoxFromMinMax(Vector3 minExtents, Vector3 maxExtents) noexcept
 {
 	Vector3 center = 0.5f * (maxExtents + minExtents);
 	Vector3 extents = maxExtents - center;
@@ -47,7 +47,7 @@ inline BoundingBox BoundingBoxFromMinMax(Vector3 minExtents, Vector3 maxExtents)
 }
 
 
-BoundingBox BoundingBoxUnion(const std::vector<BoundingBox>& boxes);
-BoundingBox operator*(Matrix4 mat, BoundingBox box);
+BoundingBox BoundingBoxUnion(const std::vector<BoundingBox>& boxes) noexcept;
+BoundingBox operator*(Matrix4 mat, BoundingBox box) noexcept;
 
 } // namespace Math

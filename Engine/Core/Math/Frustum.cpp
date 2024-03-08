@@ -18,7 +18,7 @@
 using namespace Math;
 
 
-void Frustum::ConstructPerspectiveFrustum(float HTan, float VTan, float NearClip, float FarClip)
+void Frustum::ConstructPerspectiveFrustum(float HTan, float VTan, float NearClip, float FarClip) noexcept
 {
 	const float NearX = HTan * NearClip;
 	const float NearY = VTan * NearClip;
@@ -50,7 +50,7 @@ void Frustum::ConstructPerspectiveFrustum(float HTan, float VTan, float NearClip
 }
 
 
-void Frustum::ConstructOrthographicFrustum(float Left, float Right, float Top, float Bottom, float Front, float Back)
+void Frustum::ConstructOrthographicFrustum(float Left, float Right, float Top, float Bottom, float Front, float Back) noexcept
 {
 	// Define the frustum corners
 	m_FrustumCorners[kNearLowerLeft] = Vector3(Left, Bottom, -Front);	// Near lower left
@@ -72,7 +72,7 @@ void Frustum::ConstructOrthographicFrustum(float Left, float Right, float Top, f
 }
 
 
-Frustum::Frustum(const Matrix4& ProjMat)
+Frustum::Frustum(const Matrix4& ProjMat) noexcept
 {
 	const float* ProjMatF = (const float*)&ProjMat;
 

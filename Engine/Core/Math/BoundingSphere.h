@@ -24,13 +24,13 @@ namespace Math
 class BoundingSphere
 {
 public:
-	BoundingSphere() {}
-	BoundingSphere(Vector3 center, Scalar radius);
-	explicit BoundingSphere(Vector4 sphere);
-	explicit BoundingSphere(const BoundingBox& box);
+	BoundingSphere() = default;
+	BoundingSphere(Vector3 center, Scalar radius) noexcept;
+	explicit BoundingSphere(Vector4 sphere) noexcept;
+	explicit BoundingSphere(const BoundingBox& box) noexcept;
 
-	Vector3 GetCenter() const;
-	Scalar GetRadius() const;
+	Vector3 GetCenter() const noexcept;
+	Scalar GetRadius() const noexcept;
 
 private:
 	Vector4 m_repr;
@@ -41,32 +41,32 @@ private:
 // Inline implementations
 //
 
-inline BoundingSphere::BoundingSphere(Vector3 center, Scalar radius)
+inline BoundingSphere::BoundingSphere(Vector3 center, Scalar radius) noexcept
 {
 	m_repr = Vector4(center);
 	m_repr.SetW(radius);
 }
 
 
-inline BoundingSphere::BoundingSphere(Vector4 sphere)
+inline BoundingSphere::BoundingSphere(Vector4 sphere) noexcept
 	: m_repr(sphere)
 {}
 
 
-inline BoundingSphere::BoundingSphere(const BoundingBox& box)
+inline BoundingSphere::BoundingSphere(const BoundingBox& box) noexcept
 {
 	m_repr = Vector4(box.GetCenter());
 	m_repr.SetW(Length(box.GetExtents()));
 }
 
 
-inline Vector3 BoundingSphere::GetCenter(void) const
+inline Vector3 BoundingSphere::GetCenter() const noexcept
 {
 	return Vector3(m_repr);
 }
 
 
-inline Scalar BoundingSphere::GetRadius(void) const
+inline Scalar BoundingSphere::GetRadius() const noexcept
 {
 	return m_repr.GetW();
 }

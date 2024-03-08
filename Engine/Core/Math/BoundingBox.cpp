@@ -33,7 +33,7 @@ static const Vector3 s_boxCorners[] =
 };
 
 
-BoundingBox BoundingBoxUnion(const vector<BoundingBox>& boxes)
+BoundingBox BoundingBoxUnion(const vector<BoundingBox>& boxes) noexcept
 {
 	float maxF = numeric_limits<float>::max();
 	Vector3 minExtents(maxF, maxF, maxF);
@@ -49,7 +49,7 @@ BoundingBox BoundingBoxUnion(const vector<BoundingBox>& boxes)
 }
 
 
-BoundingBox operator*(Matrix4 mat, BoundingBox box)
+BoundingBox operator*(Matrix4 mat, BoundingBox box) noexcept
 {
 	// Load center and extents.
 	Vector3 center = box.GetCenter();

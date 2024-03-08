@@ -68,9 +68,9 @@ private:
 	XMVECTORF32 m_value{};
 };
 
-INLINE Color Max(Color a, Color b) { return Color(XMVectorMax(a, b)); }
-INLINE Color Min(Color a, Color b) { return Color(XMVectorMin(a, b)); }
-INLINE Color Clamp(Color x, Color a, Color b) { return Color(XMVectorClamp(x, a, b)); }
+__forceinline Color Max(Color a, Color b) noexcept { return Color(XMVectorMax(a, b)); }
+__forceinline Color Min(Color a, Color b) noexcept { return Color(XMVectorMin(a, b)); }
+__forceinline Color Clamp(Color x, Color a, Color b) noexcept { return Color(XMVectorClamp(x, a, b)); }
 
 
 inline Color::Color(FXMVECTOR vec) noexcept

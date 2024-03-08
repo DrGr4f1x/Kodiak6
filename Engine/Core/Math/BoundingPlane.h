@@ -25,35 +25,35 @@ class BoundingPlane
 
 public:
 
-	BoundingPlane() {}
-	BoundingPlane(Vector3 normalToPlane, float distanceFromOrigin) : m_repr(normalToPlane, distanceFromOrigin) {}
-	BoundingPlane(Vector3 pointOnPlane, Vector3 normalToPlane);
+	BoundingPlane() noexcept = default;
+	BoundingPlane(Vector3 normalToPlane, float distanceFromOrigin) noexcept : m_repr(normalToPlane, distanceFromOrigin) {}
+	BoundingPlane(Vector3 pointOnPlane, Vector3 normalToPlane) noexcept;
 	BoundingPlane(float A, float B, float C, float D) : m_repr(A, B, C, D) {}
-	BoundingPlane(const BoundingPlane& plane) : m_repr(plane.m_repr) {}
-	explicit BoundingPlane(Vector4 plane) : m_repr(plane) {}
+	BoundingPlane(const BoundingPlane& plane) noexcept = default;
+	explicit BoundingPlane(Vector4 plane) noexcept : m_repr(plane) {}
 
-	INLINE operator Vector4() const { return m_repr; }
+	__forceinline operator Vector4() const noexcept { return m_repr; }
 
 	// Returns the direction the plane is facing.  (Warning:  might not be normalized.)
-	Vector3 GetNormal() const { return Vector3(XMVECTOR(m_repr)); }
+	Vector3 GetNormal() const noexcept { return Vector3(XMVECTOR(m_repr)); }
 
 	// Returns the point on the plane closest to the origin
-	Vector3 GetPointOnPlane() const { return -GetNormal() * m_repr.GetW(); }
+	Vector3 GetPointOnPlane() const noexcept { return -GetNormal() * m_repr.GetW(); }
 
 	// Distance from 3D point
-	Scalar DistanceFromPoint(Vector3 point) const
+	Scalar DistanceFromPoint(Vector3 point) const noexcept
 	{
 		return Dot(point, GetNormal()) + m_repr.GetW();
 	}
 
 	// Distance from homogeneous point
-	Scalar DistanceFromPoint(Vector4 point) const
+	Scalar DistanceFromPoint(Vector4 point) const noexcept
 	{
 		return Dot(point, m_repr);
 	}
 
 	// Most efficient way to transform a plane.  (Involves one quaternion-vector rotation and one dot product.)
-	friend BoundingPlane operator*(const OrthogonalTransform& xform, BoundingPlane plane)
+	friend BoundingPlane operator*(const OrthogonalTransform& xform, BoundingPlane plane) noexcept
 	{
 		Vector3 normalToPlane = xform.GetRotation() * plane.GetNormal();
 		float distanceFromOrigin = plane.m_repr.GetW() - Dot(normalToPlane, xform.GetTranslation());
@@ -61,13 +61,12 @@ public:
 	}
 
 	// Less efficient way to transform a plane (but handles affine transformations.)
-	friend BoundingPlane operator*(const Matrix4& mat, BoundingPlane plane)
+	friend BoundingPlane operator*(const Matrix4& mat, BoundingPlane plane) noexcept
 	{
 		return BoundingPlane(Transpose(Invert(mat)) * plane.m_repr);
 	}
 
 private:
-
 	Vector4 m_repr;
 };
 
@@ -75,7 +74,7 @@ private:
 //=======================================================================================================
 // Inline implementations
 //
-inline BoundingPlane::BoundingPlane(Vector3 pointOnPlane, Vector3 normalToPlane)
+inline BoundingPlane::BoundingPlane(Vector3 pointOnPlane, Vector3 normalToPlane) noexcept
 {
 	// Guarantee a normal.  This constructor isn't meant to be called frequently, but if it is, we can change this.
 	normalToPlane = Normalize(normalToPlane);
@@ -86,7 +85,7 @@ inline BoundingPlane::BoundingPlane(Vector3 pointOnPlane, Vector3 normalToPlane)
 //=======================================================================================================
 // Functions operating on planes
 //
-inline BoundingPlane PlaneFromPointsCCW(Vector3 A, Vector3 B, Vector3 C)
+inline BoundingPlane PlaneFromPointsCCW(Vector3 A, Vector3 B, Vector3 C) noexcept
 {
 	return BoundingPlane(A, Cross(B - A, C - A));
 }

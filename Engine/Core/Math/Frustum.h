@@ -22,9 +22,9 @@ namespace Math
 class Frustum
 {
 public:
-	Frustum() {}
+	Frustum() = default;
 
-	Frustum(const Matrix4& ProjectionMatrix);
+	Frustum(const Matrix4& ProjectionMatrix) noexcept;
 
 	enum CornerID
 	{
@@ -37,28 +37,28 @@ public:
 		kNearPlane, kFarPlane, kLeftPlane, kRightPlane, kTopPlane, kBottomPlane
 	};
 
-	Vector3         GetFrustumCorner(CornerID id) const { return m_FrustumCorners[id]; }
-	BoundingPlane   GetFrustumPlane(PlaneID id) const { return m_FrustumPlanes[id]; }
+	Vector3         GetFrustumCorner(CornerID id) const noexcept { return m_FrustumCorners[id]; }
+	BoundingPlane   GetFrustumPlane(PlaneID id) const noexcept { return m_FrustumPlanes[id]; }
 
 	// Test whether the bounding sphere intersects the frustum.  Intersection is defined as either being
 	// fully contained in the frustum, or by intersecting one or more of the planes.
-	bool IntersectSphere(BoundingSphere sphere) const;
+	bool IntersectSphere(BoundingSphere sphere) const noexcept;
 
 	// We don't officially have a BoundingBox class yet, but let's assume it's forthcoming.  (There is a
 	// simple struct in the Model project.)
-	bool IntersectBoundingBox(const Vector3 minBound, const Vector3 maxBound) const;
+	bool IntersectBoundingBox(const Vector3 minBound, const Vector3 maxBound) const noexcept;
 
-	friend Frustum  operator* (const OrthogonalTransform& xform, const Frustum& frustum);	// Fast
-	friend Frustum  operator* (const AffineTransform& xform, const Frustum& frustum);		// Slow
-	friend Frustum  operator* (const Matrix4& xform, const Frustum& frustum);				// Slowest (and most general)
+	friend Frustum operator*(const OrthogonalTransform& xform, const Frustum& frustum) noexcept;	// Fast
+	friend Frustum operator*(const AffineTransform& xform, const Frustum& frustum) noexcept;		// Slow
+	friend Frustum operator*(const Matrix4& xform, const Frustum& frustum) noexcept;				// Slowest (and most general)
 
 private:
 
 	// Perspective frustum constructor (for pyramid-shaped frusta)
-	void ConstructPerspectiveFrustum(float HTan, float VTan, float NearClip, float FarClip);
+	void ConstructPerspectiveFrustum(float HTan, float VTan, float NearClip, float FarClip) noexcept;
 
 	// Orthographic frustum constructor (for box-shaped frusta)
-	void ConstructOrthographicFrustum(float Left, float Right, float Top, float Bottom, float NearClip, float FarClip);
+	void ConstructOrthographicFrustum(float Left, float Right, float Top, float Bottom, float NearClip, float FarClip) noexcept;
 
 	Vector3 m_FrustumCorners[8];		// the corners of the frustum
 	BoundingPlane m_FrustumPlanes[6];			// the bounding planes
@@ -69,7 +69,7 @@ private:
 // Inline implementations
 //
 
-inline bool Frustum::IntersectSphere(BoundingSphere sphere) const
+inline bool Frustum::IntersectSphere(BoundingSphere sphere) const noexcept
 {
 	float radius = sphere.GetRadius();
 	for (int i = 0; i < 6; ++i)
@@ -81,7 +81,7 @@ inline bool Frustum::IntersectSphere(BoundingSphere sphere) const
 }
 
 
-inline bool Frustum::IntersectBoundingBox(const Vector3 minBound, const Vector3 maxBound) const
+inline bool Frustum::IntersectBoundingBox(const Vector3 minBound, const Vector3 maxBound) const noexcept
 {
 	for (int i = 0; i < 6; ++i)
 	{
@@ -95,7 +95,7 @@ inline bool Frustum::IntersectBoundingBox(const Vector3 minBound, const Vector3 
 }
 
 
-inline Frustum operator*(const OrthogonalTransform& xform, const Frustum& frustum)
+inline Frustum operator*(const OrthogonalTransform& xform, const Frustum& frustum) noexcept
 {
 	Frustum result;
 
@@ -109,7 +109,7 @@ inline Frustum operator*(const OrthogonalTransform& xform, const Frustum& frustu
 }
 
 
-inline Frustum operator*(const AffineTransform& xform, const Frustum& frustum)
+inline Frustum operator*(const AffineTransform& xform, const Frustum& frustum) noexcept
 {
 	Frustum result;
 
@@ -125,7 +125,7 @@ inline Frustum operator*(const AffineTransform& xform, const Frustum& frustum)
 }
 
 
-inline Frustum operator*(const Matrix4& mtx, const Frustum& frustum)
+inline Frustum operator*(const Matrix4& mtx, const Frustum& frustum) noexcept
 {
 	Frustum result;
 
