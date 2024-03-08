@@ -91,7 +91,7 @@ public:
 			: m_severity{ severity }
 			, m_category{ category }
 		{}
-		LogProxy(LogProxy&& other)
+		LogProxy(LogProxy&& other) noexcept
 			: m_severity{ other.m_severity }
 			, m_category{ other.m_category }
 			, m_stream{ std::move(other.m_stream) }
@@ -131,7 +131,7 @@ public:
 	{
 		LogProxy proxy{ m_severity, LogCategory{} };
 		proxy << value;
-		return proxy;
+		return std::move(proxy);
 	}
 
 	LogProxy&& operator<<(std::ostream& (*os)(std::ostream&))
