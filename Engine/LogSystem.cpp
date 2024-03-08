@@ -32,18 +32,18 @@ bool outputToDebug{ true };
 } // anonymous namespace
 
 
-string Kodiak::LogSeverityToString(LogSeverity level)
+string SeverityToString(Severity level)
 {
-	using enum LogSeverity;
+	using enum Severity;
 
 	switch (level)
 	{
-	case Fatal:		return "[  Fatal]";	break;
-	case Error:		return "[  Error]";	break;
-	case Warning:	return "[Warning]";	break;
-	case Debug:		return "[  Debug]";	break;
-	case Notice:	return "[ Notice]";	break;
-	case Info:		return "[   Info]"; break;
+	case Fatal:		return "Fatal";	break;
+	case Error:		return "Error";	break;
+	case Warning:	return "Warning";	break;
+	case Debug:		return "Debug";	break;
+	case Notice:	return "Notice";	break;
+	case Info:		return "Info"; break;
 	default:		return "";	break;
 	}
 }
@@ -133,7 +133,7 @@ void LogSystem::Initialize()
 	m_workerLoop = async(launch::async,
 		[&]
 		{
-			using enum LogSeverity;
+			using enum Severity;
 
 			while (!m_haltLogging)
 			{
@@ -147,7 +147,11 @@ void LogSystem::Initialize()
 					const auto localTime = chr::zoned_time{ chr::current_zone(), systemTime }.get_local_time();
 					const auto localTimeStr = format("[{:%Y.%m.%d-%H.%M.%S}]", chr::floor<chr::milliseconds>(localTime));
 
-					const string messageStr = format("{} {} {} ", localTimeStr, LogSeverityToString(message.severity), message.messageStr);
+					const string categoryStr = message.category ? "" : format("{}: ", message.category.GetName());
+					const string severityStr = (message.severity == None) ? "" : format("{}: ", SeverityToString(message.severity));
+
+					const string messageStr = format("{} {}{}{} ", localTimeStr, categoryStr, severityStr, message.messageStr);
+
 
 					if (outputToFile)
 					{

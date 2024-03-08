@@ -15,7 +15,7 @@
 namespace Kodiak
 {
 
-enum class LogSeverity
+enum class Severity
 {
 	Fatal,
 	Error,
@@ -23,17 +23,35 @@ enum class LogSeverity
 	Notice,
 	Info,
 	Debug,
-	Log
+	None
+};
+
+
+class LogCategory
+{
+public:
+	LogCategory() = default;
+	explicit LogCategory(const std::string& name) : m_name{ name } {}
+
+	constexpr operator bool() { return m_name.empty(); }
+
+	const std::string& GetName() const
+	{
+		return m_name;
+	}
+
+private:
+	std::string m_name;
 };
 
 
 struct LogMessage
 {
 	std::string messageStr;
-	LogSeverity severity;
+	Severity severity;
+	LogCategory category;
 };
 
-std::string LogSeverityToString(LogSeverity level);
 void PostLogMessage(LogMessage&& message);
 
 
@@ -63,33 +81,39 @@ private:
 };
 
 
-template <LogSeverity TLevel>
-class Logger
+class BaseLog
 {
 public:
-	Logger() = default;
-	~Logger()
+	BaseLog() = default;
+	BaseLog(Severity severity, LogCategory category) 
+		: m_severity{ severity }
+		, m_category{ category }
+	{}
+	~BaseLog()
 	{
-		m_stream << std::endl;
+		m_stream.flush();
 
-		PostLogMessage({ m_stream.str(), TLevel });
+		PostLogMessage({ m_stream.str(), m_severity, m_category });
 	}
 
 	std::ostringstream& MessageStream() { return m_stream; }
 
+
 private:
 	std::ostringstream m_stream;
+	Severity m_severity{ Severity::Info };
+	LogCategory m_category;
 };
 
 LogSystem* GetLogSystem();
 
 
-#define LOG(level) Logger<level>().MessageStream()
-#define LOG_FATAL Logger<LogSeverity::Fatal>().MessageStream()
-#define LOG_ERROR Logger<LogSeverity::Error>().MessageStream()
-#define LOG_WARNING Logger<LogSeverity::Warning>().MessageStream()
-#define LOG_NOTICE Logger<LogSeverity::Notice>().MessageStream()
-#define LOG_INFO Logger<LogSeverity::Info>().MessageStream()
-#define LOG_DEBUG Logger<LogSeverity::Debug>().MessageStream()
+#define Log(CAT) BaseLog(Severity::None, CAT).MessageStream()
+#define LogFatal(CAT) BaseLog(Severity::Fatal, CAT).MessageStream()
+#define LogError(CAT) BaseLog(Severity::Error, CAT).MessageStream()
+#define LogWarning(CAT) BaseLog(Severity::Warning, CAT).MessageStream()
+#define LogNotice(CAT) BaseLog(Severity::Notice, CAT).MessageStream()
+#define LogInfo(CAT) BaseLog(Severity::Info, CAT).MessageStream()
+#define LogDebug(CAT) BaseLog(Severity::Debug, CAT).MessageStream()
 
 } // namespace Kodiak

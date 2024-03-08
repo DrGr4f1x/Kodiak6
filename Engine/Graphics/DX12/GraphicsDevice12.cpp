@@ -83,13 +83,13 @@ bool TestCreateDevice(IDXGIAdapter* adapter, D3D_FEATURE_LEVEL minFeatureLevel, 
 
 GraphicsDevice::GraphicsDevice()
 {
-	LOG_INFO << "Creating DirectX 12 device";
+	LogInfo(LogDirectX) << "Creating DirectX 12 device" << endl;
 }
 
 
 GraphicsDevice::~GraphicsDevice()
 {
-	LOG_INFO << "Destroying DirectX 12 device";
+	LogInfo(LogDirectX) << "Destroying DirectX 12 device" << endl;
 
 #if defined(_DEBUG)
 	ID3D12DebugDevice* debugInterface;
@@ -116,7 +116,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	}
 	else
 	{
-		LOG_WARNING << "  Unable to enable D3D12 debug validation layer";
+		LogWarning(LogDirectX) << "  Unable to enable D3D12 debug validation layer" << endl;
 	}
 #endif
 
@@ -127,11 +127,11 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	{
 		if (SUCCEEDED(D3D12EnableExperimentalFeatures(1, &D3D12ExperimentalShaderModels, nullptr, nullptr)))
 		{
-			LOG_INFO << "  Enabled D3D12 experimental shader models";
+			LogInfo(LogDirectX) << "  Enabled D3D12 experimental shader models" << endl;
 		}
 		else
 		{
-			LOG_WARNING << "  Unable to enable D3D12 experimental shader models";
+			LogWarning(LogDirectX) << "  Unable to enable D3D12 experimental shader models" << endl;
 		}
 	}
 
@@ -173,22 +173,25 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		if (TestCreateDevice(adapter.Get(), minRequiredLevel, basicCaps))
 		{
 			string deviceName = MakeStr(desc.Description);
-			LOG_INFO << format("  Adapter {} is D3D12-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, SubSysId: {:#x}, Revision: {:#x})",
+			LogInfo(LogDirectX) << format("  Adapter {} is D3D12-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, SubSysId: {:#x}, Revision: {:#x})",
 				idx,
 				deviceName,
-				desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision);
+				desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision)
+				<< endl;
 
-			LOG_INFO << format("    Feature level {}, shader model {}, binding tier {}, wave ops {}, atomic64 {}",
+			LogInfo(LogDirectX) << format("    Feature level {}, shader model {}, binding tier {}, wave ops {}, atomic64 {}",
 				D3DTypeToString(basicCaps.maxFeatureLevel, true),
 				D3DTypeToString(basicCaps.maxShaderModel, true),
 				D3DTypeToString(basicCaps.resourceBindingTier, true),
 				basicCaps.bSupportsWaveOps ? "supported" : "not supported",
-				basicCaps.bSupportsAtomic64 ? "supported" : "not supported");
+				basicCaps.bSupportsAtomic64 ? "supported" : "not supported")
+				<< endl;
 
-			LOG_INFO << format("    Adapter memory: {} MB dedicated video memory, {} MB dedicated system memory, {} MB shared memory",
+			LogInfo(LogDirectX) << format("    Adapter memory: {} MB dedicated video memory, {} MB dedicated system memory, {} MB shared memory",
 				(uint32_t)(desc.DedicatedVideoMemory >> 20),
 				(uint32_t)(desc.DedicatedSystemMemory >> 20),
-				(uint32_t)(desc.SharedSystemMemory >> 20));
+				(uint32_t)(desc.SharedSystemMemory >> 20))
+				<< endl;
 
 			m_bestFeatureLevel = basicCaps.maxFeatureLevel;
 			m_bestShaderModel = basicCaps.maxShaderModel;
@@ -249,7 +252,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	if (chosenAdapter == -1)
 	{
-		LOG_FATAL << "Unable to chose a D3D12 adapter, exiting.";
+		LogFatal(LogDirectX) << "Unable to chose a D3D12 adapter, exiting." << endl;
 	}
 
 	// Create device, either WARP or hardware
@@ -264,11 +267,11 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 		if (bUseWarpAdapter)
 		{
-			LOG_NOTICE << "  WARP software adapter requested.  Initializing...";
+			LogNotice(LogDirectX) << "  WARP software adapter requested.  Initializing..." << endl;
 		}
 		else
 		{
-			LOG_WARNING << "  Failed to find a hardware adapter.  Falling back to WARP.\n";
+			LogWarning(LogDirectX) << "  Failed to find a hardware adapter.  Falling back to WARP.\n" << endl;
 		}
 	}
 	else
@@ -278,7 +281,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		m_device = pDevice;
 		m_adapter = pAdapter;
 
-		LOG_INFO << "  Selected D3D12 adapter " << chosenAdapter;
+		LogInfo(LogDirectX) << "  Selected D3D12 adapter " << chosenAdapter << endl;
 	}
 
 	ReadCaps();

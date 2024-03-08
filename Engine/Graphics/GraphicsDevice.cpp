@@ -12,6 +12,8 @@
 
 #include "GraphicsDevice.h"
 
+#include "Application.h"
+
 // DirectX 12
 #include "DX12\GraphicsDevice12.h"
 
@@ -45,8 +47,7 @@ DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc)
 
 	case GraphicsApi::Unknown:
 	default:
-		LOG_ERROR << "Unknown graphics API";
-		Utility::ExitFatal("Unknown graphics API", "Unknown graphics API");
+		LogFatal(LogGraphics) << "Unknown graphics API" << endl;
 		return DeviceHandle();
 	}
 }
@@ -73,7 +74,7 @@ bool IsDeveloperModeEnabled()
 			}
 		}
 
-		LOG_INFO << "Developer mode is " << (isDeveloperModeEnabled ? "enabled" : "not enabled");
+		LogInfo(LogApplication) << "Developer mode is " << (isDeveloperModeEnabled ? "enabled" : "not enabled") << endl;
 
 		initialized = true;
 	}
@@ -93,7 +94,7 @@ bool IsRenderDocAvailable()
 			isRenderDocAvailable = true;
 		}
 
-		LOG_INFO << "RenderDoc is " << (isRenderDocAvailable ? "attached" : "not attached");
+		LogInfo(LogApplication) << "RenderDoc is " << (isRenderDocAvailable ? "attached" : "not attached") << endl;
 
 		initialized = true;
 	}

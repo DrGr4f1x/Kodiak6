@@ -228,4 +228,6 @@ private:
 	bool m_captureMouse{ false };
 };
 
+inline LogCategory LogInput{ "LogInput" };
+
 } // namespace Kodiak

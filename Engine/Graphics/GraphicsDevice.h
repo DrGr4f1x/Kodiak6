@@ -74,4 +74,6 @@ bool IsDeveloperModeEnabled();
 
 bool IsRenderDocAvailable();
 
+inline LogCategory LogGraphics{ "LogGraphics" };
+
 } // namespace Kodiak

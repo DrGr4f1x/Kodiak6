@@ -122,4 +122,7 @@ Application* GetApplication();
 
 GraphicsApi GetGraphicsApiFromCommandline(int argc, const char* const* argv);
 
+inline LogCategory LogApplication{ "LogApplication" };
+inline LogCategory LogEngine{ "LogEngine" };
+
 } // namespace Kodiak

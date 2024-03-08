@@ -12,6 +12,7 @@
 
 #include "DeviceCaps12.h"
 
+#include "GraphicsDevice12.h"
 #include "Strings12.h"
 
 #include <format>
@@ -84,157 +85,157 @@ bool DeviceCaps::HasCaps(int32_t capsNum) const
 
 void DeviceCaps::LogCaps()
 {
-	LOG_INFO << "  Device Caps";
+	LogInfo(LogDirectX) << "  Device Caps" << endl;
 
-	LOG_INFO << format("    {:50} {}", "Highest supported feature level:", D3DTypeToString(basicCaps.maxFeatureLevel));
-	LOG_INFO << format("    {:50} {}", "Highest supported shader model:", D3DTypeToString(basicCaps.maxShaderModel));
-	LOG_INFO;
+	LogInfo(LogDirectX) << format("    {:50} {}", "Highest supported feature level:", D3DTypeToString(basicCaps.maxFeatureLevel)) << endl;
+	LogInfo(LogDirectX) << format("    {:50} {}", "Highest supported shader model:", D3DTypeToString(basicCaps.maxShaderModel)) << endl;
+	LogInfo(LogDirectX) << endl;
 
 	constexpr const char* formatStr = "      {:48} {}";
 
 	if (HasCaps(0))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS";
-		LOG_INFO << format(formatStr, "DoublePrecisionFloatShaderOps:", (bool)caps.DoublePrecisionFloatShaderOps);
-		LOG_INFO << format(formatStr, "OutputMergerLogicOp:", (bool)caps.OutputMergerLogicOp);
-		LOG_INFO << format(formatStr, "MinPrecisionSupport:", D3DTypeToString(caps.MinPrecisionSupport));
-		LOG_INFO << format(formatStr, "TiledResourcesTier:", D3DTypeToString(caps.TiledResourcesTier));
-		LOG_INFO << format(formatStr, "PSSpecifiedStencilRefSupported:", (bool)caps.PSSpecifiedStencilRefSupported);
-		LOG_INFO << format(formatStr, "TypedUAVLoadAdditionalFormats:", (bool)caps.TypedUAVLoadAdditionalFormats );
-		LOG_INFO << format(formatStr, "ROVsSupported:", (bool)caps.ROVsSupported);
-		LOG_INFO << format(formatStr, "ConservativeRasterizationTier:", D3DTypeToString(caps.ConservativeRasterizationTier));
-		LOG_INFO << format(formatStr, "MaxGPUVirtualAddressBitsPerResource:", caps.MaxGPUVirtualAddressBitsPerResource);
-		LOG_INFO << format(formatStr, "StandardSwizzle64KBSupported:", (bool)caps.StandardSwizzle64KBSupported);
-		LOG_INFO << format(formatStr, "CrossNodeSharingTier:", D3DTypeToString(caps.CrossNodeSharingTier));
-		LOG_INFO << format(formatStr, "CrossAdapterRowMajorTextureSupported:", (bool)caps.CrossAdapterRowMajorTextureSupported);
-		LOG_INFO << format(formatStr, "VPAndRTArrayIndexFromAnyShaderFeedingRasterizerSupportedWithoutGSEmulation:", (bool)caps.VPAndRTArrayIndexFromAnyShaderFeedingRasterizerSupportedWithoutGSEmulation);
-		LOG_INFO << format(formatStr, "ResourceHeapTier:", D3DTypeToString(caps.ResourceHeapTier));
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "DoublePrecisionFloatShaderOps:", (bool)caps.DoublePrecisionFloatShaderOps) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "OutputMergerLogicOp:", (bool)caps.OutputMergerLogicOp) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MinPrecisionSupport:", D3DTypeToString(caps.MinPrecisionSupport)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "TiledResourcesTier:", D3DTypeToString(caps.TiledResourcesTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "PSSpecifiedStencilRefSupported:", (bool)caps.PSSpecifiedStencilRefSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "TypedUAVLoadAdditionalFormats:", (bool)caps.TypedUAVLoadAdditionalFormats ) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ROVsSupported:", (bool)caps.ROVsSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ConservativeRasterizationTier:", D3DTypeToString(caps.ConservativeRasterizationTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MaxGPUVirtualAddressBitsPerResource:", caps.MaxGPUVirtualAddressBitsPerResource) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "StandardSwizzle64KBSupported:", (bool)caps.StandardSwizzle64KBSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "CrossNodeSharingTier:", D3DTypeToString(caps.CrossNodeSharingTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "CrossAdapterRowMajorTextureSupported:", (bool)caps.CrossAdapterRowMajorTextureSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "VPAndRTArrayIndexFromAnyShaderFeedingRasterizerSupportedWithoutGSEmulation:", (bool)caps.VPAndRTArrayIndexFromAnyShaderFeedingRasterizerSupportedWithoutGSEmulation) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ResourceHeapTier:", D3DTypeToString(caps.ResourceHeapTier)) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(1))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS1";
-		LOG_INFO << format(formatStr, "WaveOps:", (bool)caps1.WaveOps);
-		LOG_INFO << format(formatStr, "WaveLaneCountMin:", caps1.WaveLaneCountMin);
-		LOG_INFO << format(formatStr, "WaveLaneCountMax:", caps1.WaveLaneCountMax);
-		LOG_INFO << format(formatStr, "TotalLaneCount:", caps1.TotalLaneCount);
-		LOG_INFO << format(formatStr, "ExpandedComputeResourceState:", (bool)caps1.ExpandedComputeResourceStates);
-		LOG_INFO << format(formatStr, "Int64ShaderOps:", caps1.Int64ShaderOps);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS1" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "WaveOps:", (bool)caps1.WaveOps) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "WaveLaneCountMin:", caps1.WaveLaneCountMin) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "WaveLaneCountMax:", caps1.WaveLaneCountMax) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "TotalLaneCount:", caps1.TotalLaneCount) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ExpandedComputeResourceState:", (bool)caps1.ExpandedComputeResourceStates) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "Int64ShaderOps:", caps1.Int64ShaderOps) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(2))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS2";
-		LOG_INFO << format(formatStr, "DepthBoundsTestSupported:", (bool)caps2.DepthBoundsTestSupported );
-		LOG_INFO << format(formatStr, "ProgrammableSamplePositionsTier:", D3DTypeToString(caps2.ProgrammableSamplePositionsTier));
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS2" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "DepthBoundsTestSupported:", (bool)caps2.DepthBoundsTestSupported ) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ProgrammableSamplePositionsTier:", D3DTypeToString(caps2.ProgrammableSamplePositionsTier)) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(3))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS3";
-		LOG_INFO << format(formatStr, "CopyQueueTimestampQueriesSupported:", (bool)caps3.CopyQueueTimestampQueriesSupported);
-		LOG_INFO << format(formatStr, "CastingFullyTypedFormatSupported:", (bool)caps3.CastingFullyTypedFormatSupported);
-		LOG_INFO << format(formatStr, "WriteBufferImmediateSupportFlags:", D3DTypeToString(caps3.WriteBufferImmediateSupportFlags));
-		LOG_INFO << format(formatStr, "ViewInstancingTier:", D3DTypeToString(caps3.ViewInstancingTier));
-		LOG_INFO << format(formatStr, "BarycentricsSupported:", (bool)caps3.BarycentricsSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS3" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "CopyQueueTimestampQueriesSupported:", (bool)caps3.CopyQueueTimestampQueriesSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "CastingFullyTypedFormatSupported:", (bool)caps3.CastingFullyTypedFormatSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "WriteBufferImmediateSupportFlags:", D3DTypeToString(caps3.WriteBufferImmediateSupportFlags)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ViewInstancingTier:", D3DTypeToString(caps3.ViewInstancingTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "BarycentricsSupported:", (bool)caps3.BarycentricsSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(4))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS4";
-		LOG_INFO << format(formatStr, "MSAA64KBAlignedTextureSupported:", (bool)caps4.MSAA64KBAlignedTextureSupported);
-		LOG_INFO << format(formatStr, "SharedResourceCompatibilityTier:", D3DTypeToString(caps4.SharedResourceCompatibilityTier));
-		LOG_INFO << format(formatStr, "Native16BitShaderOpsSupported:", (bool)caps4.Native16BitShaderOpsSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS4" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MSAA64KBAlignedTextureSupported:", (bool)caps4.MSAA64KBAlignedTextureSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "SharedResourceCompatibilityTier:", D3DTypeToString(caps4.SharedResourceCompatibilityTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "Native16BitShaderOpsSupported:", (bool)caps4.Native16BitShaderOpsSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(5))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS5";
-		LOG_INFO << format(formatStr, "SRVOnlyTiledResourceTier3:", (bool)caps5.SRVOnlyTiledResourceTier3);
-		LOG_INFO << format(formatStr, "RenderPassesTier:", D3DTypeToString(caps5.RenderPassesTier));
-		LOG_INFO << format(formatStr, "RaytracingTier:", D3DTypeToString(caps5.RaytracingTier));
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS5" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "SRVOnlyTiledResourceTier3:", (bool)caps5.SRVOnlyTiledResourceTier3) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "RenderPassesTier:", D3DTypeToString(caps5.RenderPassesTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "RaytracingTier:", D3DTypeToString(caps5.RaytracingTier)) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(6))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS6";
-		LOG_INFO << format(formatStr, "AdditionalShadingRatesSupported:", (bool)caps6.AdditionalShadingRatesSupported);
-		LOG_INFO << format(formatStr, "PerPrimitiveShadingRateSupportedWithViewportIndexing:", (bool)caps6.PerPrimitiveShadingRateSupportedWithViewportIndexing);
-		LOG_INFO << format(formatStr, "VariableShadingRateTier:", D3DTypeToString(caps6.VariableShadingRateTier));
-		LOG_INFO << format(formatStr, "ShadingRateImageTileSize:", caps6.ShadingRateImageTileSize);
-		LOG_INFO << format(formatStr, "BackgroundProcessingSupported:", caps6.BackgroundProcessingSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS6" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "AdditionalShadingRatesSupported:", (bool)caps6.AdditionalShadingRatesSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "PerPrimitiveShadingRateSupportedWithViewportIndexing:", (bool)caps6.PerPrimitiveShadingRateSupportedWithViewportIndexing) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "VariableShadingRateTier:", D3DTypeToString(caps6.VariableShadingRateTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "ShadingRateImageTileSize:", caps6.ShadingRateImageTileSize) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "BackgroundProcessingSupported:", caps6.BackgroundProcessingSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(7))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS7";
-		LOG_INFO << format(formatStr, "MeshShaderTier:", D3DTypeToString(caps7.MeshShaderTier));
-		LOG_INFO << format(formatStr, "SamplerFeedbackTier:", D3DTypeToString(caps7.SamplerFeedbackTier));
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS7" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MeshShaderTier:", D3DTypeToString(caps7.MeshShaderTier)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "SamplerFeedbackTier:", D3DTypeToString(caps7.SamplerFeedbackTier)) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(8))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS8";
-		LOG_INFO << format(formatStr, "UnalignedBlockTexturesSupported:", (bool)caps8.UnalignedBlockTexturesSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS8" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "UnalignedBlockTexturesSupported:", (bool)caps8.UnalignedBlockTexturesSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(9))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS9";
-		LOG_INFO << format(formatStr, "MeshShaderPipelineStatsSupported:", (bool)caps9.MeshShaderPipelineStatsSupported);
-		LOG_INFO << format(formatStr, "MeshShaderSupportsFullRangeRenderTargetArrayIndex:", (bool)caps9.MeshShaderSupportsFullRangeRenderTargetArrayIndex);
-		LOG_INFO << format(formatStr, "AtomicInt64OnTypedResourceSupported:", (bool)caps9.AtomicInt64OnTypedResourceSupported);
-		LOG_INFO << format(formatStr, "AtomicInt64OnGroupSharedSupported:", (bool)caps9.AtomicInt64OnGroupSharedSupported);
-		LOG_INFO << format(formatStr, "DerivativesInMeshAndAmplificationShadersSupported:", (bool)caps9.DerivativesInMeshAndAmplificationShadersSupported);
-		LOG_INFO << format(formatStr, "WaveMMATier:", D3DTypeToString(caps9.WaveMMATier));
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS9" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MeshShaderPipelineStatsSupported:", (bool)caps9.MeshShaderPipelineStatsSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MeshShaderSupportsFullRangeRenderTargetArrayIndex:", (bool)caps9.MeshShaderSupportsFullRangeRenderTargetArrayIndex) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "AtomicInt64OnTypedResourceSupported:", (bool)caps9.AtomicInt64OnTypedResourceSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "AtomicInt64OnGroupSharedSupported:", (bool)caps9.AtomicInt64OnGroupSharedSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "DerivativesInMeshAndAmplificationShadersSupported:", (bool)caps9.DerivativesInMeshAndAmplificationShadersSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "WaveMMATier:", D3DTypeToString(caps9.WaveMMATier)) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(10))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS10";
-		LOG_INFO << format(formatStr, "VariableRateShadingSumCombinerSupported:", (bool)caps10.VariableRateShadingSumCombinerSupported);
-		LOG_INFO << format(formatStr, "MeshShaderPerPrimitiveShadingRateSupported:", (bool)caps10.MeshShaderPerPrimitiveShadingRateSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS10" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "VariableRateShadingSumCombinerSupported:", (bool)caps10.VariableRateShadingSumCombinerSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MeshShaderPerPrimitiveShadingRateSupported:", (bool)caps10.MeshShaderPerPrimitiveShadingRateSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 
 	}
 
 	if (HasCaps(11))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS11";
-		LOG_INFO << format(formatStr, "AtomicInt64OnDescriptorHeapResourceSupported:", (bool)caps11.AtomicInt64OnDescriptorHeapResourceSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS11" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "AtomicInt64OnDescriptorHeapResourceSupported:", (bool)caps11.AtomicInt64OnDescriptorHeapResourceSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 
 	if (HasCaps(12))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS12";
-		LOG_INFO << format(formatStr, "MSPrimitivesPipelineStatisticIncludesCulledPrimitives:", D3DTypeToString(caps12.MSPrimitivesPipelineStatisticIncludesCulledPrimitives));
-		LOG_INFO << format(formatStr, "EnhancedBarriersSupported:", (bool)caps12.EnhancedBarriersSupported);
-		LOG_INFO << format(formatStr, "RelaxedFormatCastingSupported:", (bool)caps12.RelaxedFormatCastingSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS12" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "MSPrimitivesPipelineStatisticIncludesCulledPrimitives:", D3DTypeToString(caps12.MSPrimitivesPipelineStatisticIncludesCulledPrimitives)) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "EnhancedBarriersSupported:", (bool)caps12.EnhancedBarriersSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "RelaxedFormatCastingSupported:", (bool)caps12.RelaxedFormatCastingSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 
 	}
 
 	if (HasCaps(13))
 	{
-		LOG_INFO << "    D3D12_FEATURE_D3D12_OPTIONS13";
-		LOG_INFO << format(formatStr, "UnrestrictedBufferTextureCopyPitchSupported:", (bool)caps13.UnrestrictedBufferTextureCopyPitchSupported);
-		LOG_INFO << format(formatStr, "UnrestrictedVertexElementAlignmentSupported:", (bool)caps13.UnrestrictedVertexElementAlignmentSupported);
-		LOG_INFO << format(formatStr, "InvertedViewportHeightFlipsYSupported:", (bool)caps13.InvertedViewportHeightFlipsYSupported);
-		LOG_INFO << format(formatStr, "InvertedViewportDepthFlipsZSupported:", (bool)caps13.InvertedViewportDepthFlipsZSupported);
-		LOG_INFO << format(formatStr, "TextureCopyBetweenDimensionsSupported:", (bool)caps13.TextureCopyBetweenDimensionsSupported);
-		LOG_INFO << format(formatStr, "AlphaBlendFactorSupported:", (bool)caps13.AlphaBlendFactorSupported);
-		LOG_INFO;
+		LogInfo(LogDirectX) << "    D3D12_FEATURE_D3D12_OPTIONS13" << endl;
+		LogInfo(LogDirectX) << format(formatStr, "UnrestrictedBufferTextureCopyPitchSupported:", (bool)caps13.UnrestrictedBufferTextureCopyPitchSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "UnrestrictedVertexElementAlignmentSupported:", (bool)caps13.UnrestrictedVertexElementAlignmentSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "InvertedViewportHeightFlipsYSupported:", (bool)caps13.InvertedViewportHeightFlipsYSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "InvertedViewportDepthFlipsZSupported:", (bool)caps13.InvertedViewportDepthFlipsZSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "TextureCopyBetweenDimensionsSupported:", (bool)caps13.TextureCopyBetweenDimensionsSupported) << endl;
+		LogInfo(LogDirectX) << format(formatStr, "AlphaBlendFactorSupported:", (bool)caps13.AlphaBlendFactorSupported) << endl;
+		LogInfo(LogDirectX) << endl;
 	}
 }
 

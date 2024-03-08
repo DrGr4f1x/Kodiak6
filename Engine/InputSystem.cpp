@@ -178,7 +178,7 @@ float InputSystem::GetTimeCorrectedAnalogInput(AnalogInput ai) const
 
 void InputSystem::Initialize()
 {
-	LOG_INFO << "Creating DirectInput device";
+	LogInfo(LogInput) << "Creating DirectInput device" << endl;
 
 	KbmBuildKeyMapping();
 
@@ -236,7 +236,7 @@ void InputSystem::Initialize()
 
 void InputSystem::Shutdown()
 {
-	LOG_INFO << "Destroying DirectInput device";
+	LogInfo(LogInput) << "Destroying DirectInput device" << endl;
 
 	if (m_keyboard)
 	{

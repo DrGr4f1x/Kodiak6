@@ -19,13 +19,13 @@ using namespace std;
 
 GraphicsDevice::GraphicsDevice()
 {
-	LOG_INFO << "Creating Vulkan device";
+	LogInfo(LogVulkan) << "Creating Vulkan device" << endl;
 }
 
 
 GraphicsDevice::~GraphicsDevice()
 {
-	LOG_INFO << "Destroying Vulkan device";
+	LogInfo(LogVulkan) << "Destroying Vulkan device" << endl;
 }
 
 

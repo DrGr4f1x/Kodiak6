@@ -206,14 +206,14 @@ void Application::Initialize()
 	m_logSystem = make_unique<LogSystem>();
 
 	// This is the first place we can post a startup message
-	LOG_INFO << "App: " << m_name << " starting up";
-	LOG_INFO << "  API: " << GraphicsApiToString(m_api);
-	LOG_INFO;
+	LogInfo(LogApplication) << "App: " << m_name << " starting up" << endl;
+	LogInfo(LogApplication) << "  API: " << GraphicsApiToString(m_api) << endl;
+	LogInfo(LogApplication) << endl;
 
 	m_inputSystem = make_unique<InputSystem>(m_hwnd);
 
-	LOG_INFO << "Engine systems initialized";
-	LOG_INFO;
+	LogInfo(LogApplication) << "Engine systems initialized" << endl;
+	LogInfo(LogApplication) << endl;
 
 	Configure();
 

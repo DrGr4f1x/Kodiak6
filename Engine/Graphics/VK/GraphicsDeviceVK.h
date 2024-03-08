@@ -28,4 +28,6 @@ using DeviceHandle = Microsoft::WRL::ComPtr<GraphicsDevice>;
 
 GraphicsDevice* CreateDeviceVK(const GraphicsDeviceDesc& desc);
 
+inline LogCategory LogVulkan{ "LogVulkan" };
+
 } // namespace Kodiak::VK
