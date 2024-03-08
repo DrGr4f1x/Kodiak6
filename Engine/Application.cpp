@@ -27,7 +27,7 @@ static Kodiak::Application* g_application = nullptr;
 
 
 Application::Application()
-	: m_name("Unnamed")
+	: m_name{ "Unnamed" }
 {
 	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
 	g_application = this;
@@ -35,10 +35,10 @@ Application::Application()
 
 
 Application::Application(const ApplicationDesc& desc)
-	: m_name(desc.name)
-	, m_displayWidth(desc.width)
-	, m_displayHeight(desc.height)
-	, m_api(desc.api)
+	: m_name{ desc.name }
+	, m_displayWidth{ desc.width }
+	, m_displayHeight{ desc.height }
+	, m_api{ desc.api }
 {
 	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
 	g_application = this;
@@ -60,7 +60,7 @@ void Application::Run()
 	string appNameWithAPI = GraphicsApiToString(m_api) + " " + m_name;
 
 	// Register class
-	WNDCLASSEX wcex;
+	WNDCLASSEX wcex{};
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;
@@ -92,7 +92,7 @@ void Application::Run()
 
 	do
 	{
-		MSG msg = {};
+		MSG msg{};
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);

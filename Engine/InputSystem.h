@@ -211,14 +211,14 @@ private:
 	}
 
 private:
-	HWND m_hwnd;
+	HWND m_hwnd{};
 
 	bool m_buttons[2][(int)DigitalInput::kNumDigitalInputs];
 	float m_holdDuration[(int)DigitalInput::kNumDigitalInputs] = { 0.0f };
 	float m_analogs[(int)AnalogInput::kNumAnalogInputs];
 	float m_analogsTC[(int)AnalogInput::kNumAnalogInputs];
 
-	DIMOUSESTATE2 m_mouseState;
+	DIMOUSESTATE2 m_mouseState{};
 	unsigned char m_keybuffer[256];
 	unsigned char m_dxKeyMapping[(int)DigitalInput::kNumKeys]; // map DigitalInput enum to DX key codes 
 

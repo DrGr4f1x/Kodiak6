@@ -100,8 +100,8 @@ protected:
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_appStartTime;
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_lastTimestamp;
 
-	HINSTANCE	m_hinst{ 0 };
-	HWND		m_hwnd{ 0 };
+	HINSTANCE	m_hinst{};
+	HWND		m_hwnd{};
 
 	// Engine systems
 	std::unique_ptr<FileSystem> m_filesystem;

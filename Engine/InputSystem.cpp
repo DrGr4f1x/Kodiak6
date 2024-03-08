@@ -48,7 +48,7 @@ float FilterAnalogInput(int val, int deadZone)
 
 
 InputSystem::InputSystem(HWND hwnd)
-	: m_hwnd(hwnd)
+	: m_hwnd{ hwnd }
 {
 	Initialize();
 }
@@ -69,7 +69,7 @@ void InputSystem::Update(float deltaT)
 	memset(m_buttons[0], 0, sizeof(m_buttons[0]));
 	memset(m_analogs, 0, sizeof(m_analogs));
 
-	XINPUT_STATE newInputState;
+	XINPUT_STATE newInputState{};
 	if (ERROR_SUCCESS == XInputGetState(0, &newInputState))
 	{
 		if (newInputState.Gamepad.wButtons & (1 << 0)) m_buttons[0][(int)kDPadUp] = true;

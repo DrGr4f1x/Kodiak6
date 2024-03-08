@@ -24,7 +24,7 @@ namespace Kodiak
 class Color
 {
 public:
-	Color() noexcept : m_value(g_XMOne) {}
+	Color() noexcept : m_value{ g_XMOne } {}
 	Color(FXMVECTOR vec) noexcept;
 	Color(const XMVECTORF32& vec) noexcept;
 	Color(float r, float g, float b, float a = 1.0f) noexcept;
@@ -65,7 +65,7 @@ public:
 	operator XMVECTOR() const noexcept { return m_value; }
 
 private:
-	XMVECTORF32 m_value;
+	XMVECTORF32 m_value{};
 };
 
 INLINE Color Max(Color a, Color b) { return Color(XMVectorMax(a, b)); }
