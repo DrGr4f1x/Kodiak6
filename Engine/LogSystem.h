@@ -30,7 +30,7 @@ enum class LogSeverity
 struct LogMessage
 {
 	std::string messageStr;
-	LogSeverity level;
+	LogSeverity severity;
 };
 
 std::string LogSeverityToString(LogSeverity level);
@@ -67,15 +67,7 @@ template <LogSeverity TLevel>
 class Logger
 {
 public:
-	Logger()
-	{
-		namespace chr = std::chrono;
-		auto tpSys = chr::system_clock::now();
-		auto tpLoc = chr::zoned_time{ chr::current_zone(), tpSys }.get_local_time();
-		
-		m_stream << format("[{}]", chr::floor<chr::milliseconds>(tpLoc)) << " " << LogSeverityToString(TLevel) << " ";
-	}
-
+	Logger() = default;
 	~Logger()
 	{
 		m_stream << std::endl;
@@ -84,7 +76,6 @@ public:
 	}
 
 	std::ostringstream& MessageStream() { return m_stream; }
-	//operator std::ostringstream& () { return m_stream; }
 
 private:
 	std::ostringstream m_stream;

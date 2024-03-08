@@ -90,18 +90,13 @@ void LogSystem::CreateLogFile()
 	auto logPath = fs->GetLogPath();
 
 	// Build the filename
-	SYSTEMTIME dateTime;
-	GetLocalTime(&dateTime);
-
-	// Append current date+time and extension to filename
-	ostringstream sstream;
-	sstream << "Log-";
-	sstream << dateTime.wYear << dateTime.wMonth << dateTime.wDay;
-	sstream << dateTime.wHour << dateTime.wMinute << dateTime.wSecond;
-	sstream << ".txt";
+	namespace chr = std::chrono;
+	auto systemTime = chr::system_clock::now();
+	auto localTime = chr::zoned_time{ chr::current_zone(), systemTime }.get_local_time();
+	string filename = format("Log-{:%Y%m%d%H%M%S}.txt", chr::floor<chr::seconds>(localTime));
 
 	// Build the full path
-	auto fullPath = logPath / sstream.str();
+	auto fullPath = logPath / filename;
 
 	// Open the file stream
 	m_file.open(fullPath.c_str(), ios::out | ios::trunc);
@@ -142,38 +137,45 @@ void LogSystem::Initialize()
 
 			while (!m_haltLogging)
 			{
-				LogMessage message;
+				LogMessage message{};
 				if (m_messageQueue.try_pop(message))
 				{
 					lock_guard<mutex> outputLock(m_outputMutex);
 
+					namespace chr = std::chrono;
+					const auto systemTime = chr::system_clock::now();
+					const auto localTime = chr::zoned_time{ chr::current_zone(), systemTime }.get_local_time();
+					const auto localTimeStr = format("[{:%Y.%m.%d-%H.%M.%S}]", chr::floor<chr::milliseconds>(localTime));
+
+					const string messageStr = format("{} {} {} ", localTimeStr, LogSeverityToString(message.severity), message.messageStr);
+
 					if (outputToFile)
 					{
 						m_file.flush();
-						m_file << message.messageStr;
+						m_file << messageStr;
 					}
 
 					if (outputToConsole)
 					{
-						if (message.level == Fatal || message.level == Error)
+						if (message.severity == Fatal || message.severity == Error)
 						{
-							cerr << message.messageStr;
+							cerr << messageStr;
 						}
 						else
 						{
-							cout << message.messageStr;
+							cout << messageStr;
 						}
 					}
 
 					if (outputToDebug)
 					{
-						OutputDebugStringA(message.messageStr.c_str());
+						OutputDebugStringA(messageStr.c_str());
 					}
 
-					if (message.level == Fatal)
+					if (message.severity == Fatal)
 					{
 						m_file.close();
-						Utility::ExitFatal(message.messageStr, "Fatal Error");
+						Utility::ExitFatal(messageStr, "Fatal Error");
 					}
 				}
 			}
@@ -186,7 +188,7 @@ void LogSystem::Initialize()
 
 void LogSystem::Shutdown()
 {
-	lock_guard<mutex> lock(m_initializationMutex);
+	lock_guard<mutex> lock{ m_initializationMutex };
 
 	// Only shutdown if we are in initialized state
 	if (!m_initialized)
