@@ -207,11 +207,13 @@ void Application::Initialize()
 
 	// This is the first place we can post a startup message
 	LOG_INFO << "App: " << m_name << " starting up";
-	LOG_INFO << "  API: " << GraphicsApiToString(m_api) << ENDL;
+	LOG_INFO << "  API: " << GraphicsApiToString(m_api);
+	LOG_INFO;
 
 	m_inputSystem = make_unique<InputSystem>(m_hwnd);
 
-	LOG_INFO << "Engine systems initialized" << ENDL;
+	LOG_INFO << "Engine systems initialized";
+	LOG_INFO;
 
 	Configure();
 

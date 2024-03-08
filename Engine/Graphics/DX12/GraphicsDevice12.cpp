@@ -178,14 +178,14 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 				deviceName,
 				desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision);
 
-			LOG_INFO << format("    Feature level: {}, shader model {}, binding tier {}, wave ops {}, atomic64 {}",
-				D3DFeatureLevelToString(basicCaps.maxFeatureLevel),
-				D3DShaderModelToString(basicCaps.maxShaderModel),
-				D3DResouceBindingTierToString(basicCaps.resourceBindingTier, true),
+			LOG_INFO << format("    Feature level {}, shader model {}, binding tier {}, wave ops {}, atomic64 {}",
+				D3DTypeToString(basicCaps.maxFeatureLevel, true),
+				D3DTypeToString(basicCaps.maxShaderModel, true),
+				D3DTypeToString(basicCaps.resourceBindingTier, true),
 				basicCaps.bSupportsWaveOps ? "supported" : "not supported",
 				basicCaps.bSupportsAtomic64 ? "supported" : "not supported");
 
-			LOG_INFO << format("    Adapter memory: {}MB dedicated video memory, {}MB dedicated system memory, {}MB shared memory",
+			LOG_INFO << format("    Adapter memory: {} MB dedicated video memory, {} MB dedicated system memory, {} MB shared memory",
 				(uint32_t)(desc.DedicatedVideoMemory >> 20),
 				(uint32_t)(desc.DedicatedSystemMemory >> 20),
 				(uint32_t)(desc.SharedSystemMemory >> 20));
@@ -303,7 +303,7 @@ void GraphicsDevice::ReadCaps()
 
 	m_caps.ReadFullCaps(m_device.Get(), minFeatureLevel, maxShaderModel);
 
-	m_bestShaderModel = m_caps.shaderModel.HighestShaderModel;
+	m_bestShaderModel = m_caps.basicCaps.maxShaderModel;
 
 	if (g_graphicsDeviceOptions.logDeviceFeatures)
 	{

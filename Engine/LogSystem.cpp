@@ -32,21 +32,24 @@ bool outputToDebug{ true };
 } // anonymous namespace
 
 
-string Kodiak::LogLevelToString(LogLevel level)
+string Kodiak::LogSeverityToString(LogSeverity level)
 {
+	using enum LogSeverity;
+
 	switch (level)
 	{
-	case LogLevel::Fatal:	return string("  Fatal");	break;
-	case LogLevel::Error:	return string("  Error");	break;
-	case LogLevel::Warning:	return string("Warning");	break;
-	case LogLevel::Debug:	return string("  Debug");	break;
-	case LogLevel::Notice:	return string(" Notice");	break;
-	default:				return string("   Info");	break;
+	case Fatal:		return "[  Fatal]";	break;
+	case Error:		return "[  Error]";	break;
+	case Warning:	return "[Warning]";	break;
+	case Debug:		return "[  Debug]";	break;
+	case Notice:	return "[ Notice]";	break;
+	case Info:		return "[   Info]"; break;
+	default:		return "";	break;
 	}
 }
 
 
-void Kodiak::PostLogMessage(const LogMessage&& message)
+void Kodiak::PostLogMessage(LogMessage&& message)
 {
 	auto* logSystem = GetLogSystem();
 	if (logSystem)
@@ -73,7 +76,7 @@ LogSystem::~LogSystem()
 }
 
 
-void LogSystem::PostLogMessage(const LogMessage&& message)
+void LogSystem::PostLogMessage(LogMessage&& message)
 {
 	m_messageQueue.push(move(message));
 }
@@ -135,6 +138,8 @@ void LogSystem::Initialize()
 	m_workerLoop = async(launch::async,
 		[&]
 		{
+			using enum LogSeverity;
+
 			while (!m_haltLogging)
 			{
 				LogMessage message;
@@ -150,7 +155,7 @@ void LogSystem::Initialize()
 
 					if (outputToConsole)
 					{
-						if (message.level == LogLevel::Fatal || message.level == LogLevel::Error)
+						if (message.level == Fatal || message.level == Error)
 						{
 							cerr << message.messageStr;
 						}
@@ -165,7 +170,7 @@ void LogSystem::Initialize()
 						OutputDebugStringA(message.messageStr.c_str());
 					}
 
-					if (message.level == LogLevel::Fatal)
+					if (message.level == Fatal)
 					{
 						m_file.close();
 						Utility::ExitFatal(message.messageStr, "Fatal Error");

@@ -15,25 +15,26 @@
 namespace Kodiak
 {
 
-enum class LogLevel
+enum class LogSeverity
 {
 	Fatal,
 	Error,
 	Warning,
 	Notice,
 	Info,
-	Debug
+	Debug,
+	Log
 };
 
 
 struct LogMessage
 {
 	std::string messageStr;
-	LogLevel level;
+	LogSeverity level;
 };
 
-std::string LogLevelToString(LogLevel level);
-void PostLogMessage(const LogMessage&& message);
+std::string LogSeverityToString(LogSeverity level);
+void PostLogMessage(LogMessage&& message);
 
 
 class LogSystem : NonCopyable, NonMovable
@@ -44,7 +45,7 @@ public:
 
 	bool IsInitialized() const { return m_initialized; }
 
-	void PostLogMessage(const LogMessage&& message);
+	void PostLogMessage(LogMessage&& message);
 
 private:
 	void CreateLogFile();
@@ -62,13 +63,17 @@ private:
 };
 
 
-template <LogLevel TLevel>
+template <LogSeverity TLevel>
 class Logger
 {
 public:
 	Logger()
 	{
-		m_stream << LogLevelToString(TLevel) << ": ";
+		namespace chr = std::chrono;
+		auto tpSys = chr::system_clock::now();
+		auto tpLoc = chr::zoned_time{ chr::current_zone(), tpSys }.get_local_time();
+		
+		m_stream << format("[{}]", chr::floor<chr::milliseconds>(tpLoc)) << " " << LogSeverityToString(TLevel) << " ";
 	}
 
 	~Logger()
@@ -88,13 +93,11 @@ LogSystem* GetLogSystem();
 
 
 #define LOG(level) Logger<level>().MessageStream()
-#define LOG_FATAL Logger<LogLevel::Fatal>().MessageStream()
-#define LOG_ERROR Logger<LogLevel::Error>().MessageStream()
-#define LOG_WARNING Logger<LogLevel::Warning>().MessageStream()
-#define LOG_NOTICE Logger<LogLevel::Notice>().MessageStream()
-#define LOG_INFO Logger<LogLevel::Info>().MessageStream()
-#define LOG_DEBUG Logger<LogLevel::Debug>().MessageStream()
-
-#define ENDL std::endl 
+#define LOG_FATAL Logger<LogSeverity::Fatal>().MessageStream()
+#define LOG_ERROR Logger<LogSeverity::Error>().MessageStream()
+#define LOG_WARNING Logger<LogSeverity::Warning>().MessageStream()
+#define LOG_NOTICE Logger<LogSeverity::Notice>().MessageStream()
+#define LOG_INFO Logger<LogSeverity::Info>().MessageStream()
+#define LOG_DEBUG Logger<LogSeverity::Debug>().MessageStream()
 
 } // namespace Kodiak
