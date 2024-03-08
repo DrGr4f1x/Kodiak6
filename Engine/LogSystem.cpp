@@ -140,17 +140,15 @@ void LogSystem::Initialize()
 				LogMessage message{};
 				if (m_messageQueue.try_pop(message))
 				{
-					lock_guard<mutex> outputLock(m_outputMutex);
-
 					namespace chr = std::chrono;
 					const auto systemTime = chr::system_clock::now();
 					const auto localTime = chr::zoned_time{ chr::current_zone(), systemTime }.get_local_time();
 					const auto localTimeStr = format("[{:%Y.%m.%d-%H.%M.%S}]", chr::floor<chr::milliseconds>(localTime));
 
 					const string categoryStr = message.category ? "" : format("{}: ", message.category.GetName());
-					const string severityStr = (message.severity == None) ? "" : format("{}: ", SeverityToString(message.severity));
+					const string severityStr = (message.severity == Severity::Log) ? "" : format("{}: ", SeverityToString(message.severity));
 
-					const string messageStr = format("{} {}{}{} ", localTimeStr, categoryStr, severityStr, message.messageStr);
+					const string messageStr = format("{} {}{}{}", localTimeStr, categoryStr, severityStr, message.messageStr);
 
 
 					if (outputToFile)

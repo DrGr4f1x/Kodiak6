@@ -212,6 +212,7 @@ void Application::Initialize()
 
 	m_inputSystem = make_unique<InputSystem>(m_hwnd);
 
+	LogInfo << "LogInfo test" << endl;
 	LogInfo(LogApplication) << "Engine systems initialized" << endl;
 	LogInfo(LogApplication) << endl;
 

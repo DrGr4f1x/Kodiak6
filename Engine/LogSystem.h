@@ -23,7 +23,7 @@ enum class Severity
 	Notice,
 	Info,
 	Debug,
-	None
+	Log
 };
 
 
@@ -72,7 +72,6 @@ private:
 
 private:
 	std::mutex m_initializationMutex;
-	std::mutex m_outputMutex;
 	std::ofstream m_file;
 	Concurrency::concurrent_queue<LogMessage> m_messageQueue;
 	std::atomic<bool> m_haltLogging;
@@ -81,39 +80,84 @@ private:
 };
 
 
-class BaseLog
+class LogBase
 {
 public:
-	BaseLog() = default;
-	BaseLog(Severity severity, LogCategory category) 
-		: m_severity{ severity }
-		, m_category{ category }
-	{}
-	~BaseLog()
+	class LogProxy : NonCopyable
 	{
-		m_stream.flush();
+	public:
+		LogProxy() = delete;
+		LogProxy(Severity severity, LogCategory category)
+			: m_severity{ severity }
+			, m_category{ category }
+		{}
+		LogProxy(LogProxy&& other)
+			: m_severity{ other.m_severity }
+			, m_category{ other.m_category }
+			, m_stream{ std::move(other.m_stream) }
+		{}
+		~LogProxy()
+		{
+			m_stream.flush();
+			PostLogMessage({ m_stream.str(), m_severity, m_category });
+		}
 
-		PostLogMessage({ m_stream.str(), m_severity, m_category });
+		template <typename T>
+		LogProxy& operator<<(const T& value)
+		{
+			m_stream << value;
+			return *this;
+		}
+
+		LogProxy& operator<<(std::ostream& (*os)(std::ostream&))
+		{
+			m_stream << os;
+			return *this;
+		}
+
+	private:
+		Severity m_severity{ Severity::Info };
+		LogCategory m_category;
+		std::ostringstream m_stream;
+	};
+
+	LogProxy operator()(const LogCategory& category)
+	{
+		return LogProxy{ m_severity, category };
 	}
 
-	std::ostringstream& MessageStream() { return m_stream; }
+	template <typename T>
+	LogProxy operator<<(const T& value)
+	{
+		LogProxy proxy{ m_severity, LogCategory{} };
+		proxy << value;
+		return proxy;
+	}
 
+	LogProxy&& operator<<(std::ostream& (*os)(std::ostream&))
+	{
+		LogProxy proxy{ m_severity, LogCategory{} };
+		proxy << os;
+		return std::move(proxy);
+	}
+
+public:
+	LogBase() = delete;
+	explicit LogBase(Severity severity) : m_severity{ severity } {}
 
 private:
-	std::ostringstream m_stream;
-	Severity m_severity{ Severity::Info };
-	LogCategory m_category;
+	const Severity m_severity{ Severity::Info };
 };
 
+
+inline LogBase Log{ Severity::Log };
+inline LogBase LogFatal{ Severity::Fatal };
+inline LogBase LogError{ Severity::Error };
+inline LogBase LogWarning{ Severity::Warning };
+inline LogBase LogNotice{ Severity::Notice };
+inline LogBase LogInfo{ Severity::Info };
+inline LogBase LogDebug{ Severity::Debug };
+
 LogSystem* GetLogSystem();
-
-
-#define Log(CAT) BaseLog(Severity::None, CAT).MessageStream()
-#define LogFatal(CAT) BaseLog(Severity::Fatal, CAT).MessageStream()
-#define LogError(CAT) BaseLog(Severity::Error, CAT).MessageStream()
-#define LogWarning(CAT) BaseLog(Severity::Warning, CAT).MessageStream()
-#define LogNotice(CAT) BaseLog(Severity::Notice, CAT).MessageStream()
-#define LogInfo(CAT) BaseLog(Severity::Info, CAT).MessageStream()
-#define LogDebug(CAT) BaseLog(Severity::Debug, CAT).MessageStream()
 
 } // namespace Kodiak
