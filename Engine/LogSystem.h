@@ -33,7 +33,10 @@ public:
 	LogCategory() = default;
 	explicit LogCategory(const std::string& name) : m_name{ name } {}
 
-	constexpr operator bool() { return m_name.empty(); }
+	bool IsValid() const noexcept
+	{
+		return !m_name.empty();
+	}
 
 	const std::string& GetName() const
 	{
@@ -69,6 +72,8 @@ private:
 	void CreateLogFile();
 	void Initialize();
 	void Shutdown();
+
+	void OutputLogMessage(const LogMessage& message);
 
 private:
 	std::mutex m_initializationMutex;
@@ -131,7 +136,7 @@ public:
 	{
 		LogProxy proxy{ m_severity, LogCategory{} };
 		proxy << value;
-		return std::move(proxy);
+		return proxy;
 	}
 
 	LogProxy&& operator<<(std::ostream& (*os)(std::ostream&))

@@ -28,8 +28,7 @@ LogSystem* g_logSystem{ nullptr };
 bool outputToFile{ true };
 bool outputToConsole{ true };
 bool outputToDebug{ true };
-
-} // anonymous namespace
+bool allowThreadedLogging{ true };
 
 
 string SeverityToString(Severity level)
@@ -47,6 +46,8 @@ string SeverityToString(Severity level)
 	default:		return "";	break;
 	}
 }
+
+} // anonymous namespace
 
 
 void Kodiak::PostLogMessage(LogMessage&& message)
@@ -78,7 +79,14 @@ LogSystem::~LogSystem()
 
 void LogSystem::PostLogMessage(LogMessage&& message)
 {
-	m_messageQueue.push(move(message));
+	if (allowThreadedLogging)
+	{
+		m_messageQueue.push(move(message));
+	}
+	else
+	{
+		OutputLogMessage(message);
+	}
 }
 
 
@@ -130,59 +138,22 @@ void LogSystem::Initialize()
 
 	m_haltLogging = false;
 
-	m_workerLoop = async(launch::async,
-		[&]
-		{
-			using enum Severity;
-
-			while (!m_haltLogging)
+	if (allowThreadedLogging)
+	{
+		m_workerLoop = async(launch::async,
+			[&]
 			{
-				LogMessage message{};
-				if (m_messageQueue.try_pop(message))
+				while (!m_haltLogging)
 				{
-					namespace chr = std::chrono;
-					const auto systemTime = chr::system_clock::now();
-					const auto localTime = chr::zoned_time{ chr::current_zone(), systemTime }.get_local_time();
-					const auto localTimeStr = format("[{:%Y.%m.%d-%H.%M.%S}]", chr::floor<chr::milliseconds>(localTime));
-
-					const string categoryStr = message.category ? "" : format("{}: ", message.category.GetName());
-					const string severityStr = (message.severity == Severity::Log) ? "" : format("{}: ", SeverityToString(message.severity));
-
-					const string messageStr = format("{} {}{}{}", localTimeStr, categoryStr, severityStr, message.messageStr);
-
-
-					if (outputToFile)
+					LogMessage message{};
+					if (m_messageQueue.try_pop(message))
 					{
-						m_file.flush();
-						m_file << messageStr;
-					}
-
-					if (outputToConsole)
-					{
-						if (message.severity == Fatal || message.severity == Error)
-						{
-							cerr << messageStr;
-						}
-						else
-						{
-							cout << messageStr;
-						}
-					}
-
-					if (outputToDebug)
-					{
-						OutputDebugStringA(messageStr.c_str());
-					}
-
-					if (message.severity == Fatal)
-					{
-						m_file.close();
-						Utility::ExitFatal(messageStr, "Fatal Error");
+						OutputLogMessage(message);
 					}
 				}
 			}
-		}
-	);
+		);
+	}
 
 	m_initialized = true;
 }
@@ -199,12 +170,69 @@ void LogSystem::Shutdown()
 	}
 
 	m_haltLogging = true;
-	m_workerLoop.get();
+	if (allowThreadedLogging)
+	{
+		m_workerLoop.get();
+	}
 
 	m_file.flush();
 	m_file.close();
 
 	m_initialized = false;
+}
+
+
+void LogSystem::OutputLogMessage(const LogMessage& message)
+{
+	using enum Severity;
+
+	namespace chr = std::chrono;
+	const auto systemTime = chr::system_clock::now();
+	const auto localTime = chr::zoned_time{ chr::current_zone(), systemTime }.get_local_time();
+	const auto localTimeStr = format("[{:%Y.%m.%d-%H.%M.%S}]", chr::floor<chr::milliseconds>(localTime));
+
+	const string categoryStr = format("{}: ", message.category.GetName());
+	const string severityStr = (message.severity == Severity::Log) ? "" : format("{}: ", SeverityToString(message.severity));
+
+	string messageStr;
+	if (message.category.IsValid())
+	{
+		messageStr = format("{} {}{}{}", localTimeStr, categoryStr, severityStr, message.messageStr);
+	}
+	else
+	{
+		messageStr = format("{} {}{}", localTimeStr, severityStr, message.messageStr);
+	}
+
+
+	if (outputToFile)
+	{
+		m_file.flush();
+		m_file << messageStr;
+	}
+
+	if (outputToConsole)
+	{
+		if (message.severity == Fatal || message.severity == Error)
+		{
+			cerr << messageStr;
+		}
+		else
+		{
+			cout << messageStr;
+		}
+	}
+
+	if (outputToDebug)
+	{
+		OutputDebugStringA(messageStr.c_str());
+	}
+
+	if (message.severity == Fatal)
+	{
+		m_file.close();
+		Utility::ExitFatal(messageStr, "Fatal Error");
+	}
 }
 
 
