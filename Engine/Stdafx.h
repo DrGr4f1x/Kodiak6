@@ -51,6 +51,9 @@
 #pragma comment(lib, "dxgi.lib")
 
 // Vulkan headers
+#define FORCE_VULKAN_VALIDATION 0
+#define ENABLE_VULKAN_VALIDATION (_DEBUG || FORCE_VULKAN_VALIDATION)
+
 #define VK_USE_PLATFORM_WIN32_KHR
 #define VK_NO_PROTOTYPES 1
 #include <vulkan.h>

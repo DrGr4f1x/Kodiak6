@@ -319,7 +319,7 @@ GraphicsApi Kodiak::GetGraphicsApiFromCommandline(int argc, const char* const* a
 	{
 		const char* arg = argv[i];
 
-		if (!strcmp(arg, "-d3d12") || !strcmp(arg, "-dx12"))
+		if (!strcmp(arg, "-d3d12") || !strcmp(arg, "-dx12") || !strcmp(arg, "-dx"))
 		{
 			return GraphicsApi::D3D12;
 		}

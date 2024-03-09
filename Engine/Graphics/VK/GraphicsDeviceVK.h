@@ -35,6 +35,7 @@ private:
 	std::string m_deviceName{ "Unknown" };
 
 	 // Vulkan objects
+	VkInstanceHandle m_instance;
 };
 
 using DeviceHandle = IntrusivePtr<GraphicsDevice>;

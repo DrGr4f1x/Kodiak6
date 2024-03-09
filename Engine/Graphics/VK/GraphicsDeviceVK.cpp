@@ -45,6 +45,42 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& desc)
 	appInfo.pApplicationName = desc.appName.c_str();
 	appInfo.pEngineName = "Kodiak";
 	appInfo.apiVersion = VK_API_VERSION_1_3;
+
+	const vector<const char*> instanceExtensions =
+	{
+#if ENABLE_VULKAN_VALIDATION
+		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+		VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME,
+#endif
+		VK_KHR_SURFACE_EXTENSION_NAME,
+		VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
+		VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+	};
+
+	const vector<const char*> instanceLayers =
+	{
+#if ENABLE_VULKAN_VALIDATION
+		"VK_LAYER_KHRONOS_validation"
+#endif
+	};
+
+	VkInstanceCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	createInfo.pNext = nullptr;
+	createInfo.pApplicationInfo = &appInfo;
+	createInfo.enabledExtensionCount = (uint32_t)instanceExtensions.size();
+	createInfo.ppEnabledExtensionNames = instanceExtensions.data();
+	createInfo.enabledLayerCount = (uint32_t)instanceLayers.size();
+	createInfo.ppEnabledLayerNames = instanceLayers.data();
+
+	VkInstance vkInstance{ VK_NULL_HANDLE };
+	auto res = vkCreateInstance(&createInfo, nullptr, &vkInstance);
+	if (VK_SUCCESS != res)
+	{
+		LogFatal(LogVulkan) << "Could not create Vulkan instance";
+	}
+
+	m_instance.Attach(new CVkInstance(vkInstance));
 }
 
 
