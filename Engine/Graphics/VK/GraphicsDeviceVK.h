@@ -12,19 +12,32 @@
 
 #include "Graphics\GraphicsDevice.h"
 
+#include "Graphics\VK\RefCountingVK.h"
+
+
 namespace Kodiak::VK
 {
 
-class GraphicsDevice : public TRefCount<Kodiak::IGraphicsDevice>
+class GraphicsDevice : public IntrusiveCounter<Kodiak::IGraphicsDevice>
 {
 public:
 	GraphicsDevice();
 	~GraphicsDevice() final;
 
 	void Initialize(const GraphicsDeviceDesc& desc);
+
+private:
+	void CreateInstance();
+
+private:
+	// Device info
+	GraphicsDeviceDesc m_deviceDesc{};
+	std::string m_deviceName{ "Unknown" };
+
+	 // Vulkan objects
 };
 
-using DeviceHandle = Microsoft::WRL::ComPtr<GraphicsDevice>;
+using DeviceHandle = IntrusivePtr<GraphicsDevice>;
 
 GraphicsDevice* CreateDeviceVK(const GraphicsDeviceDesc& desc);
 

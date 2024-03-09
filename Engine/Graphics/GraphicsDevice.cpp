@@ -27,11 +27,6 @@ using namespace std;
 namespace Kodiak
 {
 
-GraphicsDeviceOptions g_graphicsDeviceOptions;
-IGraphicsDevice* g_graphicsDevice = nullptr;
-
-GUID IGraphicsDevice::IID = IID_IGraphicsDevice;
-
 
 DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc)
 {

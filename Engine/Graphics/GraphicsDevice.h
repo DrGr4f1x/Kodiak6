@@ -51,21 +51,19 @@ struct GraphicsDeviceOptions
 	bool logDeviceFeatures{ true };
 };
 
-extern GraphicsDeviceOptions g_graphicsDeviceOptions;
+inline GraphicsDeviceOptions g_graphicsDeviceOptions{};
 
 
 class IGraphicsDevice : public IObject
 {
 public:
-	static GUID IID;
-
 	virtual ~IGraphicsDevice() = default;
 };
 
-using DeviceHandle = Microsoft::WRL::ComPtr<IGraphicsDevice>;
+using DeviceHandle = IntrusivePtr<IGraphicsDevice>;
 
 
-extern IGraphicsDevice* g_graphicsDevice;
+inline IGraphicsDevice* g_graphicsDevice{ nullptr };
 
 
 DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc);

@@ -138,7 +138,12 @@ namespace VulkanParser
                 {
                     // Special case handling of the GetProcAddr functions
                     if (command.Name == "vkGetInstanceProcAddr")
+                    {
+                        command.Type = "root";
+                        command.DeclarationOnly = true;
+                        version.RootCommands.Add(command);
                         continue;
+                    }
 
                     if (command.Name == "vkGetDeviceProcAddr")
                     {

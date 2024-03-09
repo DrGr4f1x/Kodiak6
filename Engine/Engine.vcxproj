@@ -25,7 +25,6 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Core\Color.cpp" />
-    <ClCompile Include="Core\GUIDs.cpp" />
     <ClCompile Include="Core\Hash.cpp" />
     <ClCompile Include="Core\Math\BoundingBox.cpp" />
     <ClCompile Include="Core\Math\Frustum.cpp" />
@@ -41,6 +40,7 @@
     <ClCompile Include="Graphics\VK\FormatsVK.cpp" />
     <ClCompile Include="Graphics\VK\GraphicsDeviceVK.cpp" />
     <ClCompile Include="Graphics\VK\GraphicsEnumsVK.cpp" />
+    <ClCompile Include="Graphics\VK\LoaderVk.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="LogSystem.cpp" />
     <ClCompile Include="Stdafx.cpp">
@@ -55,8 +55,8 @@
     <ClInclude Include="Core\Color.h" />
     <ClInclude Include="Core\CoreEnums.h" />
     <ClInclude Include="Core\DWParam.h" />
-    <ClInclude Include="Core\GUIDs.h" />
     <ClInclude Include="Core\Hash.h" />
+    <ClInclude Include="Core\IObject.h" />
     <ClInclude Include="Core\Math\BoundingBox.h" />
     <ClInclude Include="Core\Math\BoundingPlane.h" />
     <ClInclude Include="Core\Math\BoundingSphere.h" />
@@ -71,7 +71,7 @@
     <ClInclude Include="Core\Math\Vector.h" />
     <ClInclude Include="Core\NonCopyable.h" />
     <ClInclude Include="Core\NonMovable.h" />
-    <ClInclude Include="Core\RefCount.h" />
+    <ClInclude Include="Core\IntrusivePtr.h" />
     <ClInclude Include="Core\Utility.h" />
     <ClInclude Include="Core\VectorMath.h" />
     <ClInclude Include="FileSystem.h" />
@@ -86,6 +86,8 @@
     <ClInclude Include="Graphics\VK\FormatsVK.h" />
     <ClInclude Include="Graphics\VK\GraphicsDeviceVK.h" />
     <ClInclude Include="Graphics\VK\GraphicsEnumsVK.h" />
+    <ClInclude Include="Graphics\VK\LoaderVk.h" />
+    <ClInclude Include="Graphics\VK\RefCountingVK.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="LogSystem.h" />
     <ClInclude Include="Stdafx.h" />

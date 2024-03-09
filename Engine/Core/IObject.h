@@ -8,21 +8,18 @@
 // Author:  David Elder
 //
 
-#include "Stdafx.h"
-
-#include "TestApp.h"
-
-using namespace Kodiak;
+#pragma once
 
 
-int main(int argc, char* argv[])
+namespace Kodiak
 {
-	GraphicsApi api = GetGraphicsApiFromCommandline(argc, argv);
 
-	ApplicationDesc desc{ /*DO NOT MODIFY*/ s_appName, 1920, 1080, api };
+struct IObject
+{
+	virtual ~IObject() noexcept = default;
 
-	TestApp app(desc);
-	app.Run();
+	virtual unsigned long AddRef() noexcept = 0;
+	virtual unsigned long Release() noexcept = 0;
+};
 
-	return 0;
-}
+} // namespace Kodiak;

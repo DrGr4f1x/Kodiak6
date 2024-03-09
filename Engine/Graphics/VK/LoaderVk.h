@@ -10,7 +10,7 @@
 
 #pragma once
 
-namespace Kodiak
+namespace Kodiak::VK
 {
 
 // Loads the function vkGetInstanceProcAddr, which is used to load VkInstance functions and (optionally) VkDevice functions.
@@ -25,12 +25,13 @@ void LoadInstanceFunctionsOnly(VkInstance instance);
 // Loads VkDevice functions for a given VkDevice.
 void LoadDeviceFunctions(VkDevice device);
 
-} // namespace Kodiak
+} // namespace Kodiak::VK
 
 
 #if defined(VK_VERSION_1_0)
 // Root commands
 extern PFN_vkCreateInstance vkCreateInstance;
+extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
 extern PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
 // Instance commands

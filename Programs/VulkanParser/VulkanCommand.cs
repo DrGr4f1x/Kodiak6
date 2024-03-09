@@ -12,6 +12,7 @@ namespace VulkanParser
         public string Type { get; set; } = "";
         public EVersion Version { get; set; } = EVersion.VK_VERSION_1_0;
         public string Depends { get; set; } = "";
+        public bool DeclarationOnly { get; set; } = false;
 
         public string ToString(bool bSimple)
         {

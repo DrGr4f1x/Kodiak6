@@ -9,9 +9,6 @@
     <ClCompile Include="Core\Color.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\GUIDs.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Hash.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -52,7 +49,10 @@
       <Filter>Graphics\VK</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\LoaderVk.cpp">
+      <Filter>Graphics\VK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +73,6 @@
     <ClInclude Include="Core\DWParam.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\GUIDs.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Hash.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -85,7 +82,7 @@
     <ClInclude Include="Core\NonMovable.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\RefCount.h">
+    <ClInclude Include="Core\IntrusivePtr.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Utility.h">
@@ -157,11 +154,20 @@
     <ClInclude Include="Graphics\VK\GraphicsEnumsVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DX12\DeviceCaps12.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\DX12\Strings12.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\DeviceCaps12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\RefCountingVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\LoaderVk.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\IObject.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,11 +12,8 @@
 
 #include "LoaderVk.h"
 
-using namespace Kodiak;
-using namespace std;
 
-
-VkResult Kodiak::InitializeLoader()
+VkResult Kodiak::VK::InitializeLoader()
 {
     HMODULE module = LoadLibraryA("vulkan-1.dll");
     if (!module)
@@ -39,7 +36,7 @@ VkResult Kodiak::InitializeLoader()
 }
 
 
-void Kodiak::LoadInstanceFunctions(VkInstance instance)
+void Kodiak::VK::LoadInstanceFunctions(VkInstance instance)
 {
 #if defined(VK_VERSION_1_0)
 	// Instance commands
@@ -269,7 +266,7 @@ void Kodiak::LoadInstanceFunctions(VkInstance instance)
 }
 
 
-void Kodiak::LoadInstanceFunctionsOnly(VkInstance instance)
+void Kodiak::VK::LoadInstanceFunctionsOnly(VkInstance instance)
 {
 #if defined(VK_VERSION_1_0)
 	// Instance commands
@@ -308,7 +305,7 @@ void Kodiak::LoadInstanceFunctionsOnly(VkInstance instance)
 }
 
 
-void Kodiak::LoadDeviceFunctions(VkDevice device)
+void Kodiak::VK::LoadDeviceFunctions(VkDevice device)
 {
 #if defined(VK_VERSION_1_0)
 	// Device commands
@@ -513,6 +510,7 @@ void Kodiak::LoadDeviceFunctions(VkDevice device)
 #if defined(VK_VERSION_1_0)
 // Root commands
 PFN_vkCreateInstance vkCreateInstance;
+PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
 PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
 // Instance commands

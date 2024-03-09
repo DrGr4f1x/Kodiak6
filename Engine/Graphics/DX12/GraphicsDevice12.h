@@ -18,7 +18,7 @@
 namespace Kodiak::DX12
 {
 
-class GraphicsDevice : public TRefCount<Kodiak::IGraphicsDevice>
+class GraphicsDevice : public IntrusiveCounter<Kodiak::IGraphicsDevice>
 {
 public:
 	GraphicsDevice();
@@ -48,7 +48,7 @@ private:
 	DeviceCaps m_caps;
 };
 
-using DeviceHandle = Microsoft::WRL::ComPtr<Kodiak::DX12::GraphicsDevice>;
+using DeviceHandle = IntrusivePtr<GraphicsDevice>;
 
 Kodiak::DX12::GraphicsDevice* CreateDevice12(const GraphicsDeviceDesc& desc);
 

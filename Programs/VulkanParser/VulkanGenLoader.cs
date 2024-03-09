@@ -76,7 +76,7 @@ namespace VulkanParser
 
                 #pragma once
 
-                namespace Kodiak
+                namespace Kodiak::VK
                 {
 
                 // Loads the function vkGetInstanceProcAddr, which is used to load VkInstance functions and (optionally) VkDevice functions.
@@ -91,7 +91,7 @@ namespace VulkanParser
                 // Loads VkDevice functions for a given VkDevice.
                 void LoadDeviceFunctions(VkDevice device);
 
-                } // namespace Kodiak
+                } // namespace Kodiak::VK
                 """;
 
             // Write top matter
@@ -109,7 +109,7 @@ namespace VulkanParser
         private void EmitInitializeLoaderImpl(StreamWriter outputFile)
         {
             string topMatterStr = """
-                VkResult Kodiak::InitializeLoader()
+                VkResult Kodiak::VK::InitializeLoader()
                 {
                     HMODULE module = LoadLibraryA("vulkan-1.dll");
                     if (!module)
@@ -131,6 +131,11 @@ namespace VulkanParser
                     outputFile.WriteLine("#if defined({0})", version.Version);
                     foreach (var command in version.RootCommands)
                     {
+                        if (command.DeclarationOnly)
+                        {
+                            continue;
+                        }
+
                         string cmdName = command.Name;
                         outputFile.WriteLine("\t{0} = (PFN_{0})vkGetInstanceProcAddr(nullptr, \"{0}\");", cmdName);
                     }
@@ -149,7 +154,7 @@ namespace VulkanParser
         private void EmitLoadInstanceFunctionsImpl(StreamWriter outputFile)
         {
             string topMatterStr = """
-                void Kodiak::LoadInstanceFunctions(VkInstance instance)
+                void Kodiak::VK::LoadInstanceFunctions(VkInstance instance)
                 {
                 """;
             outputFile.WriteLine(topMatterStr);
@@ -165,6 +170,11 @@ namespace VulkanParser
                         outputFile.WriteLine("\t// Instance commands");
                         foreach(var command in version.InstanceCommands)
                         {
+                            if (command.DeclarationOnly)
+                            {
+                                continue;
+                            }
+
                             string cmdName = command.Name;
                             outputFile.WriteLine("\t{0} = (PFN_{0})vkGetInstanceProcAddr(instance, \"{0}\");", cmdName);
                         }
@@ -175,6 +185,11 @@ namespace VulkanParser
                         outputFile.WriteLine("\t// Device commands");
                         foreach (var command in version.DeviceCommands)
                         {
+                            if (command.DeclarationOnly)
+                            {
+                                continue;
+                            }
+
                             string cmdName = command.Name;
                             outputFile.WriteLine("\t{0} = (PFN_{0})vkGetInstanceProcAddr(instance, \"{0}\");", cmdName);
                         }
@@ -189,7 +204,7 @@ namespace VulkanParser
         private void EmitLoadInstanceFunctionsOnlyImpl(StreamWriter outputFile)
         {
             string topMatterStr = """
-                void Kodiak::LoadInstanceFunctionsOnly(VkInstance instance)
+                void Kodiak::VK::LoadInstanceFunctionsOnly(VkInstance instance)
                 {
                 """;
             outputFile.WriteLine(topMatterStr);
@@ -205,6 +220,11 @@ namespace VulkanParser
                         outputFile.WriteLine("\t// Instance commands");
                         foreach (var command in version.InstanceCommands)
                         {
+                            if (command.DeclarationOnly)
+                            {
+                                continue;
+                            }
+
                             string cmdName = command.Name;
                             outputFile.WriteLine("\t{0} = (PFN_{0})vkGetInstanceProcAddr(instance, \"{0}\");", cmdName);
                         }
@@ -220,7 +240,7 @@ namespace VulkanParser
         private void EmitLoadDeviceFunctionsImpl(StreamWriter outputFile)
         {
             string topMatterStr = """
-                void Kodiak::LoadDeviceFunctions(VkDevice device)
+                void Kodiak::VK::LoadDeviceFunctions(VkDevice device)
                 {
                 """;
             outputFile.WriteLine(topMatterStr);
@@ -236,6 +256,11 @@ namespace VulkanParser
                         outputFile.WriteLine("\t// Device commands");
                         foreach (var command in version.DeviceCommands)
                         {
+                            if (command.DeclarationOnly)
+                            {
+                                continue;
+                            }
+
                             string cmdName = command.Name;
                             outputFile.WriteLine("\t{0} = (PFN_{0})vkGetDeviceProcAddr(device, \"{0}\");", cmdName);
                         }
@@ -265,9 +290,6 @@ namespace VulkanParser
                 #include "Stdafx.h"
 
                 #include "LoaderVk.h"
-
-                using namespace Kodiak;
-                using namespace std;
                 """;
 
             outputFile.WriteLine(topMatterStr);
