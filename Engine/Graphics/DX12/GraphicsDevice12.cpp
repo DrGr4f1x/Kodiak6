@@ -161,6 +161,8 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	size_t bestDedicatedVideoMemory{ 0 };
 
+	LogInfo(LogDirectX) << "Enumerating DXGI adapters..." << endl;
+
 	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != EnumAdapters((UINT)idx, gpuPreference, dxgiFactory6.Get(), &pAdapter); ++idx)
 	{
 		Microsoft::WRL::ComPtr<IDXGIAdapter> adapter{ pAdapter };
@@ -252,7 +254,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	if (chosenAdapter == -1)
 	{
-		LogFatal(LogDirectX) << "Unable to chose a D3D12 adapter, exiting." << endl;
+		LogFatal(LogDirectX) << "Failed to select a D3D12 adapter" << endl;
 	}
 
 	// Create device, either WARP or hardware
@@ -267,11 +269,11 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 		if (bUseWarpAdapter)
 		{
-			LogNotice(LogDirectX) << "  WARP software adapter requested.  Initializing..." << endl;
+			LogNotice(LogDirectX) << "Selected WARP software adapter" << endl;
 		}
 		else
 		{
-			LogWarning(LogDirectX) << "  Failed to find a hardware adapter.  Falling back to WARP.\n" << endl;
+			LogWarning(LogDirectX) << "Failed to find a hardware adapter, falling back to WARP" << endl;
 		}
 	}
 	else
@@ -281,7 +283,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		m_device = pDevice;
 		m_adapter = pAdapter;
 
-		LogInfo(LogDirectX) << "  Selected D3D12 adapter " << chosenAdapter << endl;
+		LogInfo(LogDirectX) << "Selected D3D12 adapter " << chosenAdapter << endl;
 	}
 
 	ReadCaps();

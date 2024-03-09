@@ -39,7 +39,33 @@ public:
 private:
 	VkInstance m_instance{ VK_NULL_HANDLE };
 };
-
 using VkInstanceHandle = IntrusivePtr<CVkInstance>;
+
+
+//
+// VkPhysicalDevice
+//
+class CVkPhysicalDevice : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkPhysicalDevice() noexcept = default;
+	CVkPhysicalDevice(CVkInstance* cinstance, VkPhysicalDevice physicalDevice) noexcept
+		: m_instance{ cinstance }
+		, m_physicalDevice{ physicalDevice }
+	{}
+
+	~CVkPhysicalDevice() final
+	{
+		m_physicalDevice = VK_NULL_HANDLE;
+	}
+
+	VkPhysicalDevice Get() const noexcept { return m_physicalDevice; }
+	operator VkPhysicalDevice() const noexcept { return Get(); }
+
+private:
+	VkInstanceHandle m_instance;
+	VkPhysicalDevice m_physicalDevice{ VK_NULL_HANDLE };
+};
+using VkPhysicalDeviceHandle = IntrusivePtr<CVkPhysicalDevice>;
 
 } // namespace Kodiak::VK

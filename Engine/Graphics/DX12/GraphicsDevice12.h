@@ -32,6 +32,7 @@ private:
 
 private:
 	// Device info
+	// TODO - Put this stuff in a struct
 	GraphicsDeviceDesc m_deviceDesc{};
 	D3D_FEATURE_LEVEL m_bestFeatureLevel{ D3D_FEATURE_LEVEL_12_2 };
 	D3D_SHADER_MODEL m_bestShaderModel{ D3D_SHADER_MODEL_6_7 };
