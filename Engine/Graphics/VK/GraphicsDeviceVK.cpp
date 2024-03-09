@@ -125,13 +125,10 @@ void GraphicsDevice::CreateInstance()
 	res = vkEnumerateInstanceVersion(&instanceVersion);
 	if (res == VK_SUCCESS)
 	{
-		m_versionVariant = VK_API_VERSION_VARIANT(instanceVersion);
-		m_versionMajor = VK_API_VERSION_MAJOR(instanceVersion);
-		m_versionMinor = VK_API_VERSION_MINOR(instanceVersion);
-		m_versionPatch = VK_API_VERSION_PATCH(instanceVersion);
+		m_versionInfo = DecodeVulkanVersion(instanceVersion);
 
-		LogInfo(LogVulkan) << format("Created Vulkan instance, variant {}, API version {}.{}.{}",
-			m_versionVariant, m_versionMajor, m_versionMinor, m_versionPatch) << endl;
+		LogInfo(LogVulkan) << format("Created Vulkan instance, variant {}, API version {}",
+			m_versionInfo.variant, VulkanVersionInfoToString(m_versionInfo)) << endl;
 	}
 	else
 	{

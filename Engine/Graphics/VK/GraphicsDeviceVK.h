@@ -48,10 +48,7 @@ private:
 	// TODO - put this stuff in a struct
 	GraphicsDeviceDesc m_deviceDesc{};
 	std::string m_deviceName{ "Unknown" };
-	uint32_t m_versionVariant{ 0 };
-	uint32_t m_versionMajor{ 0 };
-	uint32_t m_versionMinor{ 0 };
-	uint32_t m_versionPatch{ 0 };
+	VulkanVersionInfo m_versionInfo{};
 
 	 // Vulkan objects
 	VkInstanceHandle m_instance;
