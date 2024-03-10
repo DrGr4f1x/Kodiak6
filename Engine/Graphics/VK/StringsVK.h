@@ -26,6 +26,41 @@ inline std::string VkDeviceTypeToString(VkPhysicalDeviceType physicalDeviceType)
 }
 
 
+inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlags)
+{
+	const uint32_t numFlags = __popcnt(sampleCountFlags);
+
+	static const std::string countMap[] = {	
+		"1",
+		"2",
+		"4",
+		"8",
+		"16",
+		"32",
+		"64"
+	};
+
+	std::string result;
+	uint32_t testBit = 1;
+	uint32_t bitsCounted = 0;
+	for (uint32_t i = 1; i < _countof(countMap); ++i)
+	{
+		if ((sampleCountFlags & testBit) == testBit)
+		{
+			++bitsCounted;
+			result += countMap[i-1];
+			if (bitsCounted != numFlags)
+			{
+				result += ", ";
+			}
+		}
+		testBit = (1 << i);
+	}
+
+	return result;
+}
+
+
 template <typename T> inline std::string VkTypeToString(T value)
 {
 	return std::format("{}", value);
@@ -35,6 +70,12 @@ template <typename T> inline std::string VkTypeToString(T value)
 template <> inline std::string VkTypeToString(VkPhysicalDeviceType value)
 {
 	return VkDeviceTypeToString(value);
+}
+
+
+template <> inline std::string VkTypeToString(VkSampleCountFlags value)
+{
+	return VkSampleCountFlagsToString(value);
 }
 
 } // namespace Kodiak::VK
