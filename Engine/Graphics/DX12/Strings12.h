@@ -89,13 +89,13 @@ inline std::string D3DFeatureLevelToString(D3D_FEATURE_LEVEL featureLevel, bool 
 	case D3D_FEATURE_LEVEL_9_1:		return bNumberOnly ? "9.1" : "D3D_FEATURE_LEVEL_9_1"; break;
 	case D3D_FEATURE_LEVEL_9_2:		return bNumberOnly ? "9.2" : "D3D_FEATURE_LEVEL_9_2"; break;
 	case D3D_FEATURE_LEVEL_9_3:		return bNumberOnly ? "9.3" : "D3D_FEATURE_LEVEL_9_3"; break;
-	case D3D_FEATURE_LEVEL_10_0:		return bNumberOnly ? "10.0" : "D3D_FEATURE_LEVEL_10_0"; break;
-	case D3D_FEATURE_LEVEL_10_1:		return bNumberOnly ? "10.1" : "D3D_FEATURE_LEVEL_10_1"; break;
-	case D3D_FEATURE_LEVEL_11_0:		return bNumberOnly ? "11.0" : "D3D_FEATURE_LEVEL_11_0"; break;
-	case D3D_FEATURE_LEVEL_11_1:		return bNumberOnly ? "11.1" :"D3D_FEATURE_LEVEL_11_1"; break;
-	case D3D_FEATURE_LEVEL_12_0:		return bNumberOnly ? "12.0" : "D3D_FEATURE_LEVEL_12_0"; break;
-	case D3D_FEATURE_LEVEL_12_1:		return bNumberOnly ? "12.1" : "D3D_FEATURE_LEVEL_12_1"; break;
-	case D3D_FEATURE_LEVEL_12_2:		return bNumberOnly ? "12.2" : "D3D_FEATURE_LEVEL_12_2"; break;
+	case D3D_FEATURE_LEVEL_10_0:	return bNumberOnly ? "10.0" : "D3D_FEATURE_LEVEL_10_0"; break;
+	case D3D_FEATURE_LEVEL_10_1:	return bNumberOnly ? "10.1" : "D3D_FEATURE_LEVEL_10_1"; break;
+	case D3D_FEATURE_LEVEL_11_0:	return bNumberOnly ? "11.0" : "D3D_FEATURE_LEVEL_11_0"; break;
+	case D3D_FEATURE_LEVEL_11_1:	return bNumberOnly ? "11.1" :"D3D_FEATURE_LEVEL_11_1"; break;
+	case D3D_FEATURE_LEVEL_12_0:	return bNumberOnly ? "12.0" : "D3D_FEATURE_LEVEL_12_0"; break;
+	case D3D_FEATURE_LEVEL_12_1:	return bNumberOnly ? "12.1" : "D3D_FEATURE_LEVEL_12_1"; break;
+	case D3D_FEATURE_LEVEL_12_2:	return bNumberOnly ? "12.2" : "D3D_FEATURE_LEVEL_12_2"; break;
 	default: return bNumberOnly ? "1.0 Core" : "D3D_FEATURE_LEVEL_1_0_CORE"; break;
 	}
 }

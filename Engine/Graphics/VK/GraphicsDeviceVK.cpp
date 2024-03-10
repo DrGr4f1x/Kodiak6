@@ -14,6 +14,7 @@
 
 #include "LoaderVk.h"
 
+
 using namespace Kodiak;
 using namespace Kodiak::VK;
 using namespace std;
@@ -25,34 +26,6 @@ namespace
 constexpr uint32_t g_requiredVulkanVersion{ VK_API_VERSION_1_3 };
 
 } // anonymous namespace
-
-
-namespace Kodiak::VK
-{
-
-VulkanVersionInfo DecodeVulkanVersion(uint32_t packedVersion)
-{
-	VulkanVersionInfo info{};
-	info.variant = VK_API_VERSION_VARIANT(packedVersion);
-	info.major = VK_API_VERSION_MAJOR(packedVersion);
-	info.minor = VK_API_VERSION_MINOR(packedVersion);
-	info.patch = VK_API_VERSION_PATCH(packedVersion);
-	return info;
-}
-
-
-string VulkanVersionInfoToString(VulkanVersionInfo versionInfo)
-{
-	return format("{}.{}.{}", versionInfo.major, versionInfo.minor, versionInfo.patch);
-}
-
-
-string VulkanVersionToString(uint32_t packedVersion)
-{
-	return VulkanVersionInfoToString(DecodeVulkanVersion(packedVersion));
-}
-
-} // namespace Kodiak::VK
 
 
 GraphicsDevice::GraphicsDevice()
@@ -147,7 +120,7 @@ void GraphicsDevice::SelectPhysicalDevice()
 	VkResult res{ VK_SUCCESS };
 
 	// Get number of available physical devices
-	res = vkEnumeratePhysicalDevices(*m_instance.Get(), &gpuCount, nullptr);
+	res = vkEnumeratePhysicalDevices(*m_instance, &gpuCount, nullptr);
 	if (res != VK_SUCCESS)
 	{
 		LogFatal(LogVulkan) << "Failed to get physical device count" << endl;
@@ -155,20 +128,11 @@ void GraphicsDevice::SelectPhysicalDevice()
 
 	// Enumerate physical devices
 	vector<VkPhysicalDevice> physicalDevices(gpuCount);
-	res = vkEnumeratePhysicalDevices(*m_instance.Get(), &gpuCount, physicalDevices.data());
+	res = vkEnumeratePhysicalDevices(*m_instance, &gpuCount, physicalDevices.data());
 	if (res != VK_SUCCESS)
 	{
 		LogFatal(LogVulkan) << "Failed to enumerate physical devices" << endl;
 	}
-
-	VkPhysicalDeviceProperties2 properties2{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
-	VkPhysicalDeviceVulkan11Properties properties11{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES };
-	VkPhysicalDeviceVulkan12Properties properties12{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES };
-	VkPhysicalDeviceVulkan12Properties properties13{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES };
-	properties2.pNext = &properties11;
-	properties11.pNext = &properties12;
-	properties12.pNext = &properties13;
-	VkPhysicalDeviceProperties& properties{ properties2.properties };
 
 	int32_t firstDiscreteGpu{ -1 };
 	int32_t firstIntegratedGpu{ -1 };
@@ -177,9 +141,10 @@ void GraphicsDevice::SelectPhysicalDevice()
 
 	for (size_t deviceIdx = 0; deviceIdx < physicalDevices.size(); ++deviceIdx)
 	{
-		vkGetPhysicalDeviceProperties2(physicalDevices[deviceIdx], &properties2);
+		DeviceCaps caps{};
+		caps.ReadCaps(physicalDevices[deviceIdx]);
 
-		auto deviceType = properties.deviceType;
+		auto deviceType = caps.properties.deviceType;
 
 		// Only consider discrete and integrated GPUs
 		if (deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceType != VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
@@ -198,12 +163,12 @@ void GraphicsDevice::SelectPhysicalDevice()
 
 		const string deviceTypeStr = deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ? "Discrete" : "Integrated";
 
-		string deviceName = properties.deviceName;
+		string deviceName = caps.properties.deviceName;
 		LogInfo(LogVulkan) << format("  {} physical device {} is Vulkan-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, API version: {})",
 			deviceTypeStr,
 			deviceIdx,
 			deviceName,
-			properties.vendorID, properties.deviceID, VulkanVersionToString(properties.apiVersion))
+			caps.properties.vendorID, caps.properties.deviceID, VulkanVersionInfoToString(caps.version))
 			<< endl;
 	}
 
@@ -225,6 +190,12 @@ void GraphicsDevice::SelectPhysicalDevice()
 	else
 	{
 		LogFatal(LogVulkan) << "Failed to select a Vulkan physical device" << endl;
+	}
+
+	m_caps.ReadCaps(*m_physicalDevice);
+	if (g_graphicsDeviceOptions.logDeviceFeatures)
+	{
+		m_caps.LogCaps();
 	}
 }
 

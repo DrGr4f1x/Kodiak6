@@ -463,4 +463,9 @@ inline HardwareVendor VendorIdToHardwareVendor(uint32_t vendorId)
 	}
 }
 
+inline std::string VendorIdToString(uint32_t vendorId)
+{
+	return HardwareVendorToString(VendorIdToHardwareVendor(vendorId));
+}
+
 } // namespace Kodiak

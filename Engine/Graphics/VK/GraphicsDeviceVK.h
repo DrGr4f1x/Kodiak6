@@ -12,24 +12,12 @@
 
 #include "Graphics\GraphicsDevice.h"
 
-#include "Graphics\VK\RefCountingVK.h"
+#include "DeviceCapsVK.h"
+#include "RefCountingVK.h"
 
 
 namespace Kodiak::VK
 {
-
-struct VulkanVersionInfo
-{
-	uint32_t variant{ 0 };
-	uint32_t major{ 0 };
-	uint32_t minor{ 0 };
-	uint32_t patch{ 0 };
-};
-
-VulkanVersionInfo DecodeVulkanVersion(uint32_t packedVersion);
-std::string VulkanVersionInfoToString(VulkanVersionInfo versionInfo);
-std::string VulkanVersionToString(uint32_t packedVersion);
-
 
 class GraphicsDevice : public IntrusiveCounter<Kodiak::IGraphicsDevice>
 {
@@ -53,6 +41,9 @@ private:
 	 // Vulkan objects
 	VkInstanceHandle m_instance;
 	VkPhysicalDeviceHandle m_physicalDevice;
+
+	// Device caps
+	DeviceCaps m_caps{};
 };
 
 using DeviceHandle = IntrusivePtr<GraphicsDevice>;
