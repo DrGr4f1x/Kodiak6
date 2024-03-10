@@ -14,7 +14,7 @@
 namespace Kodiak::VK
 {
 
-inline std::string VkDeviceTypeToString(VkPhysicalDeviceType physicalDeviceType)
+inline std::string VkTypeToString(VkPhysicalDeviceType physicalDeviceType)
 {
 	switch (physicalDeviceType)
 	{
@@ -26,7 +26,7 @@ inline std::string VkDeviceTypeToString(VkPhysicalDeviceType physicalDeviceType)
 }
 
 
-inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlags)
+inline std::string VkTypeToString(VkSampleCountFlags sampleCountFlags)
 {
 	const uint32_t numFlags = __popcnt(sampleCountFlags);
 
@@ -60,22 +60,22 @@ inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlag
 	return result;
 }
 
-
-template <typename T> inline std::string VkTypeToString(T value)
-{
-	return std::format("{}", value);
-}
-
-
-template <> inline std::string VkTypeToString(VkPhysicalDeviceType value)
-{
-	return VkDeviceTypeToString(value);
-}
-
-
-template <> inline std::string VkTypeToString(VkSampleCountFlags value)
-{
-	return VkSampleCountFlagsToString(value);
-}
-
 } // namespace Kodiak::VK
+
+
+#define DECLARE_STRING_FORMATTERS(VK_TYPE) \
+template <> \
+struct std::formatter<VK_TYPE> : public std::formatter<std::string> \
+{ \
+	auto format(VK_TYPE value, std::format_context& ctx) const \
+	{ \
+		auto str = Kodiak::VK::VkTypeToString(value); \
+		return std::formatter<std::string>::format(str, ctx); \
+	} \
+}; \
+inline std::ostream& operator<<(VK_TYPE type, std::ostream& os) { os << Kodiak::VK::VkTypeToString(type); return os; }
+
+
+DECLARE_STRING_FORMATTERS(VkPhysicalDeviceType)
+
+#undef DECLARE_STRING_FORMATTERS

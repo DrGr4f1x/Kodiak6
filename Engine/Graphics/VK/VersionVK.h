@@ -26,3 +26,20 @@ std::string VulkanVersionInfoToString(VulkanVersionInfo versionInfo);
 std::string VulkanVersionToString(uint32_t packedVersion);
 
 } // namespace Kodiak::VK
+
+
+template <>
+struct std::formatter<Kodiak::VK::VulkanVersionInfo> : public std::formatter<std::string>
+{
+	auto format(Kodiak::VK::VulkanVersionInfo value, std::format_context& ctx) const
+	{
+		auto str = Kodiak::VK::VulkanVersionInfoToString(value);
+		return std::formatter<std::string>::format(str, ctx);
+	}
+};
+
+inline std::ostream& operator<<(Kodiak::VK::VulkanVersionInfo type, std::ostream& os)
+{ 
+	os << Kodiak::VK::VulkanVersionInfoToString(type);
+	return os; 
+}

@@ -67,11 +67,11 @@ void DeviceCaps::LogCaps()
 
 	// Vulkan 1.0 properties
 	LogInfo(LogVulkan) << "    Vulkan 1.0 properties" << endl;
-	LogInfo(LogVulkan) << format(formatStr, "apiVersion:", VulkanVersionInfoToString(version)) << endl;
+	LogInfo(LogVulkan) << format(formatStr, "apiVersion:", version) << endl;
 	LogInfo(LogVulkan) << format("      {:48} {:#x}", "driverVersion:", properties.driverVersion) << endl;
 	LogInfo(LogVulkan) << format("      {:48} {} ({:#x})", "vendorID:", VendorIdToString(properties.vendorID), properties.vendorID) << endl;
 	LogInfo(LogVulkan) << format("      {:48} {:#x}", "deviceID:", properties.deviceID) << endl;
-	LogInfo(LogVulkan) << format(formatStr, "deviceType:", VkTypeToString(properties.deviceType)) << endl;
+	LogInfo(LogVulkan) << format(formatStr, "deviceType:", properties.deviceType) << endl;
 	// Vulkan 1.0 properties - limits
 	VkPhysicalDeviceLimits& limits = properties.limits;
 	LogInfo(LogVulkan) << "    Vulkan 1.0 properties.limits" << endl;

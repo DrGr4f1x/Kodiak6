@@ -101,7 +101,7 @@ void GraphicsDevice::CreateInstance()
 		m_versionInfo = DecodeVulkanVersion(instanceVersion);
 
 		LogInfo(LogVulkan) << format("Created Vulkan instance, variant {}, API version {}",
-			m_versionInfo.variant, VulkanVersionInfoToString(m_versionInfo)) << endl;
+			m_versionInfo.variant, m_versionInfo) << endl;
 	}
 	else
 	{
@@ -168,7 +168,7 @@ void GraphicsDevice::SelectPhysicalDevice()
 			deviceTypeStr,
 			deviceIdx,
 			deviceName,
-			caps.properties.vendorID, caps.properties.deviceID, VulkanVersionInfoToString(caps.version))
+			caps.properties.vendorID, caps.properties.deviceID, caps.version)
 			<< endl;
 	}
 
@@ -185,7 +185,7 @@ void GraphicsDevice::SelectPhysicalDevice()
 		auto physicalDevice = physicalDevices[firstIntegratedGpu];
 		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
 
-		LogInfo(LogVulkan) << "Selected integrated Vulkan physical device " << firstDiscreteGpu << endl;
+		LogInfo(LogVulkan) << "Selected integrated Vulkan physical device " << firstIntegratedGpu << endl;
 	}
 	else
 	{
