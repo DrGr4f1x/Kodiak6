@@ -64,6 +64,7 @@ void DeviceCaps::LogCaps()
 	constexpr const char* formatStr = "      {:48} {}";
 	constexpr const char* formatStr2 = "        {:46} {}";
 	constexpr const char* formatStr3 = "        {:46} {:#x}";
+	constexpr const char* formatStr4 = "        {:54} {}";
 
 	// Vulkan 1.0 properties
 	LogInfo(LogVulkan) << "    Vulkan 1.0 properties" << endl;
@@ -188,8 +189,10 @@ void DeviceCaps::LogCaps()
 	LogInfo(LogVulkan) << format(formatStr3, "optimalBufferCopyOffsetAlignment:", limits.optimalBufferCopyOffsetAlignment) << endl;
 	LogInfo(LogVulkan) << format(formatStr3, "optimalBufferCopyRowPitchAlignment:", limits.optimalBufferCopyRowPitchAlignment) << endl;
 	LogInfo(LogVulkan) << format(formatStr3, "nonCoherentAtomSize:", limits.nonCoherentAtomSize) << endl;
+	LogInfo(LogVulkan) << endl;
 
 	// Vulkan 1.1 properties
+	LogInfo(LogVulkan) << "    Vulkan 1.1 properties" << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "deviceUUID:", AsUUID(properties11.deviceUUID)) << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "driverUUID:", AsUUID(properties11.driverUUID)) << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "deviceLUID:", AsLUID(properties11.deviceLUID)) << endl;
@@ -205,4 +208,52 @@ void DeviceCaps::LogCaps()
 	LogInfo(LogVulkan) << format(formatStr2, "proptectedNoFault:", (bool)properties11.protectedNoFault) << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "maxPerSetDescriptors:", properties11.maxPerSetDescriptors) << endl;
 	LogInfo(LogVulkan) << format(formatStr3, "maxMemoryAllocationSize:", properties11.maxMemoryAllocationSize) << endl;
+	LogInfo(LogVulkan) << endl;
+
+	// Vulkan 1.2 properties
+	LogInfo(LogVulkan) << "    Vulkan 1.2 properties" << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "driverID:", properties12.driverID) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "driverName:", properties12.driverName) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "driverInfo:", properties12.driverInfo) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "conformanceVersion:", properties12.conformanceVersion) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "denormBehaviorIndependence:", properties12.denormBehaviorIndependence) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "roundingModeIndependence:", properties12.roundingModeIndependence) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderSignedZeroInfNanPreserveFloat16:", (bool)properties12.shaderSignedZeroInfNanPreserveFloat16) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderSignedZeroInfNanPreserveFloat32:", (bool)properties12.shaderSignedZeroInfNanPreserveFloat32) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderSignedZeroInfNanPreserveFloat64:", (bool)properties12.shaderSignedZeroInfNanPreserveFloat64) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderDenormPreserveFloat16:", (bool)properties12.shaderDenormPreserveFloat16) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderDenormPreserveFloat32:", (bool)properties12.shaderDenormPreserveFloat32) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderDenormPreserveFloat64:", (bool)properties12.shaderDenormPreserveFloat64) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderDenormFlushToZeroFloat16:", (bool)properties12.shaderDenormFlushToZeroFloat16) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderDenormFlushToZeroFloat32:", (bool)properties12.shaderDenormFlushToZeroFloat32) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderDenormFlushToZeroFloat64:", (bool)properties12.shaderDenormFlushToZeroFloat64) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderRoundingModeRTEFloat16:", (bool)properties12.shaderRoundingModeRTEFloat16) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderRoundingModeRTEFloat32:", (bool)properties12.shaderRoundingModeRTEFloat32) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderRoundingModeRTEFloat64:", (bool)properties12.shaderRoundingModeRTEFloat64) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderRoundingModeRTZFloat16:", (bool)properties12.shaderRoundingModeRTZFloat16) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderRoundingModeRTZFloat32:", (bool)properties12.shaderRoundingModeRTZFloat32) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderRoundingModeRTZFloat64:", (bool)properties12.shaderRoundingModeRTZFloat64) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxUpdateAfterBindDescriptorsInAllPools:", properties12.maxUpdateAfterBindDescriptorsInAllPools) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderUniformBufferArrayNonUniformIndexingNative:", (bool)properties12.shaderUniformBufferArrayNonUniformIndexingNative) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderSampledImageArrayNonUniformIndexingNative:", (bool)properties12.shaderSampledImageArrayNonUniformIndexingNative) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderStorageBufferArrayNonUniformIndexingNative:", (bool)properties12.shaderStorageBufferArrayNonUniformIndexingNative) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderStorageImageArrayNonUniformIndexingNative:", (bool)properties12.shaderStorageImageArrayNonUniformIndexingNative) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "shaderInputAttachmentArrayNonUniformIndexingNative:", (bool)properties12.shaderInputAttachmentArrayNonUniformIndexingNative) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "robustBufferAccessUpdateAfterBind:", (bool)properties12.robustBufferAccessUpdateAfterBind) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "quadDivergentImplicitLod:", (bool)properties12.quadDivergentImplicitLod) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageDescriptorUpdateAfterBindSamplers:", properties12.maxPerStageDescriptorUpdateAfterBindSamplers) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageDescriptorUpdateAfterBindUniformBuffers:", properties12.maxPerStageDescriptorUpdateAfterBindUniformBuffers) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageDescriptorUpdateAfterBindStorageBuffers:", properties12.maxPerStageDescriptorUpdateAfterBindStorageBuffers) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageDescriptorUpdateAfterBindSampledImages:", properties12.maxPerStageDescriptorUpdateAfterBindSampledImages) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageDescriptorUpdateAfterBindStorageImages:", properties12.maxPerStageDescriptorUpdateAfterBindStorageImages) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageDescriptorUpdateAfterBindInputAttachments:", properties12.maxPerStageDescriptorUpdateAfterBindInputAttachments) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxPerStageUpdateAfterBindResources:", properties12.maxPerStageUpdateAfterBindResources) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindSamplers:", properties12.maxDescriptorSetUpdateAfterBindSamplers) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindUniformBuffers:", properties12.maxDescriptorSetUpdateAfterBindUniformBuffers) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindUniformBuffersDynamic:", properties12.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindStorageBuffers:", properties12.maxDescriptorSetUpdateAfterBindStorageBuffers) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindStorageBuffersDynamic:", properties12.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindSampledImages:", properties12.maxDescriptorSetUpdateAfterBindSampledImages) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindStorageImages:", properties12.maxDescriptorSetUpdateAfterBindStorageImages) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindInputAttachments:", properties12.maxDescriptorSetUpdateAfterBindInputAttachments) << endl;
 }

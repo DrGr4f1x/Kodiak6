@@ -64,9 +64,44 @@ inline std::string VkTypeToString(LUID luid)
 }
 
 
-inline std::string VkTypeToString(uint8_t luid[VK_LUID_SIZE])
+inline std::string VkTypeToString(VkConformanceVersion conformanceVersion)
 {
-	return "luid";
+	return std::format("{}.{}.{}.{}", conformanceVersion.major, conformanceVersion.minor, conformanceVersion.subminor, conformanceVersion.patch);
+}
+
+
+inline std::string VkTypeToString(VkDriverId driverId)
+{
+	switch (driverId)
+	{
+	case VK_DRIVER_ID_AMD_PROPRIETARY: return "AMD Proprietary"; break;
+	case VK_DRIVER_ID_AMD_OPEN_SOURCE: return "AMD Open Source"; break;
+	case VK_DRIVER_ID_MESA_RADV: return "Mesa RADV"; break;
+	case VK_DRIVER_ID_NVIDIA_PROPRIETARY: return "NVIDIA Proprietary"; break;
+	case VK_DRIVER_ID_INTEL_PROPRIETARY_WINDOWS: return "Intel Proprietary Windows"; break;
+	case VK_DRIVER_ID_INTEL_OPEN_SOURCE_MESA: return "Intel Open Source Mesa"; break;
+	case VK_DRIVER_ID_IMAGINATION_PROPRIETARY: return "Imagination Proprietary"; break;
+	case VK_DRIVER_ID_QUALCOMM_PROPRIETARY: return "Qualcomm Proprietary"; break;
+	case VK_DRIVER_ID_ARM_PROPRIETARY: return "ARM Proprietary"; break;
+	case VK_DRIVER_ID_GOOGLE_SWIFTSHADER: return "Google SwiftShader"; break;
+	case VK_DRIVER_ID_GGP_PROPRIETARY: return "GGP Proprietary"; break;
+	case VK_DRIVER_ID_BROADCOM_PROPRIETARY: return "Broadcom Proprietary"; break;
+	case VK_DRIVER_ID_MESA_LLVMPIPE: return "Mesa LLVMpipe"; break;
+	case VK_DRIVER_ID_MOLTENVK: return "MoltenVK"; break;
+	case VK_DRIVER_ID_COREAVI_PROPRIETARY: return "CoreAVI Proprietary"; break;
+	case VK_DRIVER_ID_JUICE_PROPRIETARY: return "Juice Proprietary"; break;
+	case VK_DRIVER_ID_VERISILICON_PROPRIETARY: return "VeriSilicon Proprietary"; break;
+	case VK_DRIVER_ID_MESA_TURNIP: return "Mesa Turnip"; break;
+	case VK_DRIVER_ID_MESA_V3DV: return "Mesa V3DV"; break;
+	case VK_DRIVER_ID_MESA_PANVK: return "Mesa PanVK"; break;
+	case VK_DRIVER_ID_SAMSUNG_PROPRIETARY: return "Samsung Proprietary"; break;
+	case VK_DRIVER_ID_MESA_VENUS: return "Mesa Venus"; break;
+	case VK_DRIVER_ID_MESA_DOZEN: return "Mesa Dozen"; break;
+	case VK_DRIVER_ID_MESA_NVK: return "Mesa NVK"; break;
+	case VK_DRIVER_ID_IMAGINATION_OPEN_SOURCE_MESA: return "Imagination Open Source Mesa"; break;
+	case VK_DRIVER_ID_MESA_AGXV: return "Mesa AGXV"; break;
+	default: return "Unknown"; break;
+	}
 }
 
 
@@ -88,6 +123,17 @@ inline std::string VkTypeToString(VkPointClippingBehavior pointClippingBehavior)
 	{
 	case VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY: return "User Clip Planes Only"; break;
 	default: return "All Planes"; break;
+	}
+}
+
+
+inline std::string VkTypeToString(VkShaderFloatControlsIndependence shaderFloatControlsIndependence)
+{
+	switch (shaderFloatControlsIndependence)
+	{
+	case VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL: return "All"; break;
+	case VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE: return "None"; break;
+	default: return "32-bit Only"; break;
 	}
 }
 
@@ -232,7 +278,10 @@ inline std::ostream& operator<<(VK_TYPE type, std::ostream& os) { os << Kodiak::
 
 DECLARE_STRING_FORMATTERS(Kodiak::VK::UUID)
 DECLARE_STRING_FORMATTERS(Kodiak::VK::LUID)
+DECLARE_STRING_FORMATTERS(VkConformanceVersion)
+DECLARE_STRING_FORMATTERS(VkDriverId)
 DECLARE_STRING_FORMATTERS(VkPhysicalDeviceType)
 DECLARE_STRING_FORMATTERS(VkPointClippingBehavior)
+DECLARE_STRING_FORMATTERS(VkShaderFloatControlsIndependence)
 
 #undef DECLARE_STRING_FORMATTERS
