@@ -82,7 +82,17 @@ inline std::string VkTypeToString(VkPhysicalDeviceType physicalDeviceType)
 }
 
 
-inline std::string VkTypeToString(VkSampleCountFlags sampleCountFlags)
+inline std::string VkTypeToString(VkPointClippingBehavior pointClippingBehavior)
+{
+	switch (pointClippingBehavior)
+	{
+	case VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY: return "User Clip Planes Only"; break;
+	default: return "All Planes"; break;
+	}
+}
+
+
+inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlags)
 {
 	const uint32_t numFlags = __popcnt(sampleCountFlags);
 
@@ -116,6 +126,94 @@ inline std::string VkTypeToString(VkSampleCountFlags sampleCountFlags)
 	return result;
 }
 
+
+inline std::string VkShaderStageFlagsToString(VkShaderStageFlags shaderStageFlags)
+{
+	const uint32_t numFlags = __popcnt(shaderStageFlags);
+
+	static const std::string stageMap[]
+	{
+		"Vertex",
+		"Tessellation Control",
+		"Tessellation Evaluation",
+		"Geometry",
+		"Fragment",
+		"Compute",
+		"Task",
+		"Mesh"
+		"RayGen",
+		"Any Hit",
+		"Closest Hit",
+		"Miss",
+		"Intersection",
+		"Callable"
+	};
+
+	std::string result;
+	uint32_t testBit = 1;
+	uint32_t bitsCounted = 0;
+	for (uint32_t i = 1; i < _countof(stageMap); ++i)
+	{
+		if ((shaderStageFlags & testBit) == testBit)
+		{
+			++bitsCounted;
+			result += stageMap[i - 1];
+			if (bitsCounted != numFlags)
+			{
+				result += ", ";
+			}
+		}
+		testBit = (1 << i);
+	}
+	if ((shaderStageFlags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS)
+	{
+		result += ", All Graphics";
+	}
+
+	return result;
+}
+
+
+inline std::string VkSubgroupFeatureFlagsToString(VkSubgroupFeatureFlags subgroupFeatureFlags)
+{
+	const uint32_t numFlags = __popcnt(subgroupFeatureFlags);
+
+	static const std::string subgroupFeatureMap[]
+	{
+		"Basic",
+		"Vote",
+		"Arithmetic",
+		"Ballot",
+		"Shuffle",
+		"Shuffle Relative",
+		"Clustered",
+		"Quad",
+		"Partition",
+		"Rotate",
+		"Rotate Clustered"
+	};
+
+	std::string result;
+	uint32_t testBit = 1;
+	uint32_t bitsCounted = 0;
+	for (uint32_t i = 1; i < _countof(subgroupFeatureMap); ++i)
+	{
+		if ((subgroupFeatureFlags & testBit) == testBit)
+		{
+			++bitsCounted;
+			result += subgroupFeatureMap[i - 1];
+			if (bitsCounted != numFlags)
+			{
+				result += ", ";
+			}
+		}
+		testBit = (1 << i);
+	}
+
+
+	return result;
+}
+
 } // namespace Kodiak::VK
 
 
@@ -133,7 +231,8 @@ inline std::ostream& operator<<(VK_TYPE type, std::ostream& os) { os << Kodiak::
 
 
 DECLARE_STRING_FORMATTERS(Kodiak::VK::UUID)
-DECLARE_STRING_FORMATTERS(Kodiak::VK::LUID);
+DECLARE_STRING_FORMATTERS(Kodiak::VK::LUID)
 DECLARE_STRING_FORMATTERS(VkPhysicalDeviceType)
+DECLARE_STRING_FORMATTERS(VkPointClippingBehavior)
 
 #undef DECLARE_STRING_FORMATTERS
