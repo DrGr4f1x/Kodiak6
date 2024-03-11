@@ -14,6 +14,62 @@
 namespace Kodiak::VK
 {
 
+// TODO - Move this somewhere else
+struct UUID
+{
+	uint32_t value1{ 0 };
+	uint16_t value2{ 0 };
+	uint16_t value3{ 0 };
+	uint16_t value4{ 0 };
+	uint64_t value5{ 0 };
+};
+
+inline UUID AsUUID(uint8_t uuid[VK_UUID_SIZE])
+{
+	UUID result{};
+	result.value1 = (uuid[0] << 24) | (uuid[1] << 16) | (uuid[2] << 8) | uuid[3];
+	result.value2 = (uuid[4] << 8) | uuid[5];
+	result.value3 = (uuid[6] << 8) | uuid[7];
+	result.value4 = (uuid[8] << 8) | uuid[9];
+	result.value5 = ((uint64_t)uuid[10] << 40) | ((uint64_t)uuid[11] << 32) | (uuid[12] << 24) | (uuid[13] << 16) | (uuid[14] << 8) | uuid[15];
+	return result;
+}
+
+
+inline std::string VkTypeToString(UUID uuid)
+{
+	return std::format("{:08X}-{:04X}-{:04X}-{:04X}-{:012X}",
+		uuid.value1, uuid.value2, uuid.value3, uuid.value4,	uuid.value5);
+}
+
+
+struct LUID
+{
+	uint32_t value1{ 0 };
+	uint32_t value2{ 0 };
+};
+
+inline LUID AsLUID(uint8_t luid[VK_LUID_SIZE])
+{
+	LUID result{};
+	result.value1 = (luid[0] << 24) | (luid[1] << 16) | (luid[2] << 8) | luid[3];
+	result.value2 = (luid[4] << 24) | (luid[5] << 16) | (luid[6] << 8) | luid[7];
+	return result;
+}
+
+
+inline std::string VkTypeToString(LUID luid)
+{
+	return std::format("{:08X}-{:08X}", luid.value1, luid.value2);
+}
+
+
+inline std::string VkTypeToString(uint8_t luid[VK_LUID_SIZE])
+{
+	return "luid";
+}
+
+
 inline std::string VkTypeToString(VkPhysicalDeviceType physicalDeviceType)
 {
 	switch (physicalDeviceType)
@@ -76,6 +132,8 @@ struct std::formatter<VK_TYPE> : public std::formatter<std::string> \
 inline std::ostream& operator<<(VK_TYPE type, std::ostream& os) { os << Kodiak::VK::VkTypeToString(type); return os; }
 
 
+DECLARE_STRING_FORMATTERS(Kodiak::VK::UUID)
+DECLARE_STRING_FORMATTERS(Kodiak::VK::LUID);
 DECLARE_STRING_FORMATTERS(VkPhysicalDeviceType)
 
 #undef DECLARE_STRING_FORMATTERS

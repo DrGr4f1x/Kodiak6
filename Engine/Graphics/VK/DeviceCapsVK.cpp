@@ -188,4 +188,12 @@ void DeviceCaps::LogCaps()
 	LogInfo(LogVulkan) << format(formatStr3, "optimalBufferCopyOffsetAlignment:", limits.optimalBufferCopyOffsetAlignment) << endl;
 	LogInfo(LogVulkan) << format(formatStr3, "optimalBufferCopyRowPitchAlignment:", limits.optimalBufferCopyRowPitchAlignment) << endl;
 	LogInfo(LogVulkan) << format(formatStr3, "nonCoherentAtomSize:", limits.nonCoherentAtomSize) << endl;
+
+	// Vulkan 1.1 properties
+	LogInfo(LogVulkan) << format(formatStr2, "deviceUUID:", AsUUID(properties11.deviceUUID)) << endl;
+	LogInfo(LogVulkan) << format(formatStr2, "driverUUID:", AsUUID(properties11.driverUUID)) << endl;
+	LogInfo(LogVulkan) << format(formatStr2, "deviceLUID:", AsLUID(properties11.deviceLUID)) << endl;
+	LogInfo(LogVulkan) << format(formatStr2, "deviceNodeMask:", properties11.deviceNodeMask) << endl;
+	LogInfo(LogVulkan) << format(formatStr2, "deviceLUIDValid:", (bool)properties11.deviceLUIDValid) << endl;
+	LogInfo(LogVulkan) << format(formatStr2, "subgroupSize: ", properties11.subgroupSize) << endl;
 }
