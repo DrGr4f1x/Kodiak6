@@ -11,6 +11,9 @@
 #pragma once
 
 
+#include "FlagsVK.h"
+
+
 namespace Kodiak::VK
 {
 
@@ -140,124 +143,27 @@ inline std::string VkTypeToString(VkShaderFloatControlsIndependence shaderFloatC
 
 inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlags)
 {
-	const uint32_t numFlags = __popcnt(sampleCountFlags);
-
-	static const std::string countMap[] = {	
-		"1",
-		"2",
-		"4",
-		"8",
-		"16",
-		"32",
-		"64"
-	};
-
-	std::string result;
-	uint32_t testBit = 1;
-	uint32_t bitsCounted = 0;
-	for (uint32_t i = 1; i < _countof(countMap); ++i)
-	{
-		if ((sampleCountFlags & testBit) == testBit)
-		{
-			++bitsCounted;
-			result += countMap[i-1];
-			if (bitsCounted != numFlags)
-			{
-				result += ", ";
-			}
-		}
-		testBit = (1 << i);
-	}
-
-	return result;
+	return g_sampleCountFlagsMap.BuildString(sampleCountFlags);
 }
 
 
 inline std::string VkShaderStageFlagsToString(VkShaderStageFlags shaderStageFlags)
 {
-	const uint32_t numFlags = __popcnt(shaderStageFlags);
-
-	static const std::string stageMap[]
+	if (shaderStageFlags == VK_SHADER_STAGE_ALL_GRAPHICS)
 	{
-		"Vertex",
-		"Tessellation Control",
-		"Tessellation Evaluation",
-		"Geometry",
-		"Fragment",
-		"Compute",
-		"Task",
-		"Mesh"
-		"RayGen",
-		"Any Hit",
-		"Closest Hit",
-		"Miss",
-		"Intersection",
-		"Callable"
-	};
-
-	std::string result;
-	uint32_t testBit = 1;
-	uint32_t bitsCounted = 0;
-	for (uint32_t i = 1; i < _countof(stageMap); ++i)
-	{
-		if ((shaderStageFlags & testBit) == testBit)
-		{
-			++bitsCounted;
-			result += stageMap[i - 1];
-			if (bitsCounted != numFlags)
-			{
-				result += ", ";
-			}
-		}
-		testBit = (1 << i);
+		return "All Graphics";
 	}
-	if ((shaderStageFlags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS)
+	else if (shaderStageFlags == VK_SHADER_STAGE_ALL)
 	{
-		result += ", All Graphics";
+		return "All";
 	}
-
-	return result;
+	return g_shaderStageFlagsMap.BuildString(shaderStageFlags);
 }
 
 
 inline std::string VkSubgroupFeatureFlagsToString(VkSubgroupFeatureFlags subgroupFeatureFlags)
 {
-	const uint32_t numFlags = __popcnt(subgroupFeatureFlags);
-
-	static const std::string subgroupFeatureMap[]
-	{
-		"Basic",
-		"Vote",
-		"Arithmetic",
-		"Ballot",
-		"Shuffle",
-		"Shuffle Relative",
-		"Clustered",
-		"Quad",
-		"Partition",
-		"Rotate",
-		"Rotate Clustered"
-	};
-
-	std::string result;
-	uint32_t testBit = 1;
-	uint32_t bitsCounted = 0;
-	for (uint32_t i = 1; i < _countof(subgroupFeatureMap); ++i)
-	{
-		if ((subgroupFeatureFlags & testBit) == testBit)
-		{
-			++bitsCounted;
-			result += subgroupFeatureMap[i - 1];
-			if (bitsCounted != numFlags)
-			{
-				result += ", ";
-			}
-		}
-		testBit = (1 << i);
-	}
-
-
-	return result;
+	return g_subgroupFeatureFlagsMap.BuildString(subgroupFeatureFlags);
 }
 
 } // namespace Kodiak::VK

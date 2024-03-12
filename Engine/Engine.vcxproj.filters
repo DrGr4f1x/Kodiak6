@@ -60,6 +60,9 @@
     <ClCompile Include="Graphics\VK\VersionVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="Core\FlagStringMap.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -182,6 +185,12 @@
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\VK\StringsVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\FlagStringMap.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\FlagsVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>
