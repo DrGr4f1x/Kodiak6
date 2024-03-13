@@ -12,7 +12,7 @@
 
 #include "DeviceCaps12.h"
 
-#include "GraphicsDevice12.h"
+#include "Device12.h"
 #include "Strings12.h"
 
 

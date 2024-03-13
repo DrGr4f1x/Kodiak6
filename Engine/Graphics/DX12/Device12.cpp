@@ -10,8 +10,9 @@
 
 #include "Stdafx.h"
 
-#include "GraphicsDevice12.h"
+#include "Device12.h"
 
+#include "Graphics\GraphicsCommon.h"
 #include "Strings12.h"
 
 

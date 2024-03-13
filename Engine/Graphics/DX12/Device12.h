@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\GraphicsDevice.h"
+#include "Graphics\Interfaces.h"
 
 #include "DeviceCaps12.h"
 

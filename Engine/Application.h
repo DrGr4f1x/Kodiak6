@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include "Graphics\GraphicsDevice.h"
+#include "Graphics\GraphicsCommon.h"
+
 
 namespace Kodiak
 {

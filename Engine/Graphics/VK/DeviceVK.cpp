@@ -10,7 +10,7 @@
 
 #include "Stdafx.h"
 
-#include "GraphicsDeviceVK.h"
+#include "DeviceVK.h"
 
 #include "LoaderVk.h"
 

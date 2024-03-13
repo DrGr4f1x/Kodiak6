@@ -10,23 +10,17 @@
 
 #include "Stdafx.h"
 
-#include "GraphicsDevice.h"
+#include "GraphicsCommon.h"
 
 #include "Application.h"
+#include "Graphics\DX12\Device12.h"
+#include "Graphics\VK\DeviceVK.h"
 
-// DirectX 12
-#include "DX12\GraphicsDevice12.h"
-
-// Vulkan
-#include "VK\GraphicsDeviceVK.h"
-
-using namespace Kodiak;
 using namespace std;
 
 
 namespace Kodiak
 {
-
 
 DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc)
 {

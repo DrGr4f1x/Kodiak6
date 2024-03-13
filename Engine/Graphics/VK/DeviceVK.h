@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\GraphicsDevice.h"
+#include "Graphics\Interfaces.h"
 
 #include "DeviceCapsVK.h"
 #include "RefCountingVK.h"
@@ -19,7 +19,7 @@
 namespace Kodiak::VK
 {
 
-class GraphicsDevice : public IntrusiveCounter<Kodiak::IGraphicsDevice>
+class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
 public:
 	GraphicsDevice();

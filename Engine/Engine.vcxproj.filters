@@ -27,13 +27,10 @@
     <ClCompile Include="Graphics\Formats.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\GraphicsDevice.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\DX12\Formats12.cpp">
       <Filter>Graphics\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\DX12\GraphicsDevice12.cpp">
+    <ClCompile Include="Graphics\DX12\Device12.cpp">
       <Filter>Graphics\DX12</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\DX12\Enums12.cpp">
@@ -42,7 +39,7 @@
     <ClCompile Include="Graphics\VK\FormatsVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\VK\GraphicsDeviceVK.cpp">
+    <ClCompile Include="Graphics\VK\DeviceVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\VK\EnumsVK.cpp">
@@ -65,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp">
       <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GraphicsCommon.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,16 +142,13 @@
     <ClInclude Include="Graphics\Formats.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\GraphicsDevice.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\Enums.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DX12\Formats12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DX12\GraphicsDevice12.h">
+    <ClInclude Include="Graphics\DX12\Device12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DX12\Enums12.h">
@@ -160,7 +157,7 @@
     <ClInclude Include="Graphics\VK\FormatsVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\VK\GraphicsDeviceVK.h">
+    <ClInclude Include="Graphics\VK\DeviceVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\VK\EnumsVK.h">
@@ -204,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h">
       <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GraphicsCommon.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
