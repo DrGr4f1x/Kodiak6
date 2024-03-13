@@ -32,6 +32,7 @@
     <ClCompile Include="Core\Math\Random.cpp" />
     <ClCompile Include="Core\Utility.cpp" />
     <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp" />
     <ClCompile Include="Graphics\DX12\Formats12.cpp" />
     <ClCompile Include="Graphics\DX12\GraphicsDevice12.cpp" />
@@ -79,6 +80,7 @@
     <ClInclude Include="Core\Utility.h" />
     <ClInclude Include="Core\VectorMath.h" />
     <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="Graphics\DX12\ColorBuffer12.h" />
     <ClInclude Include="Graphics\DX12\DeviceCaps12.h" />
     <ClInclude Include="Graphics\DX12\Flags12.h" />
     <ClInclude Include="Graphics\DX12\Formats12.h" />
@@ -88,6 +90,7 @@
     <ClInclude Include="Graphics\Formats.h" />
     <ClInclude Include="Graphics\GraphicsDevice.h" />
     <ClInclude Include="Graphics\GraphicsEnums.h" />
+    <ClInclude Include="Graphics\GraphicsInterfaces.h" />
     <ClInclude Include="Graphics\VK\DeviceCapsVK.h" />
     <ClInclude Include="Graphics\VK\FlagsVK.h" />
     <ClInclude Include="Graphics\VK\FormatsVK.h" />

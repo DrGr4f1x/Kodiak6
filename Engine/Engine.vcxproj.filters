@@ -63,6 +63,9 @@
     <ClCompile Include="Core\FlagStringMap.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -194,6 +197,12 @@
       <Filter>Graphics\VK</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DX12\Flags12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GraphicsInterfaces.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\ColorBuffer12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
   </ItemGroup>

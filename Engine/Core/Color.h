@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <DirectXColors.h>
 #include <DirectXMath.h>
 #include <intrin.h>
 

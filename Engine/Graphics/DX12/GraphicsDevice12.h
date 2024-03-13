@@ -49,7 +49,6 @@ private:
 	DeviceCaps m_caps;
 };
 
-using DeviceHandle = IntrusivePtr<GraphicsDevice>;
 
 Kodiak::DX12::GraphicsDevice* CreateDevice12(const GraphicsDeviceDesc& desc);
 

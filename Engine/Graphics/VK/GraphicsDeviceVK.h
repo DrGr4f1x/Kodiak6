@@ -46,8 +46,6 @@ private:
 	DeviceCaps m_caps{};
 };
 
-using DeviceHandle = IntrusivePtr<GraphicsDevice>;
-
 GraphicsDevice* CreateDeviceVK(const GraphicsDeviceDesc& desc);
 
 inline LogCategory LogVulkan{ "LogVulkan" };
