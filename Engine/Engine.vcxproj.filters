@@ -36,7 +36,7 @@
     <ClCompile Include="Graphics\DX12\GraphicsDevice12.cpp">
       <Filter>Graphics\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\DX12\GraphicsEnums12.cpp">
+    <ClCompile Include="Graphics\DX12\Enums12.cpp">
       <Filter>Graphics\DX12</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\VK\FormatsVK.cpp">
@@ -45,7 +45,7 @@
     <ClCompile Include="Graphics\VK\GraphicsDeviceVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\VK\GraphicsEnumsVK.cpp">
+    <ClCompile Include="Graphics\VK\EnumsVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp">
@@ -145,7 +145,7 @@
     <ClInclude Include="Graphics\GraphicsDevice.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\GraphicsEnums.h">
+    <ClInclude Include="Graphics\Enums.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DX12\Formats12.h">
@@ -154,7 +154,7 @@
     <ClInclude Include="Graphics\DX12\GraphicsDevice12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DX12\GraphicsEnums12.h">
+    <ClInclude Include="Graphics\DX12\Enums12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\VK\FormatsVK.h">
@@ -163,7 +163,7 @@
     <ClInclude Include="Graphics\VK\GraphicsDeviceVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\VK\GraphicsEnumsVK.h">
+    <ClInclude Include="Graphics\VK\EnumsVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DX12\DeviceCaps12.h">
@@ -199,7 +199,7 @@
     <ClInclude Include="Graphics\DX12\Flags12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\GraphicsInterfaces.h">
+    <ClInclude Include="Graphics\Interfaces.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h">

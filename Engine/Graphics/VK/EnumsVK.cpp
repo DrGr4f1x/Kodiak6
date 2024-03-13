@@ -10,7 +10,7 @@
 
 #include "Stdafx.h"
 
-#include "GraphicsEnumsVK.h"
+#include "EnumsVK.h"
 
 using namespace Kodiak;
 using namespace Kodiak::VK;

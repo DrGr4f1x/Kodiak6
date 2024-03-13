@@ -10,7 +10,7 @@
 
 #include "Stdafx.h"
 
-#include "GraphicsEnums12.h"
+#include "Enums12.h"
 
 using namespace Kodiak;
 using namespace Kodiak::DX12;

@@ -25,6 +25,7 @@
 // Standard library headers
 #include <chrono>
 #include <cstdarg>
+#include <format>
 #include <fstream>
 #include <future>
 #include <memory>

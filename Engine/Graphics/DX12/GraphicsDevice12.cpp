@@ -14,8 +14,6 @@
 
 #include "Strings12.h"
 
-#include <format>
-
 
 using namespace Kodiak;
 using namespace Kodiak::DX12;

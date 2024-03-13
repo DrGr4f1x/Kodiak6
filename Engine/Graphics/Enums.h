@@ -415,6 +415,14 @@ inline bool IsBufferResource(ResourceType resourceType)
 }
 
 
+inline uint32_t ComputeNumMips(uint32_t width, uint32_t height)
+{
+	uint32_t highBit{ 0 };
+	_BitScanReverse((unsigned long*)&highBit, width | height);
+	return highBit + 1;
+}
+
+
 enum class HardwareVendor
 {
 	Unknown,

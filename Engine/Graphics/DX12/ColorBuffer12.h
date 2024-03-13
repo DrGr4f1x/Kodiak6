@@ -10,9 +10,10 @@
 
 #pragma once
 
-#include "Graphics\GraphicsInterfaces.h"
-#include "Graphics\GraphicsEnums.h"
+#include "Graphics\Enums.h"
 #include "Graphics\Formats.h"
+#include "Graphics\Interfaces.h"
+
 
 namespace Kodiak::DX12
 {
@@ -45,6 +46,9 @@ public:
 	}
 
 private:
+	void CreateDerivedViews(Format format, uint32_t arraySize, uint32_t numMips);
+
+private:
 	ResourceType m_resourceType{ ResourceType::Texture2D };
 	uint32_t m_width{ 0 };
 	uint32_t m_height{ 0 };
@@ -58,6 +62,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
 	ResourceState m_usageState{ ResourceState::Undefined };
 	ResourceState m_transitioningState{ ResourceState::Undefined };
+
+	// Pre-constructed descriptors
+	D3D12_CPU_DESCRIPTOR_HANDLE m_srvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_rtvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_uavHandle[12];
 };
 
 } // namespace Kodiak::DX12

@@ -12,7 +12,7 @@
 
 #include "DeviceCapsVK.h"
 
-#include "Graphics\GraphicsEnums.h"
+#include "Graphics\Enums.h"
 
 #include "GraphicsDeviceVK.h"
 #include "LoaderVk.h"
