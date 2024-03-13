@@ -20,7 +20,7 @@ public:
 		: Application{ name }
 	{}
 
-	int ProcessCommandLine(int argv, char* argv[]) final;
+	int ProcessCommandLine(int argc, char* argv[]) final;
 	void Configure() final;
 	void Startup() final;
 	void Shutdown() final;
