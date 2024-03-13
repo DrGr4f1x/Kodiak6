@@ -16,10 +16,11 @@
 class TEMPLATEApp : public Kodiak::Application
 {
 public:
-	explicit TEMPLATEApp(const Kodiak::ApplicationDesc& desc) 
-		: Application(desc)
+	explicit TEMPLATEApp(const std::string& name) 
+		: Application{ name }
 	{}
 
+	int ProcessCommandLine(int argv, char* argv[]) final;
 	void Configure() final;
 	void Startup() final;
 	void Shutdown() final;

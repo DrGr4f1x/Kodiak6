@@ -23,12 +23,11 @@ enum class DigitalInput;
 enum class AnalogInput;
 
 
-struct ApplicationDesc
+struct ApplicationOptions
 {
-	const std::string name{ "Unnamed" };
 	uint32_t width{ 1920 };
 	uint32_t height{ 1080 };
-	const GraphicsApi api{ GraphicsApi::D3D12 };
+	GraphicsApi api{ GraphicsApi::D3D12 };
 };
 
 
@@ -36,12 +35,13 @@ class Application
 {
 public:
 	Application();
-	explicit Application(const ApplicationDesc& desc);
+	Application(const std::string& appName);
 	virtual ~Application();
 
-	void Run();
+	int Run(int argc, char* argv[]);
 
 	// Override these methods in derived classes
+	virtual int ProcessCommandLine(int argc, char* argv[]);
 	virtual void Configure();
 	virtual void Startup() {}
 	virtual void Shutdown() {}
@@ -63,18 +63,6 @@ public:
 	void TogglePause() { m_isPaused = !m_isPaused; }
 	void Stop() { m_isRunning = false; }
 
-	// Input system state
-	bool IsAnyPressed() const;
-	bool IsPressed(DigitalInput di) const;
-	bool IsFirstPressed(DigitalInput di) const;
-	bool IsReleased(DigitalInput di) const;
-	bool IsFirstReleased(DigitalInput di) const;
-	float GetDurationPressed(DigitalInput di) const;
-	float GetAnalogInput(AnalogInput ai) const;
-	float GetTimeCorrectedAnalogInput(AnalogInput ai) const;
-	void SetCaptureMouse(bool capture);
-	bool GetCaptureMouse() const;
-
 	std::string GetWindowTitle() const;
 
 protected:
@@ -84,7 +72,7 @@ protected:
 	uint32_t m_displayWidth{ 1920 };
 	uint32_t m_displayHeight{ 1080 };
 
-	const GraphicsApi m_api{ GraphicsApi::D3D12 };
+	GraphicsApi m_api{ GraphicsApi::D3D12 };
 
 	// Application state
 	bool m_isRunning{ false };
@@ -120,7 +108,6 @@ private:
 
 Application* GetApplication();
 
-GraphicsApi GetGraphicsApiFromCommandline(int argc, const char* const* argv);
 
 inline LogCategory LogApplication{ "LogApplication" };
 inline LogCategory LogEngine{ "LogEngine" };

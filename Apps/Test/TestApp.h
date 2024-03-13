@@ -16,10 +16,11 @@
 class TestApp : public Kodiak::Application
 {
 public:
-	explicit TestApp(const Kodiak::ApplicationDesc& desc) 
-		: Application(desc)
+	explicit TestApp(const std::string& name) 
+		: Application{ name }
 	{}
 
+	int ProcessCommandLine(int argv, char* argv[]) final;
 	void Configure() final;
 	void Startup() final;
 	void Shutdown() final;

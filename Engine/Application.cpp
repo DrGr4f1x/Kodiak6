@@ -14,8 +14,11 @@
 
 #include "FileSystem.h"
 #include "InputSystem.h"
+#include "External\CLI11\CLI\CLI.hpp"
+
 
 #pragma comment(lib, "runtimeobject.lib")
+
 
 using namespace Kodiak;
 using namespace std;
@@ -34,13 +37,9 @@ Application::Application()
 }
 
 
-Application::Application(const ApplicationDesc& desc)
-	: m_name{ desc.name }
-	, m_displayWidth{ desc.width }
-	, m_displayHeight{ desc.height }
-	, m_api{ desc.api }
+Application::Application(const std::string& appName)
+	: m_name{ appName }
 {
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
 	g_application = this;
 }
 
@@ -52,8 +51,14 @@ Application::~Application()
 }
 
 
-void Application::Run()
+int Application::Run(int argc, char* argv[])
 {
+	int res = ProcessCommandLine(argc, argv);
+	if (res != 0)
+	{
+		return res;
+	}
+
 	Microsoft::WRL::Wrappers::RoInitializeWrapper InitializeWinRT(RO_INIT_MULTITHREADED);
 	assert_succeeded(InitializeWinRT);
 
@@ -103,6 +108,36 @@ void Application::Run()
 	} while (Tick());	// Returns false to quit loop
 
 	Shutdown();
+
+	return 0;
+}
+
+
+int Application::ProcessCommandLine(int argc, char* argv[])
+{
+	CLI::App app{ "Kodiak App", m_name };
+	argv = app.ensure_utf8(argv);
+
+	// Graphic API selection
+	bool bDX12{ false };
+	bool bVulkan{ false };
+	auto dxOpt = app.add_flag("--dx,--dx12,--d3d12", bDX12, "Select DirectX renderer");
+	auto vkOpt = app.add_flag("--vk,--vulkan", bVulkan, "Select Vulkan renderer");
+	dxOpt->excludes(vkOpt);
+	vkOpt->excludes(dxOpt);
+
+	// Width, height
+	auto widthOpt = app.add_option("--resx,--width", m_displayWidth, "Sets initial window width");
+	auto heightOpt = app.add_option("--resy,--height", m_displayHeight, "Sets initial window height");
+	
+	// Parse command line
+	CLI11_PARSE(app, argc, argv);
+
+	// Set application parameters from command line
+	m_api = bVulkan ? GraphicsApi::Vulkan : GraphicsApi::D3D12;
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
+
+	return 0;
 }
 
 
@@ -112,76 +147,6 @@ void Application::Configure()
 	auto filesystem = GetFileSystem();
 
 	filesystem->SetDefaultRootPath();
-}
-
-
-bool Application::IsAnyPressed() const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->IsAnyPressed();
-}
-
-
-bool Application::IsPressed(DigitalInput di) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->IsPressed(di);
-}
-
-
-bool Application::IsFirstPressed(DigitalInput di) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->IsFirstPressed(di);
-}
-
-
-bool Application::IsReleased(DigitalInput di) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->IsReleased(di);
-}
-
-
-bool Application::IsFirstReleased(DigitalInput di) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->IsFirstReleased(di);
-}
-
-
-float Application::GetDurationPressed(DigitalInput di) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->GetDurationPressed(di);
-}
-
-
-float Application::GetAnalogInput(AnalogInput ai) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->GetAnalogInput(ai);
-}
-
-
-float Application::GetTimeCorrectedAnalogInput(AnalogInput ai) const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->GetTimeCorrectedAnalogInput(ai);
-}
-
-
-void Application::SetCaptureMouse(bool capture)
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	m_inputSystem->SetCaptureMouse(capture);
-}
-
-
-bool Application::GetCaptureMouse() const
-{
-	assert_msg(m_inputSystem, "Input system not initialized.");
-	return m_inputSystem->GetCaptureMouse();
 }
 
 
@@ -242,7 +207,7 @@ bool Application::Tick()
 	m_inputSystem->Update(m_frameTimer);
 
 	// Close on Escape key
-	if (IsFirstPressed(DigitalInput::kKey_escape))
+	if (m_inputSystem->IsFirstPressed(DigitalInput::kKey_escape))
 		return false;
 
 	bool res = Update();
@@ -310,27 +275,6 @@ void Application::CreateGraphicsDevice()
 Kodiak::Application* Kodiak::GetApplication()
 {
 	return g_application;
-}
-
-
-GraphicsApi Kodiak::GetGraphicsApiFromCommandline(int argc, const char* const* argv)
-{
-	for (int i = 1; i < argc; ++i)
-	{
-		const char* arg = argv[i];
-
-		if (!strcmp(arg, "-d3d12") || !strcmp(arg, "-dx12") || !strcmp(arg, "-dx"))
-		{
-			return GraphicsApi::D3D12;
-		}
-		else if (!strcmp(arg, "-vk") || !strcmp(arg, "-vulkan"))
-		{
-			return GraphicsApi::Vulkan;
-		}
-	}
-
-	// Default to D3D12
-	return GraphicsApi::D3D12;
 }
 
 

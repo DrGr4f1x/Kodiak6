@@ -16,6 +16,17 @@ using namespace Kodiak;
 using namespace std;
 
 
+int TEMPLATEApp::ProcessCommandLine(int argc, char* argv[])
+{
+	// Process commandline
+	int res = Application::ProcessCommandLine(argc, argv);
+
+	// Customize commandline here
+
+	return res;
+}
+
+
 void TEMPLATEApp::Configure()
 {
 	// Application config, before device creation

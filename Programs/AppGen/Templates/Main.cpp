@@ -15,14 +15,9 @@
 using namespace Kodiak;
 
 
-int wmain(int argc, char** argv)
+int wmain(int argc, char* argv[])
 {
-	GraphicsApi api = GetGraphicsApiFromCommandline(argc, argv);
+	TEMPLATEApp app{ s_appName };
 
-	ApplicationDesc desc{ /*DO NOT MODIFY*/ s_appName, 1920, 1080, api };
-
-	TEMPLATEApp app(desc);
-	app.Run();
-
-	return 0;
+	return app.Run(argc, argv);
 }
