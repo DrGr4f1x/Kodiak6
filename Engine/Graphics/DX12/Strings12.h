@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "Flags12.h"
+
 namespace Kodiak::DX12
 {
 
@@ -17,45 +19,9 @@ static const std::string s_notSupported{ "Not supported" };
 
 inline std::string D3DTypeToString(D3D12_COMMAND_LIST_SUPPORT_FLAGS commandListSupportFlags, bool bNumberOnly = false)
 {
-	const uint32_t numFlags = __popcnt(commandListSupportFlags);
-
-	if (numFlags == 0)
-	{
-		assert(commandListSupportFlags == D3D12_COMMAND_LIST_SUPPORT_FLAG_NONE);
-		return "None";
-	}
-
-	static const std::string nameMap[] =
-	{
-		"None",
-		"Direct",
-		"Bundle",
-		"Compute",
-		"Copy",
-		"Video Decode",
-		"Video Process",
-		"Video Encode"
-	};
-
-	std::string result;
-	uint32_t testBit = 1;
-	uint32_t bitsCounted = 0;
-	for (uint32_t i = 1; i < _countof(nameMap); ++i)
-	{
-		if ((commandListSupportFlags & testBit) == testBit)
-		{
-			++bitsCounted;
-			result += nameMap[i];
-			if (bitsCounted != numFlags)
-			{
-				result += ", ";
-			}
-		}
-		testBit = (1 << i);
-	}
-
-	return result;
+	return g_commandListSupportFlagsMap.BuildString(commandListSupportFlags);
 }
+
 
 inline std::string D3DTypeToString(D3D12_CONSERVATIVE_RASTERIZATION_TIER conservativeRasterizationTier, bool bNumberOnly = false)
 {
@@ -128,6 +94,7 @@ inline std::string D3DTypeToString(D3D12_RAYTRACING_TIER raytracingTier, bool bN
 	}
 }
 
+
 inline std::string D3DTypeToString(D3D12_RENDER_PASS_TIER renderPassTier, bool bNumberOnly = false)
 {
 	switch (renderPassTier)
@@ -137,6 +104,7 @@ inline std::string D3DTypeToString(D3D12_RENDER_PASS_TIER renderPassTier, bool b
 	default: return bNumberOnly ? "0" : "Tier 0"; break;
 	}
 }
+
 
 inline std::string D3DTypeToString(D3D12_RESOURCE_BINDING_TIER resourceBindingTier, bool bNumberOnly = false)
 {
@@ -164,6 +132,7 @@ inline std::string D3DTypeToString(D3D12_SAMPLER_FEEDBACK_TIER samplerFeedbackTi
 	default: return s_notSupported;
 	}
 }
+
 
 inline std::string D3DTypeToString(D3D12_SHADER_MIN_PRECISION_SUPPORT shaderMinPrecisionSupport, bool bNumberOnly = false)
 {
@@ -212,6 +181,7 @@ inline std::string D3DTypeToString(D3D12_SHARED_RESOURCE_COMPATIBILITY_TIER shar
 	default: return bNumberOnly ? "0" : "Tier 0"; break;
 	}
 }
+
 
 inline std::string D3DTypeToString(D3D12_TILED_RESOURCES_TIER tiledResourcesTier, bool bNumberOnly = false)
 {

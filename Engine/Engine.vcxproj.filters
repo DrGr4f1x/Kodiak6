@@ -193,6 +193,9 @@
     <ClInclude Include="Graphics\VK\FlagsVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\DX12\Flags12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">

@@ -80,6 +80,7 @@
     <ClInclude Include="Core\VectorMath.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Graphics\DX12\DeviceCaps12.h" />
+    <ClInclude Include="Graphics\DX12\Flags12.h" />
     <ClInclude Include="Graphics\DX12\Formats12.h" />
     <ClInclude Include="Graphics\DX12\GraphicsDevice12.h" />
     <ClInclude Include="Graphics\DX12\GraphicsEnums12.h" />

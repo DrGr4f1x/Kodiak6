@@ -56,7 +56,7 @@ string FlagStringMap32::BuildString(uint32_t flags, char separator) const
 	for (const auto& bitKey : m_flagStringMap)
 	{
 		// Handle the other non-zero flags
-		if ((flags & bitKey.first) == bitKey.first)
+		if ( (bitKey.first != 0u) && (flags & bitKey.first) == bitKey.first)
 		{
 			if (bStringEmitted)
 			{
