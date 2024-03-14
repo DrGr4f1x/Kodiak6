@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include "Graphics\Enums.h"
-#include "Graphics\Formats.h"
-#include "Graphics\Interfaces.h"
+#include "Graphics\DX12\DirectXCommon.h"
 
 
 namespace Kodiak::DX12

@@ -12,6 +12,8 @@
 
 #include "VersionVK.h"
 
+#include "VulkanCommon.h"
+
 
 using namespace std;
 

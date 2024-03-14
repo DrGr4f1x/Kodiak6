@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include "Graphics\Enums.h"
+#include "Graphics\VK\VulkanCommon.h"
+
 
 namespace Kodiak::VK
 {

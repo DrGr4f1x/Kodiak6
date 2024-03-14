@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include "Graphics\VK\VulkanCommon.h"
+
+
 namespace Kodiak::VK
 {
 

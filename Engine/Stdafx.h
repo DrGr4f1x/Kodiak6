@@ -39,26 +39,6 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-// DirectX 12 headers
-#define FORCE_DX12_DEBUG_MARKUP 1
-#define ENABLE_DX12_DEBUG_MARKUP (_DEBUG || _PROFILE || FORCE_DX12_DEBUG_MARKUP)
-#include <d3d12.h>
-#include <dxgi1_4.h>
-#include <dxgi1_6.h>
-#include <dxgiformat.h>
-
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-
-// Vulkan headers
-#define FORCE_VULKAN_VALIDATION 0
-#define ENABLE_VULKAN_VALIDATION (_DEBUG || FORCE_VULKAN_VALIDATION)
-
-#define VK_USE_PLATFORM_WIN32_KHR
-#define VK_NO_PROTOTYPES 1
-#include <vulkan.h>
-#pragma comment(lib, "vulkan-1.lib")
-
 // Standard library headers
 #include <array>
 #include <chrono>

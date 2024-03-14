@@ -11,6 +11,8 @@
 #pragma once
 
 #include "Graphics\Formats.h"
+#include "Graphics\DX12\DirectXCommon.h"
+
 
 namespace Kodiak::DX12
 {

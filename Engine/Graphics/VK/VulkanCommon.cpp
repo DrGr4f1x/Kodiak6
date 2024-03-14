@@ -8,14 +8,6 @@
 // Author:  David Elder
 //
 
-#pragma once
+#include "Stdafx.h"
 
-#include "Graphics\VK\VulkanCommon.h"
-
-
-namespace Kodiak::VK
-{
-
-VkFormat FormatToVulkan(Format engineFormat);
-
-} // namespace Kodiak::VK
+#include "VulkanCommon.h"

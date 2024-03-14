@@ -11,12 +11,14 @@
 #pragma once
 
 #include "Graphics\Interfaces.h"
-
-#include "DeviceCaps12.h"
-
+#include "Graphics\DX12\DirectXCommon.h"
 
 namespace Kodiak::DX12
 {
+
+// Forward declarations
+struct DeviceCaps;
+
 
 class GraphicsDevice : public IntrusiveCounter<Kodiak::IGraphicsDevice>
 {
@@ -47,7 +49,7 @@ private:
 	bool m_bIsWarpAdapter{ false };
 
 	// DirectX caps
-	DeviceCaps m_caps;
+	std::unique_ptr<DeviceCaps> m_caps;
 };
 
 

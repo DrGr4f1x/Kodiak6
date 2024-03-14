@@ -10,7 +10,10 @@
 
 #pragma once
 
+#include "Graphics\DX12\DirectXCommon.h"
+
 #include <bitset>
+
 
 namespace Kodiak::DX12
 {

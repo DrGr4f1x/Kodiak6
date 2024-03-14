@@ -8,6 +8,8 @@
 // Author:  David Elder
 //
 
+#pragma once
+
 namespace Kodiak
 {
 

@@ -13,6 +13,7 @@
 #include "Device12.h"
 
 #include "Graphics\GraphicsCommon.h"
+#include "DeviceCaps12.h"
 #include "Strings12.h"
 
 
@@ -106,6 +107,8 @@ GraphicsDevice::~GraphicsDevice()
 void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 {
 	m_deviceDesc = graphicsDeviceDesc;
+
+	m_caps = make_unique<DeviceCaps>();
 
 #if _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
@@ -307,13 +310,13 @@ void GraphicsDevice::ReadCaps()
 	const D3D_FEATURE_LEVEL minFeatureLevel{ D3D_FEATURE_LEVEL_12_0 };
 	const D3D_SHADER_MODEL maxShaderModel{ D3D_SHADER_MODEL_6_7 };
 
-	m_caps.ReadFullCaps(m_device.Get(), minFeatureLevel, maxShaderModel);
+	m_caps->ReadFullCaps(m_device.Get(), minFeatureLevel, maxShaderModel);
 
-	m_bestShaderModel = m_caps.basicCaps.maxShaderModel;
+	m_bestShaderModel = m_caps->basicCaps.maxShaderModel;
 
 	if (g_graphicsDeviceOptions.logDeviceFeatures)
 	{
-		m_caps.LogCaps();
+		m_caps->LogCaps();
 	}
 }
 

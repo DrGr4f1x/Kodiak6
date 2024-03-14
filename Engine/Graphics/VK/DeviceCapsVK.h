@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include "VersionVK.h"
+#include "Graphics\VK\VersionVK.h"
+#include "Graphics\VK\VulkanCommon.h"
 
 
 namespace Kodiak::VK

@@ -66,6 +66,12 @@
     <ClCompile Include="Graphics\GraphicsCommon.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\DX12\DirectXCommon.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\VulkanCommon.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -204,6 +210,12 @@
     </ClInclude>
     <ClInclude Include="Graphics\GraphicsCommon.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\DirectXCommon.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\VulkanCommon.h">
+      <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
