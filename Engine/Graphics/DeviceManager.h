@@ -16,10 +16,24 @@
 namespace Kodiak
 {
 
+struct AdapterInfo
+{
+	std::string name{};
+	uint32_t vendorId{ 0 };
+	uint32_t deviceId{ 0 };
+	size_t dedicatedVideoMemory{ 0 };
+	size_t dedicatedSystemMemory{ 0 };
+	size_t sharedSystemMemory{ 0 };
+	HardwareVendor vendor{ HardwareVendor::Unknown };
+	AdapterType adapterType{ AdapterType::Other };
+};
+
+
 struct DeviceDesc
 {
 	std::string appName{};
 	bool enableDebugRuntime{ false };
+	bool logDeviceCaps{ true };
 	bool allowSoftwareDevice{ false };
 	bool preferDiscreteDevice{ true };
 
@@ -44,6 +58,7 @@ struct DeviceDesc
 	// Setters
 	DeviceDesc& SetAppName(const std::string& value) { appName = value; return *this; }
 	constexpr DeviceDesc& SetEnableDebugRuntime(bool value) { enableDebugRuntime = value; return *this; }
+	constexpr DeviceDesc& SetLogDeviceCaps(bool value) { logDeviceCaps = value; return *this; }
 	constexpr DeviceDesc& SetAllowSoftwareDevice(bool value) { allowSoftwareDevice = value; return *this; }
 	constexpr DeviceDesc& SetPreferDiscreteDevice(bool value) { preferDiscreteDevice = value; return *this; }
 	constexpr DeviceDesc& SetStartMaximized(bool value) { startMaximized = value; return *this; }
@@ -84,6 +99,9 @@ protected:
 protected:
 	DeviceDesc m_desc{};
 	bool m_instanceCreated{ false };
+
+	bool m_bIsDeveloperModeEnabled{ false };
+	bool m_bIsRenderDocAvailable{ false };
 };
 
 } // namespace Kodiak

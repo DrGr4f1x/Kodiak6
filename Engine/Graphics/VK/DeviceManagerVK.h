@@ -17,6 +17,14 @@ namespace Kodiak::VK
 
 class DeviceManagerVK : public DeviceManager
 {
+public:
+	DeviceManagerVK() = default;
+	~DeviceManagerVK() final = default;
+
+protected:
+	bool CreateInstanceInternal() final;
+	bool CreateDevice() final;
+	bool CreateSwapChain() final;
 };
 
 } // namespace Kodiak::VK

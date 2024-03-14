@@ -63,6 +63,12 @@ AdapterType GetAdapterType(IDXGIAdapter* adapter)
 }
 
 
+DeviceManager12::~DeviceManager12()
+{
+	delete m_caps;
+	m_caps = nullptr;
+}
+
 bool DeviceManager12::CreateInstanceInternal()
 {
 	if (!m_dxgiFactory)
@@ -88,27 +94,33 @@ bool DeviceManager12::CreateDevice()
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
 		{
 			debugInterface->EnableDebugLayer();
+			LogInfo(LogDirectX) << "Enabled D3D12 debug validation layer" << endl;
 		}
 		else
 		{
-			LogWarning(LogDirectX) << "  Failed to enable D3D12 debug validation layer" << endl;
+			LogWarning(LogDirectX) << "Failed to enable D3D12 debug validation layer" << endl;
 		}
 	}
 
-	const bool bIsDeveloperModeEnabled = IsDeveloperModeEnabled();
-	const bool bIsRenderDocAvailable = IsRenderDocAvailable();
-
-	if (bIsDeveloperModeEnabled && !bIsRenderDocAvailable)
+	if (m_bIsDeveloperModeEnabled && !m_bIsRenderDocAvailable)
 	{
 		if (SUCCEEDED(D3D12EnableExperimentalFeatures(1, &D3D12ExperimentalShaderModels, nullptr, nullptr)))
 		{
-			LogInfo(LogDirectX) << "  Enabled D3D12 experimental shader models" << endl;
+			LogInfo(LogDirectX) << "Enabled D3D12 experimental shader models" << endl;
 		}
 		else
 		{
-			LogWarning(LogDirectX) << "  Failed to enable D3D12 experimental shader models" << endl;
+			LogWarning(LogDirectX) << "Failed to enable D3D12 experimental shader models" << endl;
 		}
 	}
+
+	return SelectAdapterAndCreateDevice();
+}
+
+
+bool DeviceManager12::CreateSwapChain()
+{
+	return true;
 }
 
 
@@ -146,7 +158,6 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 			adapterInfo.sharedSystemMemory = desc.SharedSystemMemory;
 			adapterInfo.vendor = VendorIdToHardwareVendor(adapterInfo.vendorId);
 			adapterInfo.adapterType = GetAdapterType(tempAdapter.Get());
-			adapterInfo.adapter = tempAdapter;
 
 			LogInfo(LogDirectX) << format("  Adapter {} is D3D12-capable: {} (Vendor: {}, VendorId: {:#x}, DeviceId: {:#x})",
 				idx,
@@ -189,6 +200,135 @@ HRESULT DeviceManager12::EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpu
 	else
 	{
 		return dxgiFactory6->EnumAdapterByGpuPreference((UINT)adapterIdx, gpuPreference, IID_PPV_ARGS(adapter));
+	}
+}
+
+
+bool DeviceManager12::SelectAdapterAndCreateDevice()
+{
+	vector<AdapterInfo> adapterInfos = EnumerateAdapters();
+
+	int32_t firstDiscreteAdapterIdx{ -1 };
+	int32_t bestMemoryAdapterIdx{ -1 };
+	int32_t firstAdapterIdx{ -1 };
+	int32_t warpAdapterIdx{ -1 };
+	int32_t chosenAdapterIdx{ -1 };
+	size_t maxMemory{ 0 };
+
+	int32_t adapterIdx{ 0 };
+	for (const auto& adapterInfo : adapterInfos)
+	{
+		if (firstAdapterIdx == -1)
+		{
+			firstAdapterIdx = adapterIdx;
+		}
+
+		if (adapterInfo.adapterType == AdapterType::Discrete && firstDiscreteAdapterIdx == -1)
+		{
+			firstDiscreteAdapterIdx = adapterIdx;
+		}
+
+		if (adapterInfo.adapterType == AdapterType::Software && warpAdapterIdx == -1 && m_desc.allowSoftwareDevice)
+		{
+			warpAdapterIdx = adapterIdx;
+		}
+
+		if (adapterInfo.dedicatedVideoMemory > maxMemory)
+		{
+			maxMemory = adapterInfo.dedicatedVideoMemory;
+			bestMemoryAdapterIdx = adapterIdx;
+		}
+
+		++adapterIdx;
+	}
+
+	// Now chose our best adapter
+	if (m_desc.preferDiscreteDevice)
+	{
+		if (bestMemoryAdapterIdx != -1)
+		{
+			chosenAdapterIdx = bestMemoryAdapterIdx;
+		}
+		else if (firstDiscreteAdapterIdx != -1)
+		{
+			chosenAdapterIdx = firstDiscreteAdapterIdx;
+		}
+		else
+		{
+			chosenAdapterIdx = firstAdapterIdx;
+		}
+	}
+	else
+	{
+		chosenAdapterIdx = firstAdapterIdx;
+	}
+
+	if (chosenAdapterIdx == -1)
+	{
+		LogFatal(LogDirectX) << "Failed to select a D3D12 adapter" << endl;
+		return false;
+	}
+
+	// Create device, either WARP or hardware
+	IntrusivePtr<IDXGIAdapter> tempAdapter;
+	IntrusivePtr<ID3D12Device> tempDevice;
+	if (chosenAdapterIdx == warpAdapterIdx)
+	{
+		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&tempAdapter)));
+		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&tempDevice)));
+
+		m_device = tempDevice;
+		m_adapter = tempAdapter;
+		m_bIsWarpAdapter = true;
+
+		LogWarning(LogDirectX) << "Failed to find a hardware adapter, falling back to WARP" << endl;
+	}
+	else
+	{
+		assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapterIdx, &tempAdapter));
+		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&tempDevice)));
+
+		m_device = tempDevice;
+		m_adapter = tempAdapter;
+
+		LogInfo(LogDirectX) << "Selected D3D12 adapter " << chosenAdapterIdx << endl;
+	}
+
+	ReadCaps();
+
+#ifndef _RELEASE
+	if (!m_bIsWarpAdapter)
+	{
+		// Prevent the GPU from overclocking or underclocking to get consistent timings
+		if (m_bIsDeveloperModeEnabled && !m_bIsRenderDocAvailable)
+		{
+			m_device->SetStablePowerState(TRUE);
+		}
+	}
+#endif
+
+	return true;
+}
+
+
+void DeviceManager12::ReadCaps()
+{
+	if (!m_caps)
+	{
+		m_caps = new DeviceCaps{};
+
+		const D3D_FEATURE_LEVEL minFeatureLevel{ D3D_FEATURE_LEVEL_12_0 };
+		const D3D_SHADER_MODEL maxShaderModel{ D3D_SHADER_MODEL_6_7 };
+
+		m_caps->ReadFullCaps(m_device.Get(), minFeatureLevel, maxShaderModel);
+
+		m_bestFeatureLevel = m_caps->basicCaps.maxFeatureLevel;
+		m_bestShaderModel = m_caps->basicCaps.maxShaderModel;
+
+		if (m_desc.logDeviceCaps)
+		{
+			m_caps->LogCaps();
+		}
 	}
 }
 

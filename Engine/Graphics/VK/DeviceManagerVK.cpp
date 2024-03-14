@@ -15,4 +15,21 @@
 namespace Kodiak::VK
 {
 
+bool DeviceManagerVK::CreateInstanceInternal()
+{
+	return true;
+}
+
+
+bool DeviceManagerVK::CreateDevice()
+{
+	return true;
+}
+
+
+bool DeviceManagerVK::CreateSwapChain()
+{
+	return true;
+}
+
 } // namespace Kodiak::VK

@@ -68,6 +68,9 @@ bool DeviceManager::CreateInstance()
 		return true;
 	}
 
+	m_bIsDeveloperModeEnabled = IsDeveloperModeEnabled();
+	m_bIsRenderDocAvailable = IsRenderDocAvailable();
+
 	m_instanceCreated = CreateInstanceInternal();
 
 	return m_instanceCreated;

@@ -17,26 +17,18 @@
 namespace Kodiak::DX12
 {
 
-struct AdapterInfo
-{
-	std::string name{};
-	uint32_t vendorId{ 0 };
-	uint32_t deviceId{ 0 };
-	uint32_t dedicatedVideoMemory{ 0 };
-	uint32_t dedicatedSystemMemory{ 0 };
-	uint32_t sharedSystemMemory{ 0 };
-	HardwareVendor vendor{ HardwareVendor::Unknown };
-	AdapterType adapterType{ AdapterType::Other };
+// Forward declarations
+struct DeviceCaps;
 
-	IntrusivePtr<IDXGIAdapter> adapter;
-};
+
+
 
 
 class DeviceManager12 : public DeviceManager
 {
 public:
 	DeviceManager12() = default;
-	~DeviceManager12() final = default;
+	~DeviceManager12() final;
 
 protected:
 	bool CreateInstanceInternal() final;
@@ -45,6 +37,9 @@ protected:
 
 	std::vector<AdapterInfo> EnumerateAdapters();
 	HRESULT EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
+	bool SelectAdapterAndCreateDevice();
+
+	void ReadCaps();
 
 private:
 	D3D_FEATURE_LEVEL m_bestFeatureLevel{ D3D_FEATURE_LEVEL_12_2 };
@@ -52,6 +47,11 @@ private:
 	std::string m_deviceName{ "Unknown" };
 
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
+	IntrusivePtr<IDXGIAdapter> m_adapter;
+	IntrusivePtr<ID3D12Device> m_device;
+	bool m_bIsWarpAdapter{ false };
+
+	DeviceCaps* m_caps{ nullptr };
 };
 
 } // namespace Kodiak::DX12
