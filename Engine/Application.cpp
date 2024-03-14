@@ -12,8 +12,10 @@
 
 #include "Application.h"
 
+
 #include "FileSystem.h"
 #include "InputSystem.h"
+#include "Graphics\DeviceManager.h"
 #include "External\CLI11\CLI\CLI.hpp"
 
 
@@ -31,15 +33,15 @@ static Kodiak::Application* g_application = nullptr;
 
 Application::Application()
 {
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_appDesc.api), m_appDesc.name);
 	g_application = this;
 }
 
 
 Application::Application(const std::string& appName)
 {
-	m_info.name = appName;
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
+	m_appDesc.name = appName;
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_appDesc.api), m_appDesc.name);
 	g_application = this;
 }
 
@@ -62,7 +64,7 @@ int Application::Run(int argc, char* argv[])
 	Microsoft::WRL::Wrappers::RoInitializeWrapper InitializeWinRT(RO_INIT_MULTITHREADED);
 	assert_succeeded(InitializeWinRT);
 
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_appDesc.api), m_appDesc.name);
 
 	// Register class
 	WNDCLASSEX wcex{};
@@ -81,7 +83,7 @@ int Application::Run(int argc, char* argv[])
 	assert_msg(0 != RegisterClassEx(&wcex), "Unable to register a window");
 
 	// Create window
-	RECT rc = { 0, 0, (LONG)m_info.width, (LONG)m_info.height };
+	RECT rc = { 0, 0, (LONG)m_appDesc.width, (LONG)m_appDesc.height };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
 	m_hwnd = CreateWindow(m_appNameWithApi.c_str(), m_appNameWithApi.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -115,7 +117,7 @@ int Application::Run(int argc, char* argv[])
 
 int Application::ProcessCommandLine(int argc, char* argv[])
 {
-	CLI::App app{ "Kodiak App", m_info.name };
+	CLI::App app{ "Kodiak App", m_appDesc.name };
 	argv = app.ensure_utf8(argv);
 
 	// Graphic API selection
@@ -127,15 +129,15 @@ int Application::ProcessCommandLine(int argc, char* argv[])
 	vkOpt->excludes(dxOpt);
 
 	// Width, height
-	auto widthOpt = app.add_option("--resx,--width", m_info.width, "Sets initial window width");
-	auto heightOpt = app.add_option("--resy,--height", m_info.height, "Sets initial window height");
+	auto widthOpt = app.add_option("--resx,--width", m_appDesc.width, "Sets initial window width");
+	auto heightOpt = app.add_option("--resy,--height", m_appDesc.height, "Sets initial window height");
 	
 	// Parse command line
 	CLI11_PARSE(app, argc, argv);
 
 	// Set application parameters from command line
-	m_info.api = bVulkan ? GraphicsApi::Vulkan : GraphicsApi::D3D12;
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
+	m_appDesc.api = bVulkan ? GraphicsApi::Vulkan : GraphicsApi::D3D12;
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_appDesc.api), m_appDesc.name);
 
 	return 0;
 }
@@ -166,13 +168,13 @@ string Application::GetWindowTitle() const
 void Application::Initialize()
 {
 	// Create core engine systems
-	m_filesystem = make_unique<FileSystem>(m_info.name);
+	m_filesystem = make_unique<FileSystem>(m_appDesc.name);
 	m_filesystem->SetDefaultRootPath();
 	m_logSystem = make_unique<LogSystem>();
 
 	// This is the first place we can post a startup message
-	LogInfo(LogApplication) << "App: " << m_info.name << " starting up" << endl;
-	LogInfo(LogApplication) << "  API: " << GraphicsApiToString(m_info.api) << endl;
+	LogInfo(LogApplication) << "App: " << m_appDesc.name << " starting up" << endl;
+	LogInfo(LogApplication) << "  API: " << GraphicsApiToString(m_appDesc.api) << endl;
 	LogInfo(LogApplication) << endl;
 
 	m_inputSystem = make_unique<InputSystem>(m_hwnd);
@@ -183,7 +185,7 @@ void Application::Initialize()
 
 	Configure();
 
-	CreateGraphicsDevice();
+	CreateDeviceManager();
 
 	Startup();
 
@@ -258,17 +260,19 @@ bool Application::Tick()
 }
 
 
-void Application::CreateGraphicsDevice()
+void Application::CreateDeviceManager()
 {
-	GraphicsDeviceDesc desc;
-	desc.api = m_info.api;
-	desc.appName = m_info.name;
-	desc.hinstance = m_hinst;
-	desc.hwnd = m_hwnd;
-	desc.width = m_info.width;
-	desc.height = m_info.height;
+	m_deviceManager.reset(DeviceManager::Create(m_appDesc.api));
 
-	m_graphicsDevice = CreateDevice(desc);
+	auto deviceDesc = DeviceDesc{}
+		.SetAppName(m_appDesc.name)
+		.SetBackBufferWidth(m_appDesc.width)
+		.SetBackBufferHeight(m_appDesc.height);
+
+	if (!m_deviceManager->CreateDeviceAndSwapChain(deviceDesc))
+	{
+		LogFatal(LogApplication) << "Failed to create graphics device and swap chain" << endl;
+	}
 }
 
 

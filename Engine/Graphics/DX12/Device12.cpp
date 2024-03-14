@@ -133,7 +133,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		}
 		else
 		{
-			LogWarning(LogDirectX) << "  Unable to enable D3D12 experimental shader models" << endl;
+			LogWarning(LogDirectX) << "  Failed to enable D3D12 experimental shader models" << endl;
 		}
 	}
 

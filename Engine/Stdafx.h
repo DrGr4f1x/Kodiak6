@@ -17,6 +17,9 @@
 #define NOMINMAX
 #endif
 
+#define FORCE_DEBUG_LAYER 0
+#define ENABLE_DEBUG_LAYER (_DEBUG || _PROFILE || FORCE_DEBUG_LAYER)
+
 // Windows headers
 #include <windows.h>
 #include <wrl.h>

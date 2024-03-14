@@ -15,8 +15,8 @@
 #include "Graphics\Enums.h"
 
 #include "DeviceVK.h"
-#include "Generated\LoaderVk.h"
 #include "StringsVK.h"
+#include "Generated\LoaderVk.h"
 
 
 using namespace Kodiak;

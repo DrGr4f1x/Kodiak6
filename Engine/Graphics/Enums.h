@@ -388,49 +388,13 @@ enum class ResourceType : uint32_t
 template <> struct EnableBitmaskOperators<ResourceType> { static const bool enable = true; };
 
 
-inline bool IsTextureResource(ResourceType resourceType)
-{
-	using enum ResourceType;
-
-	return (resourceType >= Texture1D) && (resourceType <= Texture3D);
-}
-
-
-inline bool IsTextureArray(ResourceType resourceType)
-{
-	using enum ResourceType;
-
-	return
-		resourceType == Texture1D_Array ||
-		resourceType == Texture2D_Array ||
-		resourceType == Texture2DMS_Array ||
-		resourceType == TextureCube ||
-		resourceType == TextureCube_Array;
-}
-
-
-inline bool IsBufferResource(ResourceType resourceType)
-{
-	using enum ResourceType;
-
-	return (resourceType > Texture3D);
-}
-
-
-inline uint32_t ComputeNumMips(uint32_t width, uint32_t height)
-{
-	uint32_t highBit{ 0 };
-	_BitScanReverse((unsigned long*)&highBit, width | height);
-	return highBit + 1;
-}
-
-
 enum class HardwareVendor
 {
 	Unknown,
 	AMD,
 	Intel,
-	NVIDIA
+	NVIDIA,
+	Microsoft
 };
 
 inline std::string HardwareVendorToString(HardwareVendor hardwareVendor)
@@ -439,10 +403,11 @@ inline std::string HardwareVendorToString(HardwareVendor hardwareVendor)
 
 	switch (hardwareVendor)
 	{
-	case AMD:		return std::string("AMD");			break;
-	case Intel:		return std::string("Intel");		break;
-	case NVIDIA:	return std::string("NVIDIA");		break;
-	default:		return std::string("<Unknown>");	break;
+	case AMD:		return "AMD"; break;
+	case Intel:		return "Intel";	break;
+	case NVIDIA:	return "NVIDIA"; break;
+	case Microsoft: return "Microsoft"; break;
+	default:		return "Unknown"; break;
 	}
 }
 
@@ -467,6 +432,10 @@ inline HardwareVendor VendorIdToHardwareVendor(uint32_t vendorId)
 		return Intel;
 		break;
 
+	case 0x1414:
+		return Microsoft;
+		break;
+
 	default:
 		return Unknown;
 		break;
@@ -477,5 +446,14 @@ inline std::string VendorIdToString(uint32_t vendorId)
 {
 	return HardwareVendorToString(VendorIdToHardwareVendor(vendorId));
 }
+
+
+enum class AdapterType : uint8_t
+{
+	Discrete,
+	Integrated,
+	Software,
+	Other
+};
 
 } // namespace Kodiak

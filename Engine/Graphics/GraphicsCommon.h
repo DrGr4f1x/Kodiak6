@@ -29,6 +29,43 @@ bool IsDeveloperModeEnabled();
 bool IsRenderDocAvailable();
 
 
+inline bool IsTextureResource(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	return (resourceType >= Texture1D) && (resourceType <= Texture3D);
+}
+
+
+inline bool IsTextureArray(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	return
+		resourceType == Texture1D_Array ||
+		resourceType == Texture2D_Array ||
+		resourceType == Texture2DMS_Array ||
+		resourceType == TextureCube ||
+		resourceType == TextureCube_Array;
+}
+
+
+inline bool IsBufferResource(ResourceType resourceType)
+{
+	using enum ResourceType;
+
+	return (resourceType > Texture3D);
+}
+
+
+inline uint32_t ComputeNumMips(uint32_t width, uint32_t height)
+{
+	uint32_t highBit{ 0 };
+	_BitScanReverse((unsigned long*)&highBit, width | height);
+	return highBit + 1;
+}
+
+
 // Graphics related log categories
 inline LogCategory LogGraphics{ "LogGraphics" };
 

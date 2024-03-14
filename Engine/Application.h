@@ -17,6 +17,7 @@ namespace Kodiak
 {
 
 // Forward declarations
+class DeviceManager;
 class FileSystem;
 class InputSystem;
 class LogSystem;
@@ -24,17 +25,23 @@ enum class DigitalInput;
 enum class AnalogInput;
 
 
-struct ApplicationInfo
+struct ApplicationDesc
 {
 	std::string name{ "Unnamed" };
 	uint32_t width{ 1920 };
 	uint32_t height{ 1080 };
 	GraphicsApi api{ GraphicsApi::D3D12 };
+#if ENABLE_DEBUG_LAYER
+	bool useDebugLayer{ true };
+#else
+	bool useDebugLayer{ false };
+#endif // ENABLE_DEBUG_LAYER
 
-	ApplicationInfo& SetName(const std::string& value) { name = value; return *this; }
-	constexpr ApplicationInfo& SetWidth(uint32_t value) { width = value; return *this; }
-	constexpr ApplicationInfo& SetHeight(uint32_t value) { height = value; return *this; }
-	constexpr ApplicationInfo& SetApi(GraphicsApi value) { api = value; return *this; }
+	ApplicationDesc& SetName(const std::string& value) { name = value; return *this; }
+	constexpr ApplicationDesc& SetWidth(uint32_t value) { width = value; return *this; }
+	constexpr ApplicationDesc& SetHeight(uint32_t value) { height = value; return *this; }
+	constexpr ApplicationDesc& SetApi(GraphicsApi value) { api = value; return *this; }
+	constexpr ApplicationDesc& SetUseDebugLayer(bool value) { useDebugLayer = value; return *this; }
 };
 
 
@@ -60,8 +67,8 @@ public:
 	// Accessors
 	const HINSTANCE GetHINSTANCE() const { return m_hinst; }
 	const HWND GetHWND() const { return m_hwnd; }
-	uint32_t GetWidth() const { return m_info.width; }
-	uint32_t GetHeight() const { return m_info.height; }
+	uint32_t GetWidth() const { return m_appDesc.width; }
+	uint32_t GetHeight() const { return m_appDesc.height; }
 
 	// Application state
 	bool IsPaused() const { return m_isPaused; }
@@ -74,7 +81,7 @@ public:
 
 protected:
 	// Basic application info
-	ApplicationInfo m_info{};
+	ApplicationDesc m_appDesc{};
 	std::string m_appNameWithApi;
 
 	// Application state
@@ -98,14 +105,14 @@ protected:
 	std::unique_ptr<FileSystem> m_filesystem;
 	std::unique_ptr<LogSystem> m_logSystem;
 	std::unique_ptr<InputSystem> m_inputSystem;
-	DeviceHandle m_graphicsDevice;
-
+	std::unique_ptr<DeviceManager> m_deviceManager;
+	
 private:
 	void Initialize();
 	void Finalize();
 	bool Tick();
 
-	void CreateGraphicsDevice();
+	void CreateDeviceManager();
 };
 
 

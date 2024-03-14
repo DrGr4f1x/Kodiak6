@@ -30,11 +30,11 @@ struct UUID
 inline UUID AsUUID(uint8_t uuid[VK_UUID_SIZE])
 {
 	UUID result{};
-	result.value1 = (uuid[0] << 24) | (uuid[1] << 16) | (uuid[2] << 8) | uuid[3];
-	result.value2 = (uuid[4] << 8) | uuid[5];
-	result.value3 = (uuid[6] << 8) | uuid[7];
-	result.value4 = (uuid[8] << 8) | uuid[9];
-	result.value5 = ((uint64_t)uuid[10] << 40) | ((uint64_t)uuid[11] << 32) | (uuid[12] << 24) | (uuid[13] << 16) | (uuid[14] << 8) | uuid[15];
+	result.value1 = ((uint32_t)uuid[0] << 24) | ((uint32_t)uuid[1] << 16) | ((uint32_t)uuid[2] << 8) | uuid[3];
+	result.value2 = ((uint16_t)uuid[4] << 8) | uuid[5];
+	result.value3 = ((uint16_t)uuid[6] << 8) | uuid[7];
+	result.value4 = ((uint16_t)uuid[8] << 8) | uuid[9];
+	result.value5 = ((uint64_t)uuid[10] << 40) | ((uint64_t)uuid[11] << 32) | ((uint64_t)uuid[12] << 24) | ((uint64_t)uuid[13] << 16) | ((uint64_t)uuid[14] << 8) | uuid[15];
 	return result;
 }
 
@@ -55,8 +55,8 @@ struct LUID
 inline LUID AsLUID(uint8_t luid[VK_LUID_SIZE])
 {
 	LUID result{};
-	result.value1 = (luid[0] << 24) | (luid[1] << 16) | (luid[2] << 8) | luid[3];
-	result.value2 = (luid[4] << 24) | (luid[5] << 16) | (luid[6] << 8) | luid[7];
+	result.value1 = ((uint32_t)luid[0] << 24) | ((uint32_t)luid[1] << 16) | ((uint32_t)luid[2] << 8) | luid[3];
+	result.value2 = ((uint32_t)luid[4] << 24) | ((uint32_t)luid[5] << 16) | ((uint32_t)luid[6] << 8) | luid[7];
 	return result;
 }
 

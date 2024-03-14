@@ -37,4 +37,54 @@ DeviceManager* DeviceManager::Create(GraphicsApi api)
 	}
 }
 
+
+bool DeviceManager::CreateDeviceAndSwapChain(const DeviceDesc& desc)
+{
+	m_desc = desc;
+
+	if (!CreateInstance())
+	{
+		return false;
+	}
+
+	if (!CreateDevice())
+	{
+		return false;
+	}
+
+	if (!CreateSwapChain())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+bool DeviceManager::CreateInstance()
+{
+	if (m_instanceCreated)
+	{
+		return true;
+	}
+
+	m_instanceCreated = CreateInstanceInternal();
+
+	return m_instanceCreated;
+}
+
+
+bool DeviceManager::CreateDevice()
+{
+
+	return true;
+}
+
+
+bool DeviceManager::CreateSwapChain()
+{
+
+	return true;
+}
+
 } // namespace Kodiak

@@ -11,8 +11,8 @@
 #pragma once
 
 // DirectX 12 headers
-#define FORCE_DX12_DEBUG_MARKUP 1
-#define ENABLE_DX12_DEBUG_MARKUP (_DEBUG || _PROFILE || FORCE_DX12_DEBUG_MARKUP)
+#define FORCE_DX12_DEBUG_LAYER 0
+#define ENABLE_DX12_DEBUG_LAYER (ENABLE_DEBUG_LAYER || FORCE_DX12_DEBUG_LAYER)
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <dxgi1_6.h>
@@ -32,5 +32,7 @@ namespace Kodiak::DX12
 
 void SetDebugName(IDXGIObject* object, const std::string& name);
 void SetDebugName(ID3D12Object* object, const std::string& name);
+
+inline LogCategory LogDirectX{ "LogDirectX" };
 
 } // namespace Kodiak::DX12

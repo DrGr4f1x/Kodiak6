@@ -56,6 +56,4 @@ private:
 
 Kodiak::DX12::GraphicsDevice* CreateDevice12(const GraphicsDeviceDesc& desc);
 
-inline LogCategory LogDirectX{ "LogDirectX" };
-
 } // namespace Kodiak::DX12
