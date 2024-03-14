@@ -61,7 +61,7 @@ namespace VulkanParser
 
         private void EmitHeader(string outputDir)
         {
-            StreamWriter outputFile = new StreamWriter(Path.Combine(outputDir, "LoaderVk.h"), true);
+            StreamWriter outputFile = new StreamWriter(Path.Combine(outputDir, "LoaderVK.h"), true);
 
             string topMatterStr = """
                 //
@@ -75,6 +75,9 @@ namespace VulkanParser
                 //
 
                 #pragma once
+
+                #include "Graphics\VK\VulkanCommon.h"
+
 
                 namespace Kodiak::VK
                 {
@@ -274,7 +277,7 @@ namespace VulkanParser
 
         private void EmitSource(string outputDir)
         {
-            StreamWriter outputFile = new StreamWriter(Path.Combine(outputDir, "LoaderVk.cpp"), true);
+            StreamWriter outputFile = new StreamWriter(Path.Combine(outputDir, "LoaderVK.cpp"), true);
 
             string topMatterStr = """
                 //
