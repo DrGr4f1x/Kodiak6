@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "LoaderVk.h"
+#include "Generated\LoaderVk.h"
 
 namespace Kodiak::VK
 {
@@ -24,14 +24,7 @@ public:
 	CVkInstance() noexcept = default;
 	explicit CVkInstance(VkInstance instance) noexcept : m_instance{ instance } {}
 	
-	~CVkInstance() final
-	{
-		if (m_instance)
-		{
-			vkDestroyInstance(m_instance, nullptr);
-			m_instance = VK_NULL_HANDLE;
-		}
-	}
+	~CVkInstance() final;
 
 	VkInstance Get() const noexcept { return m_instance; }
 	operator VkInstance() const noexcept { return Get(); }

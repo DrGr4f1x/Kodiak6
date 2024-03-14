@@ -12,7 +12,29 @@
 
 #include "DeviceManager.h"
 
+#include "Graphics\DX12\DeviceManager12.h"
+#include "Graphics\VK\DeviceManagerVK.h"
+
 namespace Kodiak
 {
+
+DeviceManager* DeviceManager::Create(GraphicsApi api)
+{
+	switch (api)
+	{
+	case GraphicsApi::D3D12:
+		return new DX12::DeviceManager12();
+		break;
+
+	case GraphicsApi::Vulkan:
+		return new VK::DeviceManagerVK();
+		break;
+
+		// Fall back to DX12
+	default:
+		return new DX12::DeviceManager12();
+		break;
+	}
+}
 
 } // namespace Kodiak

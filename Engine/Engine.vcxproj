@@ -47,7 +47,8 @@
     <ClCompile Include="Graphics\VK\FormatsVK.cpp" />
     <ClCompile Include="Graphics\VK\DeviceVK.cpp" />
     <ClCompile Include="Graphics\VK\EnumsVK.cpp" />
-    <ClCompile Include="Graphics\VK\LoaderVk.cpp" />
+    <ClCompile Include="Graphics\VK\Generated\LoaderVK.cpp" />
+    <ClCompile Include="Graphics\VK\RefCountingVK.cpp" />
     <ClCompile Include="Graphics\VK\VersionVK.cpp" />
     <ClCompile Include="Graphics\VK\VulkanCommon.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -103,11 +104,11 @@
     <ClInclude Include="Graphics\VK\DeviceManagerVK.h" />
     <ClInclude Include="Graphics\VK\FlagsVK.h" />
     <ClInclude Include="Graphics\VK\FormatsVK.h" />
+    <ClInclude Include="Graphics\VK\Generated\LoaderVK.h" />
     <ClInclude Include="Graphics\VK\StringsVK.h" />
     <ClInclude Include="Graphics\VK\VersionVK.h" />
     <ClInclude Include="Graphics\VK\DeviceVK.h" />
     <ClInclude Include="Graphics\VK\EnumsVK.h" />
-    <ClInclude Include="Graphics\VK\LoaderVk.h" />
     <ClInclude Include="Graphics\VK\RefCountingVK.h" />
     <ClInclude Include="Graphics\VK\VulkanCommon.h" />
     <ClInclude Include="InputSystem.h" />

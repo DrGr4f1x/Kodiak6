@@ -15,7 +15,7 @@
 #include "Graphics\Enums.h"
 
 #include "DeviceVK.h"
-#include "LoaderVk.h"
+#include "Generated\LoaderVk.h"
 #include "StringsVK.h"
 
 

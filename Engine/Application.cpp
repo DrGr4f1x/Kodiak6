@@ -30,16 +30,16 @@ static Kodiak::Application* g_application = nullptr;
 
 
 Application::Application()
-	: m_name{ "Unnamed" }
 {
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
 	g_application = this;
 }
 
 
 Application::Application(const std::string& appName)
-	: m_name{ appName }
 {
+	m_info.name = appName;
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
 	g_application = this;
 }
 
@@ -62,7 +62,7 @@ int Application::Run(int argc, char* argv[])
 	Microsoft::WRL::Wrappers::RoInitializeWrapper InitializeWinRT(RO_INIT_MULTITHREADED);
 	assert_succeeded(InitializeWinRT);
 
-	string appNameWithAPI = GraphicsApiToString(m_api) + " " + m_name;
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
 
 	// Register class
 	WNDCLASSEX wcex{};
@@ -76,15 +76,15 @@ int Application::Run(int argc, char* argv[])
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = nullptr;
-	wcex.lpszClassName = appNameWithAPI.c_str();
+	wcex.lpszClassName = m_appNameWithApi.c_str();
 	wcex.hIconSm = LoadIcon(m_hinst, IDI_APPLICATION);
 	assert_msg(0 != RegisterClassEx(&wcex), "Unable to register a window");
 
 	// Create window
-	RECT rc = { 0, 0, (LONG)m_displayWidth, (LONG)m_displayHeight };
+	RECT rc = { 0, 0, (LONG)m_info.width, (LONG)m_info.height };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-	m_hwnd = CreateWindow(appNameWithAPI.c_str(), appNameWithAPI.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+	m_hwnd = CreateWindow(m_appNameWithApi.c_str(), m_appNameWithApi.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 		rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, m_hinst, nullptr);
 
 	assert(m_hwnd != 0);
@@ -115,7 +115,7 @@ int Application::Run(int argc, char* argv[])
 
 int Application::ProcessCommandLine(int argc, char* argv[])
 {
-	CLI::App app{ "Kodiak App", m_name };
+	CLI::App app{ "Kodiak App", m_info.name };
 	argv = app.ensure_utf8(argv);
 
 	// Graphic API selection
@@ -127,15 +127,15 @@ int Application::ProcessCommandLine(int argc, char* argv[])
 	vkOpt->excludes(dxOpt);
 
 	// Width, height
-	auto widthOpt = app.add_option("--resx,--width", m_displayWidth, "Sets initial window width");
-	auto heightOpt = app.add_option("--resy,--height", m_displayHeight, "Sets initial window height");
+	auto widthOpt = app.add_option("--resx,--width", m_info.width, "Sets initial window width");
+	auto heightOpt = app.add_option("--resy,--height", m_info.height, "Sets initial window height");
 	
 	// Parse command line
 	CLI11_PARSE(app, argc, argv);
 
 	// Set application parameters from command line
-	m_api = bVulkan ? GraphicsApi::Vulkan : GraphicsApi::D3D12;
-	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_api), m_name);
+	m_info.api = bVulkan ? GraphicsApi::Vulkan : GraphicsApi::D3D12;
+	m_appNameWithApi = format("[{}] {}", GraphicsApiToString(m_info.api), m_info.name);
 
 	return 0;
 }
@@ -166,13 +166,13 @@ string Application::GetWindowTitle() const
 void Application::Initialize()
 {
 	// Create core engine systems
-	m_filesystem = make_unique<FileSystem>(m_name);
+	m_filesystem = make_unique<FileSystem>(m_info.name);
 	m_filesystem->SetDefaultRootPath();
 	m_logSystem = make_unique<LogSystem>();
 
 	// This is the first place we can post a startup message
-	LogInfo(LogApplication) << "App: " << m_name << " starting up" << endl;
-	LogInfo(LogApplication) << "  API: " << GraphicsApiToString(m_api) << endl;
+	LogInfo(LogApplication) << "App: " << m_info.name << " starting up" << endl;
+	LogInfo(LogApplication) << "  API: " << GraphicsApiToString(m_info.api) << endl;
 	LogInfo(LogApplication) << endl;
 
 	m_inputSystem = make_unique<InputSystem>(m_hwnd);
@@ -261,12 +261,12 @@ bool Application::Tick()
 void Application::CreateGraphicsDevice()
 {
 	GraphicsDeviceDesc desc;
-	desc.api = m_api;
-	desc.appName = m_name;
+	desc.api = m_info.api;
+	desc.appName = m_info.name;
 	desc.hinstance = m_hinst;
 	desc.hwnd = m_hwnd;
-	desc.width = m_displayWidth;
-	desc.height = m_displayHeight;
+	desc.width = m_info.width;
+	desc.height = m_info.height;
 
 	m_graphicsDevice = CreateDevice(desc);
 }

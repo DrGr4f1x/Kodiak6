@@ -48,9 +48,6 @@
     <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp">
       <Filter>Graphics\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\VK\LoaderVk.cpp">
-      <Filter>Graphics\VK</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\VK\DeviceCapsVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
@@ -80,6 +77,12 @@
     </ClCompile>
     <ClCompile Include="Graphics\DX12\DeviceManager12.cpp">
       <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\Generated\LoaderVK.cpp">
+      <Filter>Graphics\VK\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\RefCountingVK.cpp">
+      <Filter>Graphics\VK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,9 +187,6 @@
     <ClInclude Include="Graphics\VK\RefCountingVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\VK\LoaderVk.h">
-      <Filter>Graphics\VK</Filter>
-    </ClInclude>
     <ClInclude Include="Core\IObject.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -235,6 +235,9 @@
     <ClInclude Include="Graphics\DX12\DeviceManager12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\VK\Generated\LoaderVK.h">
+      <Filter>Graphics\VK\Generated</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -251,6 +254,9 @@
     </Filter>
     <Filter Include="Graphics\VK">
       <UniqueIdentifier>{6548dbab-f2e7-4d61-90b8-300558ea1af8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\VK\Generated">
+      <UniqueIdentifier>{77a9d03f-3c9c-4d73-841f-a4b9a44bf949}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

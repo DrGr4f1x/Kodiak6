@@ -12,7 +12,7 @@
 
 #include "DeviceVK.h"
 
-#include "LoaderVk.h"
+#include "Generated\LoaderVk.h"
 
 
 using namespace Kodiak;

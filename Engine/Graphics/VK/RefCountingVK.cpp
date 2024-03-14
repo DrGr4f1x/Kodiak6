@@ -8,27 +8,23 @@
 // Author:  David Elder
 //
 
-#pragma once
+#include "Stdafx.h"
 
-#include "Graphics\GraphicsCommon.h"
+#include "RefCountingVK.h"
+
+#include "Generated\LoaderVK.h"
 
 
-namespace Kodiak
+namespace Kodiak::VK
 {
 
-class DeviceManager
+CVkInstance::~CVkInstance()
 {
-public:
-	static DeviceManager* Create(GraphicsApi api);
+	if (m_instance)
+	{
+		vkDestroyInstance(m_instance, nullptr);
+		m_instance = VK_NULL_HANDLE;
+	}
+}
 
-	DeviceManager() = default;
-	virtual ~DeviceManager() = default;
-
-protected:
-
-protected:
-	// Basic info from the Application
-
-};
-
-} // namespace Kodiak
+} // namespace Kodiak::VK

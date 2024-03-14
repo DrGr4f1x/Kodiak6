@@ -24,11 +24,17 @@ enum class DigitalInput;
 enum class AnalogInput;
 
 
-struct ApplicationOptions
+struct ApplicationInfo
 {
+	std::string name{ "Unnamed" };
 	uint32_t width{ 1920 };
 	uint32_t height{ 1080 };
 	GraphicsApi api{ GraphicsApi::D3D12 };
+
+	ApplicationInfo& SetName(const std::string& value) { name = value; return *this; }
+	constexpr ApplicationInfo& SetWidth(uint32_t value) { width = value; return *this; }
+	constexpr ApplicationInfo& SetHeight(uint32_t value) { height = value; return *this; }
+	constexpr ApplicationInfo& SetApi(GraphicsApi value) { api = value; return *this; }
 };
 
 
@@ -36,7 +42,7 @@ class Application
 {
 public:
 	Application();
-	Application(const std::string& appName);
+	explicit Application(const std::string& appName);
 	virtual ~Application();
 
 	int Run(int argc, char* argv[]);
@@ -54,8 +60,8 @@ public:
 	// Accessors
 	const HINSTANCE GetHINSTANCE() const { return m_hinst; }
 	const HWND GetHWND() const { return m_hwnd; }
-	uint32_t GetWidth() const { return m_displayWidth; }
-	uint32_t GetHeight() const { return m_displayHeight; }
+	uint32_t GetWidth() const { return m_info.width; }
+	uint32_t GetHeight() const { return m_info.height; }
 
 	// Application state
 	bool IsPaused() const { return m_isPaused; }
@@ -67,13 +73,9 @@ public:
 	std::string GetWindowTitle() const;
 
 protected:
-	const std::string m_name;
+	// Basic application info
+	ApplicationInfo m_info{};
 	std::string m_appNameWithApi;
-	
-	uint32_t m_displayWidth{ 1920 };
-	uint32_t m_displayHeight{ 1080 };
-
-	GraphicsApi m_api{ GraphicsApi::D3D12 };
 
 	// Application state
 	bool m_isRunning{ false };
