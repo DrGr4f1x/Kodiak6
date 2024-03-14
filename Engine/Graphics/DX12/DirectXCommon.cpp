@@ -17,15 +17,20 @@ using namespace std;
 namespace Kodiak::DX12
 {
 
-void SetDebugName(ID3D12Object* object, const string& name)
+void SetDebugName(IDXGIObject* object, const string& name)
 {
-	bool bSetDebugName = g_graphicsDeviceOptions.useDebugRuntime;
-#if ENABLE_DX12_DEBUG_MARKUP
-	bSetDebugName = true;
-#endif
-	if (bSetDebugName)
+	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
 	{
 		object->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)name.size(), name.data());
+	}
+}
+
+
+void SetDebugName(ID3D12Object* object, const string& name)
+{
+	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
+	{
+		object->SetName(MakeWStr(name).c_str());
 	}
 }
 

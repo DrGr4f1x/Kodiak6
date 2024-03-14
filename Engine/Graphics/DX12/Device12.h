@@ -32,6 +32,7 @@ private:
 	void ReadCaps();
 	HRESULT EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
 	void ConfigureInfoQueue();
+	void CreateSwapChain();
 
 private:
 	// Device info
@@ -54,8 +55,6 @@ private:
 
 
 Kodiak::DX12::GraphicsDevice* CreateDevice12(const GraphicsDeviceDesc& desc);
-
-ID3D12Device* GetDevice();
 
 inline LogCategory LogDirectX{ "LogDirectX" };
 

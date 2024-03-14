@@ -30,6 +30,7 @@
 namespace Kodiak::DX12
 {
 
+void SetDebugName(IDXGIObject* object, const std::string& name);
 void SetDebugName(ID3D12Object* object, const std::string& name);
 
 } // namespace Kodiak::DX12

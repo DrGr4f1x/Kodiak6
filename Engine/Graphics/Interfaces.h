@@ -54,6 +54,14 @@ struct GraphicsDeviceOptions
 	bool useDebugRuntime{ false };
 	bool logDeviceFeatures{ true };
 
+	bool ShouldUseDebugLayer() const noexcept
+	{
+#if ENABLE_DX12_DEBUG_MARKUP || ENABLE_VULKAN_VALIDATION
+		return true;
+#endif
+		return useDebugRuntime;
+	}
+
 	constexpr GraphicsDeviceOptions& SetUseDebugRuntime(bool value) { useDebugRuntime = value; return *this; }
 	constexpr GraphicsDeviceOptions& SetLogDeviceFeatures(bool value) { logDeviceFeatures = value; return *this; }
 };

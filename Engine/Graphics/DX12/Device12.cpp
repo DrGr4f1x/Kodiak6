@@ -110,17 +110,20 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	m_caps = make_unique<DeviceCaps>();
 
-#if _DEBUG
-	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
+	const bool bUseDebugLayer = g_graphicsDeviceOptions.ShouldUseDebugLayer();
+
+	if (bUseDebugLayer)
 	{
-		debugInterface->EnableDebugLayer();
+		Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
+		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
+		{
+			debugInterface->EnableDebugLayer();
+		}
+		else
+		{
+			LogWarning(LogDirectX) << "  Unable to enable D3D12 debug validation layer" << endl;
+		}
 	}
-	else
-	{
-		LogWarning(LogDirectX) << "  Unable to enable D3D12 debug validation layer" << endl;
-	}
-#endif
 
 	const bool bIsDeveloperModeEnabled = IsDeveloperModeEnabled();
 	const bool bIsRenderDocAvailable = IsRenderDocAvailable();
@@ -138,7 +141,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	}
 
 	// Obtain the DXGI factory
-	assert_succeeded(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_dxgiFactory)));
+	assert_succeeded(CreateDXGIFactory2(bUseDebugLayer ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory)));
 
 	Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory6;
 	m_dxgiFactory->QueryInterface(IID_PPV_ARGS(dxgiFactory6.GetAddressOf()));
@@ -302,6 +305,8 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 #endif
 
 	ConfigureInfoQueue();
+
+	CreateSwapChain();
 }
 
 
@@ -397,6 +402,12 @@ void GraphicsDevice::ConfigureInfoQueue()
 }
 
 
+void GraphicsDevice::CreateSwapChain()
+{
+
+}
+
+
 Kodiak::DX12::GraphicsDevice* Kodiak::DX12::CreateDevice12(const Kodiak::GraphicsDeviceDesc& desc)
 {
 	GraphicsDevice* device = new GraphicsDevice;
@@ -406,10 +417,4 @@ Kodiak::DX12::GraphicsDevice* Kodiak::DX12::CreateDevice12(const Kodiak::Graphic
 	g_graphicsDevice = device;
 
 	return device;
-}
-
-
-ID3D12Device* GetDevice()
-{
-	return g_device.Get();
 }
