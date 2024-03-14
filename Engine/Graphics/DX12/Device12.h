@@ -29,6 +29,7 @@ public:
 private:
 	void ReadCaps();
 	HRESULT EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
+	void ConfigureInfoQueue();
 
 private:
 	// Device info
