@@ -43,10 +43,10 @@ private:
 	std::string m_deviceName{ "Unknown" };
 
 	// DirectX 12 objects
-	Microsoft::WRL::ComPtr<IDXGIFactory4> m_dxgiFactory;
-	Microsoft::WRL::ComPtr<IDXGIAdapter> m_adapter;
-	Microsoft::WRL::ComPtr<ID3D12Device> m_device;
-	Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
+	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
+	IntrusivePtr<IDXGIAdapter> m_adapter;
+	IntrusivePtr<ID3D12Device> m_device;
+	IntrusivePtr<IDXGISwapChain3> m_swapChain;
 	bool m_bIsWarpAdapter{ false };
 
 	// DirectX caps

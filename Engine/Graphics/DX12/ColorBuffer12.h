@@ -57,7 +57,7 @@ private:
 	Color m_clearColor{ DirectX::Colors::Black };
 	uint32_t m_numFragments{ 1 };
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_resource;
+	IntrusivePtr<ID3D12Resource> m_resource;
 	ResourceState m_usageState{ ResourceState::Undefined };
 	ResourceState m_transitioningState{ ResourceState::Undefined };
 

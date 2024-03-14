@@ -29,8 +29,6 @@ extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12\\
 namespace
 {
 
-Microsoft::WRL::ComPtr<ID3D12Device> g_device;
-
 #if ENABLE_DX12_DEBUG_MARKUP
 void SetDebugName(ID3D12Object* object, const string& name)
 {
@@ -50,7 +48,7 @@ bool IsDirectXAgilitySDKAvailable()
 
 bool IsAdapterIntegrated(IDXGIAdapter* adapter)
 {
-	Microsoft::WRL::ComPtr<IDXGIAdapter3> adapter3;
+	IntrusivePtr<IDXGIAdapter3> adapter3;
 	adapter->QueryInterface(IID_PPV_ARGS(adapter3.GetAddressOf()));
 
 	DXGI_QUERY_VIDEO_MEMORY_INFO nonLocalVideoMemoryInfo{};
@@ -91,16 +89,15 @@ GraphicsDevice::~GraphicsDevice()
 {
 	LogInfo(LogDirectX) << "Destroying DirectX 12 device" << endl;
 
-#if defined(_DEBUG)
-	ID3D12DebugDevice* debugInterface;
-	if (SUCCEEDED(m_device->QueryInterface(&debugInterface)))
+	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
 	{
-		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
-		debugInterface->Release();
+		ID3D12DebugDevice* debugInterface{ nullptr };
+		if (SUCCEEDED(m_device->QueryInterface(&debugInterface)))
+		{
+			debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+			debugInterface->Release();
+		}
 	}
-#endif
-
-	g_device.Reset();
 }
 
 
@@ -114,7 +111,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	if (bUseDebugLayer)
 	{
-		Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
+		IntrusivePtr<ID3D12Debug> debugInterface;
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
 		{
 			debugInterface->EnableDebugLayer();
@@ -143,7 +140,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	// Obtain the DXGI factory
 	assert_succeeded(CreateDXGIFactory2(bUseDebugLayer ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory)));
 
-	Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory6;
+	IntrusivePtr<IDXGIFactory6> dxgiFactory6;
 	m_dxgiFactory->QueryInterface(IID_PPV_ARGS(dxgiFactory6.GetAddressOf()));
 
 	// Create the D3D graphics device
@@ -153,7 +150,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 	static const bool bAllowSoftwareRendering{ false };
 	static const bool bFavorDiscreteAdapter{ true };
 
-	Microsoft::WRL::ComPtr<ID3D12Device> pDevice;
+	IntrusivePtr<ID3D12Device> pDevice;
 
 	const D3D_FEATURE_LEVEL minRequiredLevel{ D3D_FEATURE_LEVEL_11_0 };
 	const DXGI_GPU_PREFERENCE gpuPreference{ DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE };
@@ -170,7 +167,7 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 
 	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != EnumAdapters((UINT)idx, gpuPreference, dxgiFactory6.Get(), &pAdapter); ++idx)
 	{
-		Microsoft::WRL::ComPtr<IDXGIAdapter> adapter{ pAdapter };
+		IntrusivePtr<IDXGIAdapter> adapter{ pAdapter };
 
 		DXGI_ADAPTER_DESC desc{};
 		adapter->GetDesc(&desc);
