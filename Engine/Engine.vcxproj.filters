@@ -84,6 +84,9 @@
     <ClCompile Include="Graphics\VK\RefCountingVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\VK\ExtensionManagerVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -237,6 +240,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\VK\Generated\LoaderVK.h">
       <Filter>Graphics\VK\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\ExtensionManagerVK.h">
+      <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

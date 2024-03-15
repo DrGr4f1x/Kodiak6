@@ -21,9 +21,6 @@ namespace Kodiak::DX12
 struct DeviceCaps;
 
 
-
-
-
 class DeviceManager12 : public DeviceManager
 {
 public:

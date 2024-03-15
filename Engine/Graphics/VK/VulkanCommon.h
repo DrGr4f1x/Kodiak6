@@ -20,9 +20,18 @@
 #include <vulkan.h>
 #pragma comment(lib, "vulkan-1.lib")
 
+
 #include "Graphics\GraphicsCommon.h"
+#include "Graphics\VK\RefCountingVK.h"
+#include "Graphics\VK\VersionVK.h"
+
+
+#define VK_SUCCEEDED(res) (res == VK_SUCCESS)
+#define VK_FAILED(res) (res != VK_SUCCESS)
 
 namespace Kodiak::VK
 {
+
+inline LogCategory LogVulkan{ "LogVulkan" };
 
 } // namespace Kodiak::VK

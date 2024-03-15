@@ -44,6 +44,7 @@
     <ClCompile Include="Graphics\GraphicsCommon.cpp" />
     <ClCompile Include="Graphics\VK\DeviceCapsVK.cpp" />
     <ClCompile Include="Graphics\VK\DeviceManagerVK.cpp" />
+    <ClCompile Include="Graphics\VK\ExtensionManagerVK.cpp" />
     <ClCompile Include="Graphics\VK\FormatsVK.cpp" />
     <ClCompile Include="Graphics\VK\DeviceVK.cpp" />
     <ClCompile Include="Graphics\VK\EnumsVK.cpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="Graphics\Interfaces.h" />
     <ClInclude Include="Graphics\VK\DeviceCapsVK.h" />
     <ClInclude Include="Graphics\VK\DeviceManagerVK.h" />
+    <ClInclude Include="Graphics\VK\ExtensionManagerVK.h" />
     <ClInclude Include="Graphics\VK\FlagsVK.h" />
     <ClInclude Include="Graphics\VK\FormatsVK.h" />
     <ClInclude Include="Graphics\VK\Generated\LoaderVK.h" />

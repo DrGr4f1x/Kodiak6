@@ -48,6 +48,4 @@ private:
 
 GraphicsDevice* CreateDeviceVK(const GraphicsDeviceDesc& desc);
 
-inline LogCategory LogVulkan{ "LogVulkan" };
-
 } // namespace Kodiak::VK

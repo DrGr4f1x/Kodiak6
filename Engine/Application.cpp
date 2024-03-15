@@ -266,6 +266,7 @@ void Application::CreateDeviceManager()
 
 	auto deviceDesc = DeviceDesc{}
 		.SetAppName(m_appDesc.name)
+		.SetEnableDebugRuntime(m_appDesc.useDebugLayer)
 		.SetBackBufferWidth(m_appDesc.width)
 		.SetBackBufferHeight(m_appDesc.height);
 
