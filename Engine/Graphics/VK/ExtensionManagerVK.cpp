@@ -36,7 +36,7 @@ bool ExtensionManager::InitializeDevice(VkPhysicalDevice device)
 	uint32_t numExtensions{ 0 };
 	if (VK_FAILED(vkEnumerateDeviceExtensionProperties(device, nullptr, &numExtensions, nullptr)))
 	{
-		LogError(LogVulkan) << "Failed to enumerate Vulkan device extensions" << endl;
+		LogError(LogVulkan) << "Failed to get Vulkan device extension count" << endl;
 		return false;
 	}
 
@@ -127,7 +127,7 @@ bool ExtensionManager::EnumerateInstanceLayers()
 	uint32_t numLayers{ 0 };
 	if (VK_FAILED(vkEnumerateInstanceLayerProperties(&numLayers, nullptr)))
 	{
-		LogError(LogVulkan) << "Failed to enumerate Vulkan instance layers" << endl;
+		LogError(LogVulkan) << "Failed to get Vulkan instance layer count" << endl;
 		return false;
 	}
 
@@ -156,14 +156,14 @@ bool ExtensionManager::EnumerateInstanceExtensions()
 	uint32_t numExtensions{ 0 };
 	if (VK_FAILED(vkEnumerateInstanceExtensionProperties(nullptr, &numExtensions, nullptr)))
 	{
-		LogError(LogVulkan) << "Failed to enumerate instance extensions" << endl;
+		LogError(LogVulkan) << "Failed to get Vulkan instance extension count" << endl;
 		return false;
 	}
 
 	vector<VkExtensionProperties> extensions(numExtensions);
 	if (VK_FAILED(vkEnumerateInstanceExtensionProperties(nullptr, &numExtensions, extensions.data())))
 	{
-		LogError(LogVulkan) << "Failed to enumerate instance extensions" << endl;
+		LogError(LogVulkan) << "Failed to enumerate Vulkan instance extensions" << endl;
 		return false;
 	}
 

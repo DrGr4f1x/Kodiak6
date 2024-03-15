@@ -18,6 +18,7 @@ namespace Kodiak::VK
 {
 
 // Forward declarations
+struct DeviceCaps;
 class ExtensionManager;
 
 
@@ -33,12 +34,16 @@ protected:
 	bool CreateSwapChain() final;
 
 	void SetRequiredInstanceLayersAndExtensions();
+	bool SelectPhysicalDevice();
 
 private:
 	ExtensionManager* m_extensionManager{ nullptr };
 	VulkanVersionInfo m_versionInfo{};
 
 	VkInstanceHandle m_instance;
+	VkPhysicalDeviceHandle m_physicalDevice;
+
+	DeviceCaps* m_caps{ nullptr };
 };
 
 } // namespace Kodiak::VK

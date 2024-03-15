@@ -12,8 +12,10 @@
 
 #include "DeviceManagerVK.h"
 
+#include "DeviceCapsVK.h"
 #include "ExtensionManagerVK.h"
 #include "Generated\LoaderVK.h"
+
 
 using namespace std;
 
@@ -25,6 +27,9 @@ DeviceManagerVK::~DeviceManagerVK()
 {
 	delete m_extensionManager;
 	m_extensionManager = nullptr;
+
+	delete m_caps;
+	m_caps = nullptr;
 }
 
 bool DeviceManagerVK::CreateInstanceInternal()
@@ -43,6 +48,11 @@ bool DeviceManagerVK::CreateInstanceInternal()
 	if (!m_extensionManager->InitializeInstance())
 	{
 		return false;
+	}
+
+	if (!m_caps)
+	{
+		m_caps = new DeviceCaps{};
 	}
 
 	SetRequiredInstanceLayersAndExtensions();
@@ -94,6 +104,8 @@ bool DeviceManagerVK::CreateInstanceInternal()
 
 bool DeviceManagerVK::CreateDevice()
 {
+	SelectPhysicalDevice();
+
 	return true;
 }
 
@@ -119,6 +131,96 @@ void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 		"VK_KHR_surface"
 	};
 	m_extensionManager->SetRequiredInstanceExtensions(requiredExtensions);
+}
+
+
+bool DeviceManagerVK::SelectPhysicalDevice()
+{
+	uint32_t gpuCount{ 0 };
+	
+	// Get number of available physical devices
+	if (VK_FAILED(vkEnumeratePhysicalDevices(*m_instance, &gpuCount, nullptr)))
+	{
+		LogError(LogVulkan) << "Failed to get physical device count" << endl;
+		return false;
+	}
+
+	// Enumerate physical devices
+	vector<VkPhysicalDevice> physicalDevices(gpuCount);
+	if (VK_FAILED(vkEnumeratePhysicalDevices(*m_instance, &gpuCount, physicalDevices.data())))
+	{
+		LogError(LogVulkan) << "Failed to enumerate physical devices" << endl;
+		return false;
+	}
+
+	int32_t firstDiscreteGpu{ -1 };
+	int32_t firstIntegratedGpu{ -1 };
+
+	LogInfo(LogVulkan) << "Enumerating Vulkan physical devices" << endl;
+
+	for (size_t deviceIdx = 0; deviceIdx < physicalDevices.size(); ++deviceIdx)
+	{
+		DeviceCaps caps{};
+		caps.ReadCaps(physicalDevices[deviceIdx]);
+
+		auto deviceType = caps.properties.deviceType;
+
+		// Only consider discrete and integrated GPUs
+		if (deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceType != VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+		{
+			continue;
+		}
+
+		if (deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && firstDiscreteGpu == -1)
+		{
+			firstDiscreteGpu = (uint32_t)deviceIdx;
+		}
+		else if (deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && firstIntegratedGpu == -1)
+		{
+			firstIntegratedGpu = (uint32_t)deviceIdx;
+		}
+
+		const string deviceTypeStr = deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ? "Discrete" : "Integrated";
+
+		string deviceName = caps.properties.deviceName;
+		LogInfo(LogVulkan) << format("  {} physical device {} is Vulkan-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, API version: {})",
+			deviceTypeStr,
+			deviceIdx,
+			deviceName,
+			caps.properties.vendorID, caps.properties.deviceID, caps.version)
+			<< endl;
+	}
+
+	// Now select a device, preferring discrete if available
+	if (firstDiscreteGpu != -1)
+	{
+		auto physicalDevice = physicalDevices[firstDiscreteGpu];
+		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
+
+		LogInfo(LogVulkan) << "Selected discrete Vulkan physical device " << firstDiscreteGpu << endl;
+	}
+	else if (firstIntegratedGpu != -1)
+	{
+		auto physicalDevice = physicalDevices[firstIntegratedGpu];
+		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
+
+		LogInfo(LogVulkan) << "Selected integrated Vulkan physical device " << firstIntegratedGpu << endl;
+	}
+	else
+	{
+		LogError(LogVulkan) << "Failed to select a Vulkan physical device" << endl;
+		return false;
+	}
+
+	m_caps->ReadCaps(*m_physicalDevice);
+	if (g_graphicsDeviceOptions.logDeviceFeatures)
+	{
+		m_caps->LogCaps();
+	}
+
+	m_extensionManager->InitializeDevice(*m_physicalDevice);
+
+	return true;
 }
 
 } // namespace Kodiak::VK
