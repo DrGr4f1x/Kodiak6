@@ -29,10 +29,12 @@ struct ExtensionSet
 class ExtensionManager
 {
 public:
-	bool Initialize();
+	bool InitializeInstance();
+	bool InitializeDevice(VkPhysicalDevice device);
 
 	bool GetEnabledInstanceLayers(std::vector<const char*>& layers);
 	bool GetEnabledInstanceExtensions(std::vector<const char*>& extensions);
+	bool GetEnabledDeviceExtensions(std::vector<const char*>& extensions);
 
 	void SetRequiredInstanceLayer(const std::string& layer) { requiredExtensions.instanceLayers.insert(layer); }
 	void SetRequiredInstanceLayers(const std::vector<std::string>& layers) { requiredExtensions.instanceLayers.insert(layers.begin(), layers.end()); }
@@ -61,11 +63,13 @@ private:
 
 	bool ValidateInstanceLayers();
 	bool ValidateInstanceExtensions();
+	bool ValidateDeviceExtensions();
 
 private:
 	VkInstanceHandle m_instance;
 	bool m_instanceLayersValidated{ false };
 	bool m_instanceExtensionsValidated{ false };
+	bool m_deviceExtensionsValidated{ false };
 };
 
 } // namespace Kodiak::VK

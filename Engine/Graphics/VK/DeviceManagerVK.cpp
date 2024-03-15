@@ -40,7 +40,7 @@ bool DeviceManagerVK::CreateInstanceInternal()
 		m_extensionManager = new ExtensionManager{};
 	}
 
-	if (!m_extensionManager->Initialize())
+	if (!m_extensionManager->InitializeInstance())
 	{
 		return false;
 	}

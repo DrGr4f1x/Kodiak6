@@ -20,12 +20,40 @@ using namespace std;
 namespace Kodiak::VK
 {
 
-bool ExtensionManager::Initialize()
+bool ExtensionManager::InitializeInstance()
 {
 	bool bLayersRead = EnumerateInstanceLayers();
 	bool bExtensionsRead = EnumerateInstanceExtensions();
 
 	return bLayersRead && bExtensionsRead;
+}
+
+
+bool ExtensionManager::InitializeDevice(VkPhysicalDevice device)
+{
+	LogInfo(LogVulkan) << "Enumerating available Vulkan device extensions" << endl;
+
+	uint32_t numExtensions{ 0 };
+	if (VK_FAILED(vkEnumerateDeviceExtensionProperties(device, nullptr, &numExtensions, nullptr)))
+	{
+		LogError(LogVulkan) << "Failed to enumerate Vulkan device extensions" << endl;
+		return false;
+	}
+
+	vector<VkExtensionProperties> extensions(numExtensions);
+	if (VK_FAILED(vkEnumerateDeviceExtensionProperties(device, nullptr, &numExtensions, extensions.data())))
+	{
+		LogError(LogVulkan) << "Failed to enumerator Vulkan device extensions" << endl;
+		return false;
+	}
+
+	for (const auto& extension : extensions)
+	{
+		LogInfo(LogVulkan) << "  - " << extension.extensionName << endl;
+		availableExtensions.deviceExtensions.insert(extension.extensionName);
+	}
+
+	return true;
 }
 
 
@@ -63,6 +91,27 @@ bool ExtensionManager::GetEnabledInstanceExtensions(vector<const char*>& extensi
 	}
 
 	for (const auto& extension : enabledExtensions.instanceExtensions)
+	{
+		extensions.push_back(extension.c_str());
+	}
+
+	return true;
+}
+
+
+bool ExtensionManager::GetEnabledDeviceExtensions(vector<const char*>& extensions)
+{
+	extensions.clear();
+
+	if (!m_deviceExtensionsValidated)
+	{
+		if (!ValidateDeviceExtensions())
+		{
+			return false;
+		}
+	}
+
+	for (const auto& extension : enabledExtensions.deviceExtensions)
 	{
 		extensions.push_back(extension.c_str());
 	}
@@ -245,6 +294,67 @@ bool ExtensionManager::ValidateInstanceExtensions()
 	}
 
 	m_instanceExtensionsValidated = true;
+
+	return true;
+}
+
+
+bool ExtensionManager::ValidateDeviceExtensions()
+{
+	// Check required extensions
+	vector<string> missingExtensions;
+	for (const auto& extension : requiredExtensions.deviceExtensions)
+	{
+		if (availableExtensions.deviceExtensions.find(extension) != availableExtensions.deviceExtensions.end())
+		{
+			enabledExtensions.deviceExtensions.insert(extension);
+		}
+		else
+		{
+			missingExtensions.push_back(extension);
+		}
+	}
+
+	if (!missingExtensions.empty())
+	{
+		LogError(LogVulkan) << "Failed to create Vulkan device because the following required extensions(s) are not supported:";;
+		for (const auto& extension : missingExtensions)
+		{
+			LogError(LogVulkan) << endl << "  - " << extension;
+		}
+		return false;
+	}
+
+	// Check optional extensions
+	missingExtensions.clear();
+	for (const auto& extension : optionalExtensions.deviceExtensions)
+	{
+		if (availableExtensions.deviceExtensions.find(extension) != availableExtensions.deviceExtensions.end())
+		{
+			enabledExtensions.deviceExtensions.insert(extension);
+		}
+		else
+		{
+			missingExtensions.push_back(extension);
+		}
+	}
+
+	if (!missingExtensions.empty())
+	{
+		LogWarning(LogVulkan) << "The following optional Vulkan device extension(s) are not supported:";
+		for (const auto& extension : missingExtensions)
+		{
+			LogError(LogVulkan) << endl << "  - " << extension;
+		}
+	}
+
+	LogInfo(LogVulkan) << "Enabling Vulkan device extensions:" << endl;
+	for (const auto& extension : enabledExtensions.deviceExtensions)
+	{
+		LogInfo(LogVulkan) << "  - " << extension << endl;
+	}
+
+	m_deviceExtensionsValidated = true;
 
 	return true;
 }
