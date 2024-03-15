@@ -63,6 +63,9 @@ void DeviceCaps::LogCaps()
 	constexpr const char* formatStr2 = "        {:46} {}";
 	constexpr const char* formatStr3 = "        {:46} {:#x}";
 	constexpr const char* formatStr4 = "        {:54} {}";
+	constexpr const char* formatStr5 = "        {:54} {:#x}";
+	constexpr const char* formatStr6 = "        {:72} {}";
+	constexpr const char* formatStr7 = "        {:72} {:#x}";
 
 	// Vulkan 1.0 properties
 	LogInfo(LogVulkan) << "    Vulkan 1.0 properties" << endl;
@@ -254,4 +257,62 @@ void DeviceCaps::LogCaps()
 	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindSampledImages:", properties12.maxDescriptorSetUpdateAfterBindSampledImages) << endl;
 	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindStorageImages:", properties12.maxDescriptorSetUpdateAfterBindStorageImages) << endl;
 	LogInfo(LogVulkan) << format(formatStr4, "maxDescriptorSetUpdateAfterBindInputAttachments:", properties12.maxDescriptorSetUpdateAfterBindInputAttachments) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "supportedDepthResolveModes:", VkResolveModeFlagsToString(properties12.supportedDepthResolveModes)) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "supportedStencilResolveModes:", VkResolveModeFlagsToString(properties12.supportedStencilResolveModes)) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "independentResolveNone:", (bool)properties12.independentResolveNone) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "independentResolve:", (bool)properties12.independentResolve) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "filterMinmaxSingleComponentFormats:", (bool)properties12.filterMinmaxSingleComponentFormats) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "filterMinmaxImageComponentMapping:", (bool)properties12.filterMinmaxImageComponentMapping) << endl;
+	LogInfo(LogVulkan) << format(formatStr5, "maxTimelineSemaphoreValueDifference:", properties12.maxTimelineSemaphoreValueDifference) << endl;
+	LogInfo(LogVulkan) << format(formatStr4, "framebufferIntegerColorSampleCounts:", VkSampleCountFlagsToString(properties12.framebufferIntegerColorSampleCounts)) << endl;
+	LogInfo(LogVulkan) << endl;
+
+	// Vulkan 1.3 properties
+	LogInfo(LogVulkan) << "    Vulkan 1.3 properties" << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "minSubgroupSize:", properties13.minSubgroupSize) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxSubgroupSize:", properties13.maxSubgroupSize) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxComputeWorkgroupSubgroups:", properties13.maxComputeWorkgroupSubgroups) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "requiredSubgroupSizeStages:", VkShaderStageFlagsToString(properties13.requiredSubgroupSizeStages)) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxInlineUniformBlockSize:", properties13.maxInlineUniformBlockSize) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxPerStageDescriptorInlineUniformBlocks:", properties13.maxPerStageDescriptorInlineUniformBlocks) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks:", properties13.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxDescriptorSetInlineUniformBlocks:", properties13.maxDescriptorSetInlineUniformBlocks) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxDescriptorSetUpdateAfterBindInlineUniformBlocks:", properties13.maxDescriptorSetUpdateAfterBindInlineUniformBlocks) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "maxInlineUniformTotalSize:", properties13.maxInlineUniformTotalSize) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct8BitUnsignedAccelerated:", (bool)properties13.integerDotProduct8BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct8BitSignedAccelerated:", (bool)properties13.integerDotProduct8BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct8BitMixedSignednessAccelerated:", (bool)properties13.integerDotProduct8BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct4x8BitPackedUnsignedAccelerated:", (bool)properties13.integerDotProduct4x8BitPackedUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct4x8BitPackedSignedAccelerated:", (bool)properties13.integerDotProduct4x8BitPackedSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct4x8BitPackedMixedSignednessAccelerated:", (bool)properties13.integerDotProduct4x8BitPackedMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct16BitUnsignedAccelerated:", (bool)properties13.integerDotProduct16BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct16BitSignedAccelerated:", (bool)properties13.integerDotProduct16BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct16BitMixedSignednessAccelerated:", (bool)properties13.integerDotProduct16BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct32BitUnsignedAccelerated:", (bool)properties13.integerDotProduct32BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct32BitSignedAccelerated:", (bool)properties13.integerDotProduct32BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct32BitMixedSignednessAccelerated:", (bool)properties13.integerDotProduct32BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct64BitUnsignedAccelerated:", (bool)properties13.integerDotProduct64BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct64BitSignedAccelerated:", (bool)properties13.integerDotProduct64BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProduct64BitMixedSignednessAccelerated:", (bool)properties13.integerDotProduct64BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating8BitUnsignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating8BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating8BitSignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating8BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating16BitUnsignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating16BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating16BitSignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating16BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating32BitUnsignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating32BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating32BitSignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating32BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating64BitUnsignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating64BitUnsignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating64BitSignedAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating64BitSignedAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated:", (bool)properties13.integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated) << endl;
+	LogInfo(LogVulkan) << format(formatStr7, "storageTexelBufferOffsetAlignmentBytes:", properties13.storageTexelBufferOffsetAlignmentBytes) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "storageTexelBufferOffsetSingleTexelAlignment:", (bool)properties13.storageTexelBufferOffsetSingleTexelAlignment) << endl;
+	LogInfo(LogVulkan) << format(formatStr7, "uniformTexelBufferOffsetAlignmentBytes:", properties13.uniformTexelBufferOffsetAlignmentBytes) << endl;
+	LogInfo(LogVulkan) << format(formatStr6, "uniformTexelBufferOffsetSingleTexelAlignment:", (bool)properties13.uniformTexelBufferOffsetSingleTexelAlignment) << endl;
+	LogInfo(LogVulkan) << format(formatStr7, "maxBufferSize:", properties13.maxBufferSize) << endl;
+	LogInfo(LogVulkan) << endl;
 }

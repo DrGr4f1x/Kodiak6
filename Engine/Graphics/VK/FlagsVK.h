@@ -21,6 +21,16 @@ inline static const FlagStringMap32 g_queueFlagsMap{
 	{ VK_QUEUE_TRANSFER_BIT,	"Transfer" }
 };
 
+
+inline static const FlagStringMap32 g_resolveModeFlagsMap{
+	{ VK_RESOLVE_MODE_NONE, "None" },
+	{ VK_RESOLVE_MODE_SAMPLE_ZERO_BIT, "Sample Zero" },
+	{ VK_RESOLVE_MODE_AVERAGE_BIT, "Average" },
+	{ VK_RESOLVE_MODE_MIN_BIT, "Min" },
+	{ VK_RESOLVE_MODE_MAX_BIT, "Max" }
+};
+
+
 inline static const FlagStringMap32 g_sampleCountFlagsMap{
 	{ VK_SAMPLE_COUNT_1_BIT,	"1" },
 	{ VK_SAMPLE_COUNT_2_BIT,	"2" },

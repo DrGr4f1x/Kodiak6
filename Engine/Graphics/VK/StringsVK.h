@@ -147,6 +147,12 @@ inline std::string VkQueueFlagsToString(VkQueueFlags queueFlags)
 }
 
 
+inline std::string VkResolveModeFlagsToString(VkResolveModeFlags resolveModeFlags)
+{
+	return g_resolveModeFlagsMap.BuildString(resolveModeFlags, '|');
+}
+
+
 inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlags)
 {
 	return g_sampleCountFlagsMap.BuildString(sampleCountFlags);
