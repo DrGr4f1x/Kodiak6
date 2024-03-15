@@ -479,4 +479,18 @@ VkQueryType QueryTypeToVulkan(QueryType queryHeapType)
 	}
 }
 
+
+AdapterType VkPhysicalDeviceTypeToEngine(VkPhysicalDeviceType physicalDeviceType)
+{
+	using enum AdapterType;
+
+	switch (physicalDeviceType)
+	{
+	case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: return Discrete; break;
+	case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: return Integrated; break;
+	case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: return Software; break;
+	default: return Other; break;
+	}
+}
+
 } // Minimumnamespace Kodiak::VK

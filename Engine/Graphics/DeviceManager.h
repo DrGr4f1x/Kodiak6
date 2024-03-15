@@ -26,6 +26,7 @@ struct AdapterInfo
 	size_t sharedSystemMemory{ 0 };
 	HardwareVendor vendor{ HardwareVendor::Unknown };
 	AdapterType adapterType{ AdapterType::Other };
+	uint32_t apiVersion{ 0 };
 };
 
 

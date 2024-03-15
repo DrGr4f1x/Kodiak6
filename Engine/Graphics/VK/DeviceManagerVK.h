@@ -34,6 +34,7 @@ protected:
 	bool CreateSwapChain() final;
 
 	void SetRequiredInstanceLayersAndExtensions();
+	std::vector<std::pair<AdapterInfo, VkPhysicalDevice>> EnumeratePhysicalDevices();
 	bool SelectPhysicalDevice();
 
 private:

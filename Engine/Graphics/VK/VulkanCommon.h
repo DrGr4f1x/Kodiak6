@@ -22,8 +22,11 @@
 
 
 #include "Graphics\GraphicsCommon.h"
+#include "Graphics\VK\EnumsVK.h"
 #include "Graphics\VK\RefCountingVK.h"
+#include "Graphics\VK\StringsVK.h"
 #include "Graphics\VK\VersionVK.h"
+#include "Graphics\VK\Generated\LoaderVK.h"
 
 
 #define VK_SUCCEEDED(res) (res == VK_SUCCESS)
@@ -32,6 +35,7 @@
 namespace Kodiak::VK
 {
 
+inline const uint32_t g_requiredVulkanApiVersion = VK_API_VERSION_1_3;
 inline LogCategory LogVulkan{ "LogVulkan" };
 
 } // namespace Kodiak::VK

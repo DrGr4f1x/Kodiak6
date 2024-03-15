@@ -242,7 +242,7 @@ bool DeviceManager12::SelectAdapterAndCreateDevice()
 		++adapterIdx;
 	}
 
-	// Now chose our best adapter
+	// Now choose our best adapter
 	if (m_desc.preferDiscreteDevice)
 	{
 		if (bestMemoryAdapterIdx != -1)

@@ -456,4 +456,18 @@ enum class AdapterType : uint8_t
 	Other
 };
 
+
+inline std::string AdapterTypeToString(AdapterType adapterType)
+{
+	using enum AdapterType;
+
+	switch (adapterType)
+	{
+	case Discrete: return "Discrete"; break;
+	case Integrated: return "Integrated"; break;
+	case Software: return "Software"; break;
+	default: return "Other"; break;
+	}
+}
+
 } // namespace Kodiak

@@ -20,6 +20,48 @@
 using namespace std;
 
 
+namespace
+{
+
+size_t GetDedicatedVideoMemory(VkPhysicalDevice physicalDevice)
+{
+	size_t memory{ 0 };
+
+	VkPhysicalDeviceMemoryProperties memoryProperties{};
+	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+
+	for (const auto& heap : memoryProperties.memoryHeaps)
+	{
+		if (heap.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
+		{
+			memory += heap.size;
+		}
+	}
+
+	return memory;
+}
+
+size_t GetSharedSystemMemory(VkPhysicalDevice physicalDevice)
+{
+	size_t memory{ 0 };
+
+	VkPhysicalDeviceMemoryProperties memoryProperties{};
+	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+
+	for (const auto& heap : memoryProperties.memoryHeaps)
+	{
+		if (heap.flags == 0)
+		{
+			memory += heap.size;
+		}
+	}
+
+	return memory;
+}
+
+} // anonymous namespace
+
+
 namespace Kodiak::VK
 {
 
@@ -134,15 +176,17 @@ void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 }
 
 
-bool DeviceManagerVK::SelectPhysicalDevice()
+vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDevices()
 {
+	vector<pair<AdapterInfo, VkPhysicalDevice>> adapters;
+
 	uint32_t gpuCount{ 0 };
-	
+
 	// Get number of available physical devices
 	if (VK_FAILED(vkEnumeratePhysicalDevices(*m_instance, &gpuCount, nullptr)))
 	{
 		LogError(LogVulkan) << "Failed to get physical device count" << endl;
-		return false;
+		return adapters;
 	}
 
 	// Enumerate physical devices
@@ -150,11 +194,8 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 	if (VK_FAILED(vkEnumeratePhysicalDevices(*m_instance, &gpuCount, physicalDevices.data())))
 	{
 		LogError(LogVulkan) << "Failed to enumerate physical devices" << endl;
-		return false;
+		return adapters;
 	}
-
-	int32_t firstDiscreteGpu{ -1 };
-	int32_t firstIntegratedGpu{ -1 };
 
 	LogInfo(LogVulkan) << "Enumerating Vulkan physical devices" << endl;
 
@@ -163,54 +204,129 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 		DeviceCaps caps{};
 		caps.ReadCaps(physicalDevices[deviceIdx]);
 
-		auto deviceType = caps.properties.deviceType;
+		AdapterInfo adapterInfo{};
+		adapterInfo.name = caps.properties.deviceName;
+		adapterInfo.deviceId = caps.properties.deviceID;
+		adapterInfo.vendorId = caps.properties.vendorID;
+		adapterInfo.dedicatedVideoMemory = GetDedicatedVideoMemory(physicalDevices[deviceIdx]);
+		adapterInfo.sharedSystemMemory = GetSharedSystemMemory(physicalDevices[deviceIdx]);
+		adapterInfo.vendor = VendorIdToHardwareVendor(adapterInfo.vendorId);
+		adapterInfo.adapterType = VkPhysicalDeviceTypeToEngine(caps.properties.deviceType);
+		adapterInfo.apiVersion = caps.properties.apiVersion;
 
-		// Only consider discrete and integrated GPUs
-		if (deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceType != VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+		LogInfo(LogVulkan) << format("  {} physical device {} is Vulkan-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, API version: {})",
+			AdapterTypeToString(adapterInfo.adapterType),
+			deviceIdx,
+			adapterInfo.name,
+			adapterInfo.vendorId, adapterInfo.deviceId, VulkanVersionToString(adapterInfo.apiVersion))
+			<< endl;
+
+		LogInfo(LogVulkan) << format("    Physical device memory: {} MB dedicated video memory, {} MB dedicated system memory, {} MB shared memory",
+			(uint32_t)(adapterInfo.dedicatedVideoMemory >> 20),
+			(uint32_t)(adapterInfo.dedicatedSystemMemory >> 20),
+			(uint32_t)(adapterInfo.sharedSystemMemory >> 20))
+			<< endl;
+
+		adapters.push_back(make_pair(adapterInfo, physicalDevices[deviceIdx]));
+	}
+
+	return adapters;
+}
+
+
+bool DeviceManagerVK::SelectPhysicalDevice()
+{
+	using enum AdapterType;
+
+	vector<pair<AdapterInfo, VkPhysicalDevice>> physicalDevices = EnumeratePhysicalDevices();
+
+	if (physicalDevices.empty())
+	{
+		return false;
+	}
+
+	int32_t firstDiscreteAdapterIdx{ -1 };
+	int32_t bestMemoryAdapterIdx{ -1 };
+	int32_t firstAdapterIdx{ -1 };
+	int32_t softwareAdapterIdx{ -1 };
+	int32_t chosenAdapterIdx{ -1 };
+	size_t maxMemory{ 0 };
+
+	int32_t adapterIdx{ 0 };
+	for (const auto& adapterPair : physicalDevices)
+	{
+		// Skip adapters that don't support the required Vulkan API version
+		if (adapterPair.first.apiVersion < g_requiredVulkanApiVersion)
 		{
 			continue;
 		}
 
-		if (deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && firstDiscreteGpu == -1)
+		// Skip adapters of type 'Other'
+		if (adapterPair.first.adapterType == Other)
 		{
-			firstDiscreteGpu = (uint32_t)deviceIdx;
-		}
-		else if (deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && firstIntegratedGpu == -1)
-		{
-			firstIntegratedGpu = (uint32_t)deviceIdx;
+			continue;
 		}
 
-		const string deviceTypeStr = deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ? "Discrete" : "Integrated";
+		// Skip software adapters if we disallow them
+		if (adapterPair.first.adapterType == Software && !m_desc.allowSoftwareDevice)
+		{
+			continue;
+		}
 
-		string deviceName = caps.properties.deviceName;
-		LogInfo(LogVulkan) << format("  {} physical device {} is Vulkan-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, API version: {})",
-			deviceTypeStr,
-			deviceIdx,
-			deviceName,
-			caps.properties.vendorID, caps.properties.deviceID, caps.version)
-			<< endl;
+		if (firstAdapterIdx == -1)
+		{
+			firstAdapterIdx = adapterIdx;
+		}
+
+		if (adapterPair.first.adapterType == Discrete && firstDiscreteAdapterIdx == -1)
+		{
+			firstDiscreteAdapterIdx = adapterIdx;
+		}
+
+		if (adapterPair.first.adapterType == Software && softwareAdapterIdx == -1 && m_desc.allowSoftwareDevice)
+		{
+			softwareAdapterIdx = adapterIdx;
+		}
+
+		if (adapterPair.first.dedicatedVideoMemory > maxMemory)
+		{
+			maxMemory = adapterPair.first.dedicatedVideoMemory;
+			bestMemoryAdapterIdx = adapterIdx;
+		}
+
+		++adapterIdx;
 	}
 
-	// Now select a device, preferring discrete if available
-	if (firstDiscreteGpu != -1)
-	{
-		auto physicalDevice = physicalDevices[firstDiscreteGpu];
-		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
 
-		LogInfo(LogVulkan) << "Selected discrete Vulkan physical device " << firstDiscreteGpu << endl;
-	}
-	else if (firstIntegratedGpu != -1)
+	// Now choose our best adapter
+	if (m_desc.preferDiscreteDevice)
 	{
-		auto physicalDevice = physicalDevices[firstIntegratedGpu];
-		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
-
-		LogInfo(LogVulkan) << "Selected integrated Vulkan physical device " << firstIntegratedGpu << endl;
+		if (bestMemoryAdapterIdx != -1)
+		{
+			chosenAdapterIdx = bestMemoryAdapterIdx;
+		}
+		else if (firstDiscreteAdapterIdx != -1)
+		{
+			chosenAdapterIdx = firstDiscreteAdapterIdx;
+		}
+		else
+		{
+			chosenAdapterIdx = firstAdapterIdx;
+		}
 	}
 	else
 	{
-		LogError(LogVulkan) << "Failed to select a Vulkan physical device" << endl;
+		chosenAdapterIdx = firstAdapterIdx;
+	}
+
+	if (chosenAdapterIdx == -1)
+	{
+		LogFatal(LogVulkan) << "Failed to select a Vulkan physical device" << endl;
 		return false;
 	}
+
+	m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevices[chosenAdapterIdx].second));
+	LogInfo(LogVulkan) << "Selected physical device " << chosenAdapterIdx << endl;
 
 	m_caps->ReadCaps(*m_physicalDevice);
 	if (g_graphicsDeviceOptions.logDeviceFeatures)

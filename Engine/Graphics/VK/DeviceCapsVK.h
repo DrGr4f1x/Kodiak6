@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\VK\VersionVK.h"
+
 #include "Graphics\VK\VulkanCommon.h"
 
 

@@ -69,4 +69,6 @@ VkAccessFlags ResourceStateToVulkan(ResourceState resourceState);
 
 VkQueryType QueryTypeToVulkan(QueryType queryHeapType);
 
+AdapterType VkPhysicalDeviceTypeToEngine(VkPhysicalDeviceType physicalDeviceType);
+
 } // namespace Kodiak::VK
