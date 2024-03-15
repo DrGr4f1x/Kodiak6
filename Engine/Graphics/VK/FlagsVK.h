@@ -15,6 +15,12 @@
 namespace Kodiak::VK
 {
 
+inline static const FlagStringMap32 g_queueFlagsMap{
+	{ VK_QUEUE_GRAPHICS_BIT,	"Graphics" },
+	{ VK_QUEUE_COMPUTE_BIT,		"Compute" },
+	{ VK_QUEUE_TRANSFER_BIT,	"Transfer" }
+};
+
 inline static const FlagStringMap32 g_sampleCountFlagsMap{
 	{ VK_SAMPLE_COUNT_1_BIT,	"1" },
 	{ VK_SAMPLE_COUNT_2_BIT,	"2" },

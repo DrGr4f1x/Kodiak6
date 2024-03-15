@@ -12,19 +12,24 @@
 
 #include "RefCountingVK.h"
 
-#include "Generated\LoaderVK.h"
-
-
 namespace Kodiak::VK
 {
 
 CVkInstance::~CVkInstance()
 {
-	if (m_instance)
+	vkDestroyInstance(m_instance, nullptr);
+	m_instance = VK_NULL_HANDLE;
+}
+
+
+CVkDevice::~CVkDevice()
+{
+	if (m_device)
 	{
-		vkDestroyInstance(m_instance, nullptr);
-		m_instance = VK_NULL_HANDLE;
+		vkDeviceWaitIdle(m_device);
 	}
+	vkDestroyDevice(m_device, nullptr);
+	m_device = nullptr;
 }
 
 } // namespace Kodiak::VK

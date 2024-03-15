@@ -36,6 +36,8 @@ protected:
 	void SetRequiredInstanceLayersAndExtensions();
 	std::vector<std::pair<AdapterInfo, VkPhysicalDevice>> EnumeratePhysicalDevices();
 	bool SelectPhysicalDevice();
+	void GetQueueFamilyIndices();
+	int32_t GetQueueFamilyIndex(VkQueueFlags queueFlags);
 
 private:
 	ExtensionManager* m_extensionManager{ nullptr };
@@ -45,6 +47,15 @@ private:
 	VkPhysicalDeviceHandle m_physicalDevice;
 
 	DeviceCaps* m_caps{ nullptr };
+
+	// Queues and queue families
+	std::vector<VkQueueFamilyProperties> m_queueFamilyProperties;
+	struct
+	{
+		int32_t graphics{ -1 };
+		int32_t compute{ -1 };
+		int32_t transfer{ -1 };
+	} m_queueFamilyIndices;
 };
 
 } // namespace Kodiak::VK

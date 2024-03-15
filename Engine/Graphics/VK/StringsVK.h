@@ -141,6 +141,12 @@ inline std::string VkTypeToString(VkShaderFloatControlsIndependence shaderFloatC
 }
 
 
+inline std::string VkQueueFlagsToString(VkQueueFlags queueFlags)
+{
+	return g_queueFlagsMap.BuildString(queueFlags, '|');
+}
+
+
 inline std::string VkSampleCountFlagsToString(VkSampleCountFlags sampleCountFlags)
 {
 	return g_sampleCountFlagsMap.BuildString(sampleCountFlags);

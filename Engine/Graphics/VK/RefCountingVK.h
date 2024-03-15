@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Generated\LoaderVk.h"
+#include "Graphics\VK\VulkanCommon.h"
 
 namespace Kodiak::VK
 {
@@ -60,5 +60,28 @@ private:
 	VkPhysicalDevice m_physicalDevice{ VK_NULL_HANDLE };
 };
 using VkPhysicalDeviceHandle = IntrusivePtr<CVkPhysicalDevice>;
+
+
+//
+// VkDevice
+//
+class CVkDevice : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkDevice() noexcept = default;
+	CVkDevice(CVkPhysicalDevice* physicalDevice, VkDevice device) noexcept
+		: m_physicalDevice{ physicalDevice }
+		, m_device{ device }
+	{}
+
+	~CVkDevice() final;
+
+	VkDevice Get() const noexcept { return m_device; }
+	operator VkDevice() const { return Get(); }
+
+private:
+	VkPhysicalDeviceHandle m_physicalDevice;
+	VkDevice m_device{ VK_NULL_HANDLE };
+};
 
 } // namespace Kodiak::VK
