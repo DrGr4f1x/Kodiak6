@@ -68,6 +68,12 @@ DeviceManager12::~DeviceManager12()
 {
 	delete m_caps;
 	m_caps = nullptr;
+
+	for (auto fenceEvent : m_frameFenceEvents)
+	{
+		WaitForSingleObject(fenceEvent, INFINITE);
+		CloseHandle(fenceEvent);
+	}
 }
 
 bool DeviceManager12::CreateInstanceInternal()
@@ -170,6 +176,17 @@ bool DeviceManager12::CreateSwapChain()
 	{
 		LogError(LogDirectX) << "Failed to get IDXGISwapChain3 interface" << endl;
 		return false;
+	}
+
+	if (FAILED(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_frameFence))))
+	{
+		LogError(LogDirectX) << "Failed to create frame fence" << endl;
+		return false;
+	}
+
+	for (uint32_t bufferIdx = 0; bufferIdx < swapChainDesc.BufferCount; ++bufferIdx)
+	{
+		m_frameFenceEvents.push_back(CreateEvent(nullptr, false, true, nullptr));
 	}
 
 	return true;

@@ -56,6 +56,9 @@ private:
 	bool m_bIsWarpAdapter{ false };
 	bool m_bIsTearingSupported{ false };
 
+	IntrusivePtr<ID3D12Fence> m_frameFence;
+	std::vector<HANDLE> m_frameFenceEvents;
+
 	DeviceCaps* m_caps{ nullptr };
 };
 
