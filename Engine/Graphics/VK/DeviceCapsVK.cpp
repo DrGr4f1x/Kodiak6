@@ -74,9 +74,10 @@ void DeviceCaps::LogCaps()
 	LogInfo(LogVulkan) << format("      {:48} {} ({:#x})", "vendorID:", VendorIdToString(properties.vendorID), properties.vendorID) << endl;
 	LogInfo(LogVulkan) << format("      {:48} {:#x}", "deviceID:", properties.deviceID) << endl;
 	LogInfo(LogVulkan) << format(formatStr, "deviceType:", properties.deviceType) << endl;
-	// Vulkan 1.0 properties - limits
+
+	// Vulkan 1.0 limits
 	VkPhysicalDeviceLimits& limits = properties.limits;
-	LogInfo(LogVulkan) << "    Vulkan 1.0 properties.limits" << endl;
+	LogInfo(LogVulkan) << "    Vulkan 1.0 limits" << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "maxImageDimension1D:", limits.maxImageDimension1D) << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "maxImageDimension2D:", limits.maxImageDimension2D) << endl;
 	LogInfo(LogVulkan) << format(formatStr2, "maxImageDimension3D:", limits.maxImageDimension3D) << endl;

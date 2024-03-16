@@ -31,8 +31,6 @@ public:
 private:
 	void ReadCaps();
 	HRESULT EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
-	void ConfigureInfoQueue();
-	void CreateSwapChain();
 
 private:
 	// Device info
@@ -48,6 +46,7 @@ private:
 	IntrusivePtr<ID3D12Device> m_device;
 	IntrusivePtr<IDXGISwapChain3> m_swapChain;
 	bool m_bIsWarpAdapter{ false };
+	bool m_bIsTearingSupported{ false };
 
 	// DirectX caps
 	std::unique_ptr<DeviceCaps> m_caps;

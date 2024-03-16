@@ -36,6 +36,9 @@ protected:
 	HRESULT EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
 	bool SelectAdapterAndCreateDevice();
 
+	void ConfigureInfoQueue();
+	bool CreateCommandQueues();
+
 	void ReadCaps();
 
 private:
@@ -46,7 +49,12 @@ private:
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
 	IntrusivePtr<IDXGIAdapter> m_adapter;
 	IntrusivePtr<ID3D12Device> m_device;
+	IntrusivePtr<ID3D12CommandQueue> m_graphicsQueue;
+	IntrusivePtr<ID3D12CommandQueue> m_computeQueue;
+	IntrusivePtr<ID3D12CommandQueue> m_copyQueue;
+	IntrusivePtr<IDXGISwapChain3> m_swapChain;
 	bool m_bIsWarpAdapter{ false };
+	bool m_bIsTearingSupported{ false };
 
 	DeviceCaps* m_caps{ nullptr };
 };

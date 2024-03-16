@@ -12,6 +12,7 @@
 
 #include "DeviceManager12.h"
 #include "Graphics\DX12\DeviceCaps12.h"
+#include "Graphics\DX12\Formats12.h"
 #include "Graphics\DX12\Strings12.h"
 
 using namespace std;
@@ -120,6 +121,57 @@ bool DeviceManager12::CreateDevice()
 
 bool DeviceManager12::CreateSwapChain()
 {
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	swapChainDesc.Width = m_desc.backBufferWidth;
+	swapChainDesc.Height = m_desc.backBufferHeight;
+	swapChainDesc.SampleDesc.Count = m_desc.swapChainSampleCount;
+	swapChainDesc.SampleDesc.Quality = m_desc.swapChainSampleQuality;
+	swapChainDesc.BufferUsage = DXGI_USAGE_SHADER_INPUT | DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = m_desc.numSwapChainBuffers;
+	swapChainDesc.Flags = m_desc.allowModeSwitch ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
+	switch (m_desc.swapChainFormat)
+	{
+	case Format::SRGBA8_UNorm:
+		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		break;
+	case Format::SBGRA8_UNorm:
+		swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		break;
+	default:
+		swapChainDesc.Format = FormatToDxgi(m_desc.swapChainFormat).srvFormat;
+		break;
+	}
+
+	IntrusivePtr<IDXGIFactory5> dxgiFactory5;
+	if (SUCCEEDED(m_dxgiFactory->QueryInterface(IID_PPV_ARGS(&dxgiFactory5))))
+	{
+		BOOL supported{ 0 };
+		if (SUCCEEDED(dxgiFactory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &supported, sizeof(supported))))
+		{
+			m_bIsTearingSupported = (supported != 0);
+		}
+	}
+
+	if (m_bIsTearingSupported)
+	{
+		swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+	}
+
+	IntrusivePtr<IDXGISwapChain1> swapChain1;
+	if (FAILED(m_dxgiFactory->CreateSwapChainForHwnd(m_graphicsQueue, m_desc.hwnd, &swapChainDesc, nullptr, nullptr, &swapChain1)))
+	{
+		LogError(LogDirectX) << "Failed to create swap chain" << endl;
+		return false;
+	}
+
+	if (FAILED(swapChain1->QueryInterface(IID_PPV_ARGS(&m_swapChain))))
+	{
+		LogError(LogDirectX) << "Failed to get IDXGISwapChain3 interface" << endl;
+		return false;
+	}
+
 	return true;
 }
 
@@ -306,6 +358,103 @@ bool DeviceManager12::SelectAdapterAndCreateDevice()
 		}
 	}
 #endif
+
+	ConfigureInfoQueue();
+
+	if (!CreateCommandQueues())
+	{
+		LogFatal(LogDirectX) << "Failed to create D3D12 device" << endl;
+		return false;
+	}
+
+	return true;
+}
+
+
+void DeviceManager12::ConfigureInfoQueue()
+{
+	if (!g_graphicsDeviceOptions.useDebugRuntime)
+	{
+		return;
+	}
+
+	ID3D12InfoQueue* pInfoQueue{ nullptr };
+	if (SUCCEEDED(m_device->QueryInterface(IID_PPV_ARGS(&pInfoQueue))))
+	{
+		// Suppress whole categories of messages
+		//D3D12_MESSAGE_CATEGORY Categories[] = {};
+
+		// Suppress messages based on their severity level
+		D3D12_MESSAGE_SEVERITY severities[] =
+		{
+			D3D12_MESSAGE_SEVERITY_INFO
+		};
+
+		// Suppress individual messages by their ID
+		D3D12_MESSAGE_ID denyIds[] =
+		{
+			// This occurs when there are uninitialized descriptors in a descriptor table, even when a
+			// shader does not access the missing descriptors.  I find this is common when switching
+			// shader permutations and not wanting to change much code to reorder resources.
+			D3D12_MESSAGE_ID_INVALID_DESCRIPTOR_HANDLE,
+
+			// Triggered when a shader does not export all color components of a render target, such as
+			// when only writing RGB to an R10G10B10A2 buffer, ignoring alpha.
+			D3D12_MESSAGE_ID_CREATEGRAPHICSPIPELINESTATE_PS_OUTPUT_RT_OUTPUT_MISMATCH,
+
+			// This occurs when a descriptor table is unbound even when a shader does not access the missing
+			// descriptors.  This is common with a root signature shared between disparate shaders that
+			// don't all need the same types of resources.
+			D3D12_MESSAGE_ID_COMMAND_LIST_DESCRIPTOR_TABLE_NOT_SET,
+
+			D3D12_MESSAGE_ID_COPY_DESCRIPTORS_INVALID_RANGES,
+
+			// Silence complaints about shaders not being signed by DXIL.dll.  We don't care about this.
+			D3D12_MESSAGE_ID_NON_RETAIL_SHADER_MODEL_WONT_VALIDATE,
+
+			// RESOURCE_BARRIER_DUPLICATE_SUBRESOURCE_TRANSITIONS
+			(D3D12_MESSAGE_ID)1008,
+		};
+
+		D3D12_INFO_QUEUE_FILTER newFilter = {};
+		//newFilter.DenyList.NumCategories = _countof(Categories);
+		//newFilter.DenyList.pCategoryList = Categories;
+		newFilter.DenyList.NumSeverities = _countof(severities);
+		newFilter.DenyList.pSeverityList = severities;
+		newFilter.DenyList.NumIDs = _countof(denyIds);
+		newFilter.DenyList.pIDList = denyIds;
+
+		pInfoQueue->PushStorageFilter(&newFilter);
+		pInfoQueue->Release();
+	}
+}
+
+
+bool DeviceManager12::CreateCommandQueues()
+{
+	D3D12_COMMAND_QUEUE_DESC queueDesc{};
+	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+	queueDesc.NodeMask = 1;
+	if (FAILED(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_graphicsQueue))))
+	{
+		LogError(LogDirectX) << "Failed to create graphics queue" << endl;
+		return false;
+	}
+
+	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+	if (FAILED(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_computeQueue))))
+	{
+		LogError(LogDirectX) << "Failed to create compute queue" << endl;
+		return false;
+	}
+
+	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COPY;
+	if (FAILED(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_copyQueue))))
+	{
+		LogError(LogDirectX) << "Failed to create copy queue" << endl;
+		return false;
+	}
 
 	return true;
 }

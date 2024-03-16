@@ -300,10 +300,6 @@ void GraphicsDevice::Initialize(const GraphicsDeviceDesc& graphicsDeviceDesc)
 		}
 	}
 #endif
-
-	ConfigureInfoQueue();
-
-	CreateSwapChain();
 }
 
 
@@ -332,76 +328,6 @@ HRESULT GraphicsDevice::EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpu
 	{
 		return dxgiFactory6->EnumAdapterByGpuPreference((UINT)adapterIdx, gpuPreference, IID_PPV_ARGS(adapter));
 	}
-}
-
-
-void GraphicsDevice::ConfigureInfoQueue()
-{
-	bool bUseInfoQueue = g_graphicsDeviceOptions.useDebugRuntime;
-#if _DEBUG
-	bUseInfoQueue = true;
-#endif
-
-	if (!bUseInfoQueue)
-	{
-		return;
-	}
-
-	ID3D12InfoQueue* pInfoQueue{ nullptr };
-	if (SUCCEEDED(m_device->QueryInterface(IID_PPV_ARGS(&pInfoQueue))))
-	{
-		// Suppress whole categories of messages
-		//D3D12_MESSAGE_CATEGORY Categories[] = {};
-
-		// Suppress messages based on their severity level
-		D3D12_MESSAGE_SEVERITY severities[] =
-		{
-			D3D12_MESSAGE_SEVERITY_INFO
-		};
-
-		// Suppress individual messages by their ID
-		D3D12_MESSAGE_ID denyIds[] =
-		{
-			// This occurs when there are uninitialized descriptors in a descriptor table, even when a
-			// shader does not access the missing descriptors.  I find this is common when switching
-			// shader permutations and not wanting to change much code to reorder resources.
-			D3D12_MESSAGE_ID_INVALID_DESCRIPTOR_HANDLE,
-
-			// Triggered when a shader does not export all color components of a render target, such as
-			// when only writing RGB to an R10G10B10A2 buffer, ignoring alpha.
-			D3D12_MESSAGE_ID_CREATEGRAPHICSPIPELINESTATE_PS_OUTPUT_RT_OUTPUT_MISMATCH,
-
-			// This occurs when a descriptor table is unbound even when a shader does not access the missing
-			// descriptors.  This is common with a root signature shared between disparate shaders that
-			// don't all need the same types of resources.
-			D3D12_MESSAGE_ID_COMMAND_LIST_DESCRIPTOR_TABLE_NOT_SET,
-
-			D3D12_MESSAGE_ID_COPY_DESCRIPTORS_INVALID_RANGES,
-
-			// Silence complaints about shaders not being signed by DXIL.dll.  We don't care about this.
-			D3D12_MESSAGE_ID_NON_RETAIL_SHADER_MODEL_WONT_VALIDATE,
-
-			// RESOURCE_BARRIER_DUPLICATE_SUBRESOURCE_TRANSITIONS
-			(D3D12_MESSAGE_ID)1008,
-		};
-
-		D3D12_INFO_QUEUE_FILTER newFilter = {};
-		//newFilter.DenyList.NumCategories = _countof(Categories);
-		//newFilter.DenyList.pCategoryList = Categories;
-		newFilter.DenyList.NumSeverities = _countof(severities);
-		newFilter.DenyList.pSeverityList = severities;
-		newFilter.DenyList.NumIDs = _countof(denyIds);
-		newFilter.DenyList.pIDList = denyIds;
-
-		pInfoQueue->PushStorageFilter(&newFilter);
-		pInfoQueue->Release();
-	}
-}
-
-
-void GraphicsDevice::CreateSwapChain()
-{
-
 }
 
 
