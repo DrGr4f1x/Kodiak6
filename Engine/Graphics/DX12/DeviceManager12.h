@@ -27,6 +27,9 @@ public:
 	DeviceManager12() = default;
 	~DeviceManager12() final;
 
+	void BeginFrame() final;
+	void Present() final;
+
 protected:
 	bool CreateInstanceInternal() final;
 	bool CreateDevice() final;
@@ -58,6 +61,7 @@ private:
 
 	IntrusivePtr<ID3D12Fence> m_frameFence;
 	std::vector<HANDLE> m_frameFenceEvents;
+	uint32_t m_frameCount{ 0 };
 
 	std::unique_ptr<DeviceCaps> m_caps;
 };

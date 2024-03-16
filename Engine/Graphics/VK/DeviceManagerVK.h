@@ -28,6 +28,9 @@ public:
 	DeviceManagerVK() = default;
 	~DeviceManagerVK() final;
 
+	void BeginFrame() final;
+	void Present() final;
+
 protected:
 	bool CreateInstanceInternal() final;
 	bool CreateDevice() final;

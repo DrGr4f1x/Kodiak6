@@ -73,6 +73,35 @@ DeviceManager12::~DeviceManager12()
 	}
 }
 
+
+void DeviceManager12::BeginFrame()
+{
+	// TODO Handle window resize here
+
+	auto bufferIndex = m_swapChain->GetCurrentBackBufferIndex();
+	WaitForSingleObject(m_frameFenceEvents[bufferIndex], INFINITE);
+}
+
+
+void DeviceManager12::Present()
+{
+	if (!m_bIsWindowVisible)
+	{
+		return;
+	}
+
+	auto bufferIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+	UINT presentFlags = 0;
+
+	m_swapChain->Present(m_desc.enableVSync ? 1 : 0, presentFlags);
+
+	m_frameFence->SetEventOnCompletion(m_frameCount, m_frameFenceEvents[bufferIndex]);
+	m_graphicsQueue->Signal(m_frameFence, m_frameCount);
+	++m_frameCount;
+}
+
+
 bool DeviceManager12::CreateInstanceInternal()
 {
 	if (!m_dxgiFactory)

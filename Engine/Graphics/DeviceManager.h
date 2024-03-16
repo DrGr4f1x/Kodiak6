@@ -95,6 +95,9 @@ public:
 
 	bool CreateInstance();
 
+	virtual void BeginFrame() = 0;
+	virtual void Present() = 0;
+
 protected:
 	virtual bool CreateInstanceInternal() = 0;
 	virtual bool CreateDevice() = 0;
@@ -106,6 +109,8 @@ protected:
 
 	bool m_bIsDeveloperModeEnabled{ false };
 	bool m_bIsRenderDocAvailable{ false };
+
+	bool m_bIsWindowVisible{ true };
 };
 
 } // namespace Kodiak

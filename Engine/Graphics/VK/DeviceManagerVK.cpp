@@ -202,6 +202,18 @@ bool DeviceManagerVK::CreateSwapChain()
 }
 
 
+void DeviceManagerVK::BeginFrame()
+{
+
+}
+
+
+void DeviceManagerVK::Present()
+{
+
+}
+
+
 void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 {
 	vector<string> requiredLayers{};

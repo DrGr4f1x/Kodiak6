@@ -215,11 +215,13 @@ bool Application::Tick()
 	bool res = Update();
 	if (res)
 	{
-		/*m_grid->Update(m_camera);
+		//m_grid->Update(m_camera);
+
+		m_deviceManager->BeginFrame();
 
 		Render();
 
-		m_graphicsDevice->SubmitFrame();*/
+		m_deviceManager->Present();
 	}
 
 	++m_frameCounter;
