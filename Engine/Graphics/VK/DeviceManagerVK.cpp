@@ -51,9 +51,6 @@ DeviceManagerVK::~DeviceManagerVK()
 {
 	delete m_extensionManager;
 	m_extensionManager = nullptr;
-
-	delete m_caps;
-	m_caps = nullptr;
 }
 
 bool DeviceManagerVK::CreateInstanceInternal()
@@ -76,7 +73,7 @@ bool DeviceManagerVK::CreateInstanceInternal()
 
 	if (!m_caps)
 	{
-		m_caps = new DeviceCaps{};
+		m_caps = make_unique<DeviceCaps>();
 	}
 
 	SetRequiredInstanceLayersAndExtensions();

@@ -46,7 +46,7 @@ private:
 	VkInstanceHandle m_instance;
 	VkPhysicalDeviceHandle m_physicalDevice;
 
-	DeviceCaps* m_caps{ nullptr };
+	std::unique_ptr<DeviceCaps> m_caps;
 
 	// Queues and queue families
 	std::vector<VkQueueFamilyProperties> m_queueFamilyProperties;

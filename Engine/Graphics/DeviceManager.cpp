@@ -12,8 +12,12 @@
 
 #include "DeviceManager.h"
 
+#include "Graphics\DX12\DeviceCaps12.h"
 #include "Graphics\DX12\DeviceManager12.h"
+
+#include "Graphics\VK\DeviceCapsVK.h"
 #include "Graphics\VK\DeviceManagerVK.h"
+
 
 namespace Kodiak
 {

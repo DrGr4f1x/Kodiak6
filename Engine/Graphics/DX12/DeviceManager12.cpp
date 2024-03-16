@@ -66,9 +66,6 @@ AdapterType GetAdapterType(IDXGIAdapter* adapter)
 
 DeviceManager12::~DeviceManager12()
 {
-	delete m_caps;
-	m_caps = nullptr;
-
 	for (auto fenceEvent : m_frameFenceEvents)
 	{
 		WaitForSingleObject(fenceEvent, INFINITE);
@@ -481,7 +478,7 @@ void DeviceManager12::ReadCaps()
 {
 	if (!m_caps)
 	{
-		m_caps = new DeviceCaps{};
+		m_caps = make_unique<DeviceCaps>();
 
 		const D3D_FEATURE_LEVEL minFeatureLevel{ D3D_FEATURE_LEVEL_12_0 };
 		const D3D_SHADER_MODEL maxShaderModel{ D3D_SHADER_MODEL_6_7 };

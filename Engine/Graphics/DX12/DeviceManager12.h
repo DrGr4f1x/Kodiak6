@@ -59,7 +59,7 @@ private:
 	IntrusivePtr<ID3D12Fence> m_frameFence;
 	std::vector<HANDLE> m_frameFenceEvents;
 
-	DeviceCaps* m_caps{ nullptr };
+	std::unique_ptr<DeviceCaps> m_caps;
 };
 
 } // namespace Kodiak::DX12
