@@ -17,6 +17,7 @@
 
 #include "Graphics\VK\DeviceCapsVK.h"
 #include "Graphics\VK\DeviceManagerVK.h"
+#include "Graphics\VK\ExtensionManagerVK.h"
 
 
 namespace Kodiak

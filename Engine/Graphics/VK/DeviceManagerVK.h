@@ -40,7 +40,7 @@ protected:
 	int32_t GetQueueFamilyIndex(VkQueueFlags queueFlags);
 
 private:
-	ExtensionManager* m_extensionManager{ nullptr };
+	std::unique_ptr<ExtensionManager> m_extensionManager;
 	VulkanVersionInfo m_versionInfo{};
 
 	VkInstanceHandle m_instance;

@@ -47,11 +47,8 @@ size_t GetDedicatedVideoMemory(VkPhysicalDevice physicalDevice)
 namespace Kodiak::VK
 {
 
-DeviceManagerVK::~DeviceManagerVK()
-{
-	delete m_extensionManager;
-	m_extensionManager = nullptr;
-}
+DeviceManagerVK::~DeviceManagerVK() = default;
+
 
 bool DeviceManagerVK::CreateInstanceInternal()
 {
@@ -63,7 +60,7 @@ bool DeviceManagerVK::CreateInstanceInternal()
 
 	if (!m_extensionManager)
 	{
-		m_extensionManager = new ExtensionManager{};
+		m_extensionManager = make_unique<ExtensionManager>();
 	}
 
 	if (!m_extensionManager->InitializeInstance())
