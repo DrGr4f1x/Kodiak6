@@ -20,7 +20,7 @@ namespace VulkanParser
 
         private void EmitFunctionPointers(string modifier, StreamWriter outputFile)
         {
-            // Write function pointer declaration blocks
+            // Write function pointer declaration blocks for main Vulkan versions
             foreach (var version in m_parser.Versions)
             {
                 if (!version.HasAnyCommands)
@@ -56,6 +56,33 @@ namespace VulkanParser
                 }
 
                 outputFile.WriteLine("#endif // defined({0})", version.Version);
+                outputFile.WriteLine();
+            }
+
+            // Write function pointer declaration blocks for Vulkan extensions
+            foreach (var extension in m_parser.Extensions)
+            {
+                if (!extension.HasAnyCommands)
+                    continue;
+
+                string extMacro = "";
+                if (extension.Depends.Length == 0)
+                {
+                    extMacro = string.Format("defined({0})", extension.Name);
+                }
+                else
+                {
+                    extMacro = string.Format("defined({0}) && ({1})", extension.Name, extension.Depends);
+                }
+
+                outputFile.WriteLine("#if {0}", extMacro);
+                
+                foreach (var command in extension.Commands)
+                {
+                    outputFile.WriteLine("{0}PFN_{1} {1};", modifier, command.Name);
+                }
+                outputFile.WriteLine("#endif // {0}", extMacro);
+                outputFile.WriteLine();
             }
         }
 

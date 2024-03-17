@@ -12,6 +12,7 @@
 
 #include "Graphics\VK\VulkanCommon.h"
 
+
 namespace Kodiak::VK
 {
 
@@ -83,5 +84,27 @@ private:
 	VkPhysicalDeviceHandle m_physicalDevice;
 	VkDevice m_device{ VK_NULL_HANDLE };
 };
+
+
+//
+// VkSurfaceKHR
+//
+//class CVkSurface : public IntrusiveCounter<IObject>, public NonCopyable
+//{
+//public:
+//	CVkSurface() noexcept = default;
+//	~CVkSurface() final
+//	{
+//		vkDestroySurfaceKHR(m_instance->Get(), m_surfaceKHR, nullptr);
+//		m_surfaceKHR = VK_NULL_HANDLE;
+//	}
+//
+//	VkSurfaceKHR Get() const noexcept { return m_surfaceKHR; }
+//	operator VkSurfaceKHR() const noexcept { return m_surfaceKHR; }
+//
+//private:
+//	VkInstanceHandle m_instance;
+//	VkSurfaceKHR m_surfaceKHR{ VK_NULL_HANDLE };
+//};
 
 } // namespace Kodiak::VK

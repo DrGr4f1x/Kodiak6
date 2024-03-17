@@ -122,6 +122,22 @@ bool DeviceManagerVK::CreateInstanceInternal()
 
 bool DeviceManagerVK::CreateDevice()
 {
+	// TODO - install debug callback here
+
+	// TODO - gather application/user device extensions here
+
+	// Adjust swap chain formats
+	switch (m_desc.swapChainFormat)
+	{
+	case Format::SRGBA8_UNorm: m_desc.swapChainFormat = Format::SBGRA8_UNorm; break;
+	case Format::RGBA8_UNorm: m_desc.swapChainFormat = Format::BGRA8_UNorm; break;
+	}
+
+	if (!CreateWindowSurface())
+	{
+		return false;
+	}
+
 	if (!SelectPhysicalDevice())
 	{
 		return false;
@@ -288,6 +304,12 @@ vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDe
 	return adapters;
 }
 
+
+bool DeviceManagerVK::CreateWindowSurface()
+{
+
+	return true;
+}
 
 bool DeviceManagerVK::SelectPhysicalDevice()
 {

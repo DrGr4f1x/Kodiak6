@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -99,6 +100,11 @@ namespace VulkanParser
             get { return m_commands; }
         }
 
+        public bool HasAnyCommands
+        {
+            get { return m_commands.Count > 0; }
+        }
+
         public VulkanExtension(HashSet<string> knownVersions)
         {
             m_knownVersions = knownVersions;
@@ -116,22 +122,19 @@ namespace VulkanParser
             DeprecatedBy = (string?)element.Attribute("deprecatedby") ?? "";
             ObsoletedBy = (string?)element.Attribute("obsoletedby") ?? "";
 
+            Depends = ParseDepends(Depends);
+
             IEnumerable<XElement> requires =
                 from cl in element.Elements("require")
                 select cl;
 
             foreach (XElement require in requires)
             {
-                string dependsStr = "VK_VERSION_1_0";
-                EVersion version = EVersion.VK_VERSION_1_0;
-
+                string dependsStr = "";
+                
                 if (require.Attribute("depends") != null)
                 {
                     dependsStr = (string?)require.Attribute("depends") ?? "";
-                    if (m_knownVersions.Contains(dependsStr))
-                    {
-                        version = (EVersion)Enum.Parse(typeof(EVersion), dependsStr);
-                    }
                 }
 
                 IEnumerable<XElement> commands =
@@ -144,8 +147,7 @@ namespace VulkanParser
 
                     vkCommand.Name = (string?)command.Attribute("name") ?? "";
                     vkCommand.Type = Type;
-                    vkCommand.Version = version;
-                    vkCommand.Depends = dependsStr;
+                    vkCommand.Depends = ParseDepends(dependsStr);
 
                     Commands.Add(vkCommand);
                 }
@@ -188,6 +190,16 @@ namespace VulkanParser
                 }
             }
             Console.WriteLine();
+        }
+
+        private static string Define(Match match)
+        {
+            return "defined(" + match.Value + ")";
+        }
+
+        private static string ParseDepends(string depends)
+        {
+            return Regex.Replace(depends, "[a-zA-Z0-9_]+", Define).Replace(",", " || ").Replace("+", " && ");
         }
     }
 }

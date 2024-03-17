@@ -38,6 +38,7 @@ protected:
 
 	void SetRequiredInstanceLayersAndExtensions();
 	std::vector<std::pair<AdapterInfo, VkPhysicalDevice>> EnumeratePhysicalDevices();
+	bool CreateWindowSurface();
 	bool SelectPhysicalDevice();
 	void GetQueueFamilyIndices();
 	int32_t GetQueueFamilyIndex(VkQueueFlags queueFlags);

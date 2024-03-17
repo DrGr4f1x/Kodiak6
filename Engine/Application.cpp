@@ -271,7 +271,8 @@ void Application::CreateDeviceManager()
 		.SetEnableDebugRuntime(m_appDesc.useDebugLayer)
 		.SetBackBufferWidth(m_appDesc.width)
 		.SetBackBufferHeight(m_appDesc.height)
-		.SetHwnd(m_hwnd);
+		.SetHwnd(m_hwnd)
+		.SetHinstance(m_hinst);
 
 	if (!m_deviceManager->CreateDeviceAndSwapChain(deviceDesc))
 	{

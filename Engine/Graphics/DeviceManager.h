@@ -57,6 +57,7 @@ struct DeviceDesc
 	bool enablePerMonitorDPI{ false };
 
 	HWND hwnd{ nullptr };
+	HINSTANCE hinstance{ nullptr };
 
 	// Setters
 	DeviceDesc& SetAppName(const std::string& value) { appName = value; return *this; }
@@ -80,6 +81,7 @@ struct DeviceDesc
 	constexpr DeviceDesc& SetMaxFramesInFlight(uint32_t value) { maxFramesInFlight = value; return *this; }
 	constexpr DeviceDesc& SetEnablePerMonitorDPI(bool value) { enablePerMonitorDPI = value; return *this; }
 	constexpr DeviceDesc& SetHwnd(HWND value) { hwnd = value; return *this; }
+	constexpr DeviceDesc& SetHinstance(HINSTANCE value) { hinstance = value; return *this; }
 };
 
 

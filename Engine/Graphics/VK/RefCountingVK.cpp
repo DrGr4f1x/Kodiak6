@@ -12,6 +12,8 @@
 
 #include "RefCountingVK.h"
 
+#include "Generated\LoaderVK.h"
+
 namespace Kodiak::VK
 {
 

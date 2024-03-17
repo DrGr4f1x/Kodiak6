@@ -26,7 +26,6 @@
 #include "Graphics\VK\RefCountingVK.h"
 #include "Graphics\VK\StringsVK.h"
 #include "Graphics\VK\VersionVK.h"
-#include "Graphics\VK\Generated\LoaderVK.h"
 
 
 #define VK_SUCCEEDED(res) (res == VK_SUCCESS)

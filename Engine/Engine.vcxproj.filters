@@ -81,10 +81,10 @@
     <ClCompile Include="Graphics\VK\Generated\LoaderVK.cpp">
       <Filter>Graphics\VK\Generated</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\VK\RefCountingVK.cpp">
+    <ClCompile Include="Graphics\VK\ExtensionManagerVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\VK\ExtensionManagerVK.cpp">
+    <ClCompile Include="Graphics\VK\RefCountingVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
   </ItemGroup>

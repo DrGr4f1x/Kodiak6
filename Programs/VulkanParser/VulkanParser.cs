@@ -23,6 +23,11 @@ namespace VulkanParser
             get { return m_versions; } 
         }  
 
+        public List<VulkanExtension> Extensions
+        {
+            get { return m_extensions; }
+        }
+
         private void ParseVersions()
         {
             // ==========================================================================
@@ -97,7 +102,7 @@ namespace VulkanParser
                 if (alias != null)
                 {
                     string name = (string?)commandElem.Attribute("name") ?? "";
-                    m_commandMap[name] = m_commandMap[commandElem.Attribute("alias").Value];
+                    m_commandMap[name] = m_commandMap[alias.Value];
                 }
             }
         }
