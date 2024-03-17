@@ -34,4 +34,11 @@ CVkDevice::~CVkDevice()
 	m_device = nullptr;
 }
 
+
+CVkSurface::~CVkSurface()
+{
+	vkDestroySurfaceKHR(m_instance->Get(), m_surfaceKHR, nullptr);
+	m_surfaceKHR = VK_NULL_HANDLE;
+}
+
 } // namespace Kodiak::VK

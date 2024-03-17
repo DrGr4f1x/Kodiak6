@@ -24,7 +24,6 @@ class CVkInstance : public IntrusiveCounter<IObject>, public NonCopyable
 public:
 	CVkInstance() noexcept = default;
 	explicit CVkInstance(VkInstance instance) noexcept : m_instance{ instance } {}
-	
 	~CVkInstance() final;
 
 	VkInstance Get() const noexcept { return m_instance; }
@@ -74,7 +73,6 @@ public:
 		: m_physicalDevice{ physicalDevice }
 		, m_device{ device }
 	{}
-
 	~CVkDevice() final;
 
 	VkDevice Get() const noexcept { return m_device; }
@@ -89,22 +87,18 @@ private:
 //
 // VkSurfaceKHR
 //
-//class CVkSurface : public IntrusiveCounter<IObject>, public NonCopyable
-//{
-//public:
-//	CVkSurface() noexcept = default;
-//	~CVkSurface() final
-//	{
-//		vkDestroySurfaceKHR(m_instance->Get(), m_surfaceKHR, nullptr);
-//		m_surfaceKHR = VK_NULL_HANDLE;
-//	}
-//
-//	VkSurfaceKHR Get() const noexcept { return m_surfaceKHR; }
-//	operator VkSurfaceKHR() const noexcept { return m_surfaceKHR; }
-//
-//private:
-//	VkInstanceHandle m_instance;
-//	VkSurfaceKHR m_surfaceKHR{ VK_NULL_HANDLE };
-//};
+class CVkSurface : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkSurface() noexcept = default;
+	~CVkSurface() final;
+
+	VkSurfaceKHR Get() const noexcept { return m_surfaceKHR; }
+	operator VkSurfaceKHR() const noexcept { return m_surfaceKHR; }
+
+private:
+	VkInstanceHandle m_instance;
+	VkSurfaceKHR m_surfaceKHR{ VK_NULL_HANDLE };
+};
 
 } // namespace Kodiak::VK
