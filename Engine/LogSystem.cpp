@@ -230,7 +230,12 @@ void LogSystem::OutputLogMessage(const LogMessage& message)
 
 	if (message.severity == Fatal)
 	{
+		m_file.flush();
 		m_file.close();
+
+		cerr.flush();
+		cout.flush();
+
 		Utility::ExitFatal(messageStr, "Fatal Error");
 	}
 }
