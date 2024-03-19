@@ -20,6 +20,9 @@
 #include <vulkan.h>
 #pragma comment(lib, "vulkan-1.lib")
 
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 0
+#include "External\VulkanMemoryAllocator\vk_mem_alloc.h"
 
 #include "Graphics\GraphicsCommon.h"
 #include "Graphics\VK\EnumsVK.h"
@@ -28,8 +31,8 @@
 #include "Graphics\VK\VersionVK.h"
 
 
-#define VK_SUCCEEDED(res) (res == VK_SUCCESS)
-#define VK_FAILED(res) (res != VK_SUCCESS)
+#define VK_SUCCEEDED(resexpr) VkResult res = resexpr; res == VK_SUCCESS
+#define VK_FAILED(resexpr) VkResult res = resexpr; res != VK_SUCCESS
 
 namespace Kodiak::VK
 {

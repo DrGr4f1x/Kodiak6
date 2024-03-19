@@ -14,6 +14,7 @@
 
 #include "DeviceCapsVK.h"
 #include "ExtensionManagerVK.h"
+#include "FormatsVK.h"
 #include "Generated\LoaderVK.h"
 
 
@@ -207,13 +208,67 @@ bool DeviceManagerVK::CreateDevice()
 		return false;
 	}
 
-
 	return true;
 }
 
 
 bool DeviceManagerVK::CreateSwapChain()
 {
+	DestroySwapChain();
+
+	m_swapChainFormat = { FormatToVulkan(m_desc.swapChainFormat), VK_COLOR_SPACE_SRGB_NONLINEAR_KHR	};
+
+	VkExtent2D extent{ m_desc.backBufferHeight,	m_desc.backBufferHeight	};
+
+	unordered_set<uint32_t> uniqueQueues{ (uint32_t)m_queueFamilyIndices.graphics, (uint32_t)m_queueFamilyIndices.present };
+	vector<uint32_t> queues(uniqueQueues.begin(), uniqueQueues.end());
+
+	const bool enableSwapChainSharing = queues.size() > 1;
+
+	VkSwapchainCreateInfoKHR createInfo{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
+	createInfo.surface = m_surface->Get();
+	createInfo.minImageCount = m_desc.numSwapChainBuffers;
+	createInfo.imageFormat = m_swapChainFormat.format;
+	createInfo.imageColorSpace = m_swapChainFormat.colorSpace;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	createInfo.imageSharingMode = enableSwapChainSharing ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
+	createInfo.flags = m_swapChainMutableFormatSupported ? VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR : 0;
+	createInfo.queueFamilyIndexCount = enableSwapChainSharing ? (uint32_t)queues.size() : 0;
+	createInfo.pQueueFamilyIndices = enableSwapChainSharing ? queues.data() : nullptr;
+	createInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	createInfo.presentMode = m_desc.enableVSync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
+	createInfo.clipped = true;
+	createInfo.oldSwapchain = nullptr;
+
+	vector<VkFormat> imageFormats{ m_swapChainFormat.format };
+	switch (m_swapChainFormat.format)
+	{
+	case VK_FORMAT_R8G8B8A8_UNORM:
+		imageFormats.push_back(VK_FORMAT_R8G8B8A8_SRGB);
+		break;
+	case VK_FORMAT_R8G8B8A8_SRGB:
+		imageFormats.push_back(VK_FORMAT_R8G8B8A8_UNORM);
+		break;
+	case VK_FORMAT_B8G8R8A8_UNORM:
+		imageFormats.push_back(VK_FORMAT_B8G8R8A8_SRGB);
+		break;
+	case VK_FORMAT_B8G8R8A8_SRGB:
+		imageFormats.push_back(VK_FORMAT_B8G8R8A8_UNORM);
+		break;
+	}
+
+	VkImageFormatListCreateInfo imageFormatListCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO };
+	imageFormatListCreateInfo.viewFormatCount = (uint32_t)imageFormats.size();
+	imageFormatListCreateInfo.pViewFormats = imageFormats.data();
+
+	if (m_swapChainMutableFormatSupported)
+	{
+		createInfo.pNext = &imageFormatListCreateInfo;
+	}
+
 	return true;
 }
 
@@ -307,6 +362,17 @@ vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDe
 
 bool DeviceManagerVK::CreateWindowSurface()
 {
+	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo{ VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR };
+	surfaceCreateInfo.hinstance = m_desc.hinstance;
+	surfaceCreateInfo.hwnd = m_desc.hwnd;
+
+	VkSurfaceKHR vkSurface{ VK_NULL_HANDLE };
+	if (VK_FAILED(vkCreateWin32SurfaceKHR(m_instance->Get(), &surfaceCreateInfo, nullptr, &vkSurface)))
+	{
+		LogError(LogVulkan) << "Failed to create Win32 surface" << endl;
+		return false;
+	}
+	m_surface = VkSurfaceHandle::Create(new CVkSurface(m_instance, vkSurface));
 
 	return true;
 }
@@ -447,6 +513,11 @@ int32_t DeviceManagerVK::GetQueueFamilyIndex(VkQueueFlags queueFlags)
 		{
 			if ((properties.queueFlags & queueFlags) && ((properties.queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0))
 			{
+				if (m_queueFamilyIndices.present == -1 && vkGetPhysicalDeviceWin32PresentationSupportKHR(m_physicalDevice->Get(), index))
+				{
+					m_queueFamilyIndices.present = index;
+				}
+
 				return index;
 			}
 			++index;
@@ -462,6 +533,11 @@ int32_t DeviceManagerVK::GetQueueFamilyIndex(VkQueueFlags queueFlags)
 		{
 			if ((properties.queueFlags & queueFlags) && ((properties.queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0) && ((properties.queueFlags & VK_QUEUE_COMPUTE_BIT) == 0))
 			{
+				if (m_queueFamilyIndices.present == -1 && vkGetPhysicalDeviceWin32PresentationSupportKHR(m_physicalDevice->Get(), index))
+				{
+					m_queueFamilyIndices.present = index;
+				}
+
 				return index;
 			}
 			++index;
@@ -474,6 +550,11 @@ int32_t DeviceManagerVK::GetQueueFamilyIndex(VkQueueFlags queueFlags)
 	{
 		if (properties.queueFlags & queueFlags)
 		{
+			if (m_queueFamilyIndices.present == -1 && vkGetPhysicalDeviceWin32PresentationSupportKHR(m_physicalDevice->Get(), index))
+			{
+				m_queueFamilyIndices.present = index;
+			}
+
 			return index;
 		}
 		++index;
@@ -481,6 +562,17 @@ int32_t DeviceManagerVK::GetQueueFamilyIndex(VkQueueFlags queueFlags)
 
 	LogWarning(LogVulkan) << "Failed to find a matching queue family index for queue bit(s) " << VkQueueFlagsToString(queueFlags) << endl;
 	return -1;
+}
+
+
+void DeviceManagerVK::DestroySwapChain()
+{
+	if (m_swapChain)
+	{
+		m_swapChain->Destroy();
+	}
+
+	m_swapChainImages.clear();
 }
 
 } // namespace Kodiak::VK

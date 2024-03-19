@@ -11,3 +11,6 @@
 #include "Stdafx.h"
 
 #include "VulkanCommon.h"
+
+#define VMA_IMPLEMENTATION
+#include "External\VulkanMemoryAllocator\vk_mem_alloc.h"

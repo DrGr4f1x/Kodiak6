@@ -31,6 +31,11 @@
     <ClCompile Include="Core\Math\Frustum.cpp" />
     <ClCompile Include="Core\Math\Random.cpp" />
     <ClCompile Include="Core\Utility.cpp" />
+    <ClCompile Include="External\D3D12MemoryAllocator\D3D12MemAlloc.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Graphics\DeviceManager.cpp" />
     <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp" />
@@ -86,6 +91,25 @@
     <ClInclude Include="Core\IntrusivePtr.h" />
     <ClInclude Include="Core\Utility.h" />
     <ClInclude Include="Core\VectorMath.h" />
+    <ClInclude Include="External\CLI11\CLI\App.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Argv.hpp" />
+    <ClInclude Include="External\CLI11\CLI\CLI.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Config.hpp" />
+    <ClInclude Include="External\CLI11\CLI\ConfigFwd.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Encoding.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Error.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Formatter.hpp" />
+    <ClInclude Include="External\CLI11\CLI\FormatterFwd.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Macros.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Option.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Split.hpp" />
+    <ClInclude Include="External\CLI11\CLI\StringTools.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Timer.hpp" />
+    <ClInclude Include="External\CLI11\CLI\TypeTools.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Validators.hpp" />
+    <ClInclude Include="External\CLI11\CLI\Version.hpp" />
+    <ClInclude Include="External\D3D12MemoryAllocator\D3D12MemAlloc.h" />
+    <ClInclude Include="External\VulkanMemoryAllocator\vk_mem_alloc.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Graphics\DeviceManager.h" />
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h" />

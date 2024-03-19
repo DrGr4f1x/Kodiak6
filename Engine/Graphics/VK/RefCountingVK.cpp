@@ -17,14 +17,20 @@
 namespace Kodiak::VK
 {
 
-CVkInstance::~CVkInstance()
+void CVkInstance::Destroy()
 {
 	vkDestroyInstance(m_instance, nullptr);
 	m_instance = VK_NULL_HANDLE;
 }
 
 
-CVkDevice::~CVkDevice()
+void CVkPhysicalDevice::Destroy()
+{
+	m_physicalDevice = VK_NULL_HANDLE;
+}
+
+
+void CVkDevice::Destroy()
 {
 	if (m_device)
 	{
@@ -35,10 +41,36 @@ CVkDevice::~CVkDevice()
 }
 
 
-CVkSurface::~CVkSurface()
+void CVkSurface::Destroy()
 {
 	vkDestroySurfaceKHR(m_instance->Get(), m_surfaceKHR, nullptr);
 	m_surfaceKHR = VK_NULL_HANDLE;
+}
+
+
+void CVmaAllocator::Destroy()
+{
+	vmaDestroyAllocator(m_allocator);
+	m_allocator = VK_NULL_HANDLE;
+}
+
+
+void CVkImage::Destroy()
+{
+	if (m_bOwnsImage)
+	{
+		vmaDestroyImage(m_allocator->Get(), m_image, m_allocation);
+		m_allocation = VK_NULL_HANDLE;
+	}
+	m_image = VK_NULL_HANDLE;
+}
+
+
+void CVkSwapchain::Destroy()
+{
+	vkDeviceWaitIdle(m_device->Get());
+	vkDestroySwapchainKHR(m_device->Get(), m_swapchainKHR, nullptr);
+	m_swapchainKHR = VK_NULL_HANDLE;
 }
 
 } // namespace Kodiak::VK

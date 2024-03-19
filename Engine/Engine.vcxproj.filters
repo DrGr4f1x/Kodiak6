@@ -87,6 +87,9 @@
     <ClCompile Include="Graphics\VK\RefCountingVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="External\D3D12MemoryAllocator\D3D12MemAlloc.cpp">
+      <Filter>External\D3D12MemoryAllocator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -244,6 +247,63 @@
     <ClInclude Include="Graphics\VK\ExtensionManagerVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\App.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Argv.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\CLI.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Config.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\ConfigFwd.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Encoding.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Error.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Formatter.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\FormatterFwd.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Macros.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Option.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Split.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\StringTools.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Timer.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\TypeTools.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Validators.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\CLI11\CLI\Version.hpp">
+      <Filter>External\CL11</Filter>
+    </ClInclude>
+    <ClInclude Include="External\D3D12MemoryAllocator\D3D12MemAlloc.h">
+      <Filter>External\D3D12MemoryAllocator</Filter>
+    </ClInclude>
+    <ClInclude Include="External\VulkanMemoryAllocator\vk_mem_alloc.h">
+      <Filter>External\VulkanMemoryAllocator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -263,6 +323,18 @@
     </Filter>
     <Filter Include="Graphics\VK\Generated">
       <UniqueIdentifier>{77a9d03f-3c9c-4d73-841f-a4b9a44bf949}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{e1fa5e13-b8e2-4edc-9162-d7c7a5581939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\CL11">
+      <UniqueIdentifier>{be8f8507-d4f7-4c03-bb0a-a06b7115adad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\D3D12MemoryAllocator">
+      <UniqueIdentifier>{a2069ef2-759f-455f-86af-9aff63341768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\VulkanMemoryAllocator">
+      <UniqueIdentifier>{4fd9ab76-b403-48fe-9966-c9e30126f096}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
