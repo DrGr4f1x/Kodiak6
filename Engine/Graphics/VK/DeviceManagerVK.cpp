@@ -42,6 +42,55 @@ size_t GetDedicatedVideoMemory(VkPhysicalDevice physicalDevice)
 	return memory;
 }
 
+
+VkBool32 DebugMessageCallback(
+	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+	VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+	void* pUserData)
+{
+	using namespace Kodiak;
+	using namespace Kodiak::VK;
+
+	string prefix;
+
+	if (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
+	{
+		prefix += prefix.empty() ? "[Performance]" : " [Performance]";
+	}
+	if (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
+	{
+		prefix += prefix.empty() ? "[Validation]" : " [Validation]";
+	}
+	if (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
+	{
+		prefix += prefix.empty() ? "[General]" : " [General]";
+	}
+
+	string debugMessage = format("{} [{}] Code {} : {}", prefix, pCallbackData->pMessageIdName, pCallbackData->messageIdNumber, pCallbackData->pMessage);
+
+	if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+	{
+		LogError(LogVulkan) << debugMessage << endl;
+	}
+	else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+	{
+		LogWarning(LogVulkan) << debugMessage << endl;
+	}
+	else
+	{
+		LogInfo(LogVulkan) << debugMessage << endl;
+	}
+
+	// The return value of this callback controls whether the Vulkan call that caused
+	// the validation message will be aborted or not
+	// We return VK_FALSE as we DON'T want Vulkan calls that cause a validation message 
+	// (and return a VkResult) to abort
+	// If you instead want to have calls abort, pass in VK_TRUE and the function will 
+	// return VK_ERROR_VALIDATION_FAILED_EXT 
+	return VK_FALSE;
+}
+
 } // anonymous namespace
 
 
@@ -53,9 +102,9 @@ DeviceManagerVK::~DeviceManagerVK() = default;
 
 bool DeviceManagerVK::CreateInstanceInternal()
 {
-	if (VK_SUCCESS != InitializeLoader())
+	if (VK_FAILED(InitializeLoader()))
 	{
-		LogFatal(LogVulkan) << "Failed to initialize Vulkan loader" << endl;
+		LogFatal(LogVulkan) << "Failed to initialize Vulkan loader.  Error code: " << endl;
 		return false;
 	}
 
@@ -96,7 +145,7 @@ bool DeviceManagerVK::CreateInstanceInternal()
 	VkInstance vkInstance{ VK_NULL_HANDLE };
 	if (VK_FAILED(vkCreateInstance(&createInfo, nullptr, &vkInstance)))
 	{
-		LogFatal(LogVulkan) << "Failed to create Vulkan instance" << endl;
+		LogFatal(LogVulkan) << "Failed to create Vulkan instance.  Error code: " << res << endl;
 		return false;
 	}
 
@@ -110,12 +159,14 @@ bool DeviceManagerVK::CreateInstanceInternal()
 	}
 	else
 	{
-		LogInfo(LogVulkan) << "Created Vulkan instance, but failed to enumerate version" << endl;
+		LogInfo(LogVulkan) << "Created Vulkan instance, but failed to enumerate version.  Error code: " << res << endl;
 	}
 
 	LoadInstanceFunctionsOnly(vkInstance);
 
 	m_instance = VkInstanceHandle::Create(new CVkInstance(vkInstance));
+
+	InstallDebugMessenger();
 
 	return true;
 }
@@ -123,8 +174,6 @@ bool DeviceManagerVK::CreateInstanceInternal()
 
 bool DeviceManagerVK::CreateDevice()
 {
-	// TODO - install debug callback here
-
 	// TODO - gather application/user device extensions here
 
 	// Adjust swap chain formats
@@ -166,7 +215,7 @@ bool DeviceManagerVK::CreateDevice()
 	}
 	else
 	{
-		LogError(LogVulkan) << "Failed to find graphics queue" << endl;
+		LogError(LogVulkan) << "Failed to find graphics queue." << endl;
 		return false;
 	}
 
@@ -185,7 +234,7 @@ bool DeviceManagerVK::CreateDevice()
 	}
 	else
 	{
-		LogError(LogVulkan) << "Failed to find compute queue" << endl;
+		LogError(LogVulkan) << "Failed to find compute queue." << endl;
 		return false;
 	}
 
@@ -204,9 +253,33 @@ bool DeviceManagerVK::CreateDevice()
 	}
 	else
 	{
-		LogError(LogVulkan) << "Failed to find transfer queue" << endl;
+		LogError(LogVulkan) << "Failed to find transfer queue." << endl;
 		return false;
 	}
+
+	// HACK - replace with real device extension handling
+	vector<const char*> extensions{ "VK_KHR_swapchain" };
+
+	VkDeviceCreateInfo createInfo{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
+	createInfo.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
+	createInfo.pQueueCreateInfos = queueCreateInfos.data();
+	createInfo.pEnabledFeatures = nullptr;
+	// TODO - device extensions
+	createInfo.enabledExtensionCount = (uint32_t)extensions.size();;
+	createInfo.ppEnabledExtensionNames = extensions.data();
+	createInfo.enabledLayerCount = 0;
+	createInfo.ppEnabledLayerNames = nullptr;
+	createInfo.pNext = m_caps->GetPhysicalDeviceFeatures2();
+
+	VkDevice device{ VK_NULL_HANDLE };
+	if (VK_FAILED(vkCreateDevice(*m_physicalDevice, &createInfo, nullptr, &device)))
+	{
+		LogError(LogVulkan) << "Failed to create Vulkan device.  Error code: " << res << endl;
+		return false;
+	}
+	m_device = VkDeviceHandle::Create(new CVkDevice(m_physicalDevice, device));
+
+	LoadDeviceFunctions(*m_device);
 
 	return true;
 }
@@ -218,7 +291,7 @@ bool DeviceManagerVK::CreateSwapChain()
 
 	m_swapChainFormat = { FormatToVulkan(m_desc.swapChainFormat), VK_COLOR_SPACE_SRGB_NONLINEAR_KHR	};
 
-	VkExtent2D extent{ m_desc.backBufferHeight,	m_desc.backBufferHeight	};
+	VkExtent2D extent{ m_desc.backBufferWidth,	m_desc.backBufferHeight	};
 
 	unordered_set<uint32_t> uniqueQueues{ (uint32_t)m_queueFamilyIndices.graphics, (uint32_t)m_queueFamilyIndices.present };
 	vector<uint32_t> queues(uniqueQueues.begin(), uniqueQueues.end());
@@ -269,12 +342,42 @@ bool DeviceManagerVK::CreateSwapChain()
 		createInfo.pNext = &imageFormatListCreateInfo;
 	}
 
+	VkSwapchainKHR swapchain{ VK_NULL_HANDLE };
+	if (VK_FAILED(vkCreateSwapchainKHR(*m_device, &createInfo, nullptr, &swapchain)))
+	{
+		LogError(LogVulkan) << "Failed to create Vulkan swapchain.  Error code: " << res << endl;
+		return false;
+	}
+	m_swapChain = VkSwapchainHandle::Create(new CVkSwapchain(m_device, swapchain));
+
+	m_presentSemaphores.reserve(m_desc.maxFramesInFlight);
+	for (uint32_t i = 0; i < m_desc.maxFramesInFlight; ++i)
+	{
+		VkSemaphore semaphore{ VK_NULL_HANDLE };
+		VkSemaphoreCreateInfo createInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+		
+		if (VK_FAILED(vkCreateSemaphore(*m_device, &createInfo, nullptr, &semaphore)))
+		{
+			LogError(LogVulkan) << "Failed to create present semaphore.  Error code: " << res << endl;
+			return false;
+		}
+		m_presentSemaphores.push_back(VkSemaphoreHandle::Create(new CVkSemaphore(m_device, semaphore)));
+	}
+
 	return true;
 }
 
 
 void DeviceManagerVK::BeginFrame()
 {
+	// TODO
+	/*const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
+
+	if (VK_FAILED(vkAcquireNextImageKHR(*m_device, *m_swapChain, numeric_limits<uint64_t>::max(), *semaphore, VK_NULL_HANDLE, &m_swapChainIndex)))
+	{
+		LogFatal(LogVulkan) << "Failed to acquire next swapchain image in BeginFrame.  Error code: " << res << endl;
+		return;
+	}*/
 
 }
 
@@ -295,11 +398,42 @@ void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 	m_extensionManager->SetRequiredInstanceLayers(requiredLayers);
 
 	vector<string> requiredExtensions{
-		"VK_EXT_debug_report",
+		"VK_EXT_debug_utils",
 		"VK_KHR_win32_surface",
 		"VK_KHR_surface"
 	};
 	m_extensionManager->SetRequiredInstanceExtensions(requiredExtensions);
+}
+
+
+bool DeviceManagerVK::InstallDebugMessenger()
+{
+	if (!m_desc.enableDebugRuntime)
+	{
+		return true;
+	}
+
+	VkDebugUtilsMessengerCreateInfoEXT createInfo{ VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
+	createInfo.messageSeverity =
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
+		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+	createInfo.pfnUserCallback = DebugMessageCallback;
+
+	VkDebugUtilsMessengerEXT messenger{ VK_NULL_HANDLE };
+	if (VK_FAILED(vkCreateDebugUtilsMessengerEXT(*m_instance, &createInfo, nullptr, &messenger)))
+	{
+		LogWarning(LogVulkan) << "Failed to create Vulkan debug messenger.  Error Code: " << res << endl;
+		return false;
+	}
+
+	m_debugMessenger = VkDebugUtilsMessengerHandle::Create(new CVkDebugUtilsMessenger(m_instance, messenger));
+
+	return true;
 }
 
 
@@ -312,7 +446,7 @@ vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDe
 	// Get number of available physical devices
 	if (VK_FAILED(vkEnumeratePhysicalDevices(*m_instance, &gpuCount, nullptr)))
 	{
-		LogError(LogVulkan) << "Failed to get physical device count" << endl;
+		LogError(LogVulkan) << "Failed to get physical device count.  Error code: " << res << endl;
 		return adapters;
 	}
 
@@ -320,7 +454,7 @@ vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDe
 	vector<VkPhysicalDevice> physicalDevices(gpuCount);
 	if (VK_FAILED(vkEnumeratePhysicalDevices(*m_instance, &gpuCount, physicalDevices.data())))
 	{
-		LogError(LogVulkan) << "Failed to enumerate physical devices" << endl;
+		LogError(LogVulkan) << "Failed to enumerate physical devices.  Error code: " << res << endl;
 		return adapters;
 	}
 
@@ -369,7 +503,7 @@ bool DeviceManagerVK::CreateWindowSurface()
 	VkSurfaceKHR vkSurface{ VK_NULL_HANDLE };
 	if (VK_FAILED(vkCreateWin32SurfaceKHR(m_instance->Get(), &surfaceCreateInfo, nullptr, &vkSurface)))
 	{
-		LogError(LogVulkan) << "Failed to create Win32 surface" << endl;
+		LogError(LogVulkan) << "Failed to create Win32 surface.  Error code: " << res << endl;
 		return false;
 	}
 	m_surface = VkSurfaceHandle::Create(new CVkSurface(m_instance, vkSurface));
@@ -464,7 +598,7 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 
 	if (chosenAdapterIdx == -1)
 	{
-		LogFatal(LogVulkan) << "Failed to select a Vulkan physical device" << endl;
+		LogFatal(LogVulkan) << "Failed to select a Vulkan physical device." << endl;
 		return false;
 	}
 

@@ -228,4 +228,62 @@ private:
 };
 using VkSwapchainHandle = IntrusivePtr<CVkSwapchain>;
 
+
+//
+// VkSemaphore
+//
+class CVkSemaphore : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkSemaphore() noexcept = default;
+	CVkSemaphore(CVkDevice* device, VkSemaphore semaphore)
+		: m_device{ device }
+		, m_semaphore{ semaphore }
+	{}
+
+	~CVkSemaphore()
+	{
+		Destroy();
+	}
+
+	VkSemaphore Get() const noexcept { return m_semaphore; }
+	operator VkSemaphore() const noexcept { return Get(); }
+
+	void Destroy();
+
+private:
+	VkDeviceHandle m_device;
+	VkSemaphore m_semaphore{ VK_NULL_HANDLE };
+};
+using VkSemaphoreHandle = IntrusivePtr<CVkSemaphore>;
+
+
+//
+// VkDebugUtilsMessengerEXT
+//
+class CVkDebugUtilsMessenger : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkDebugUtilsMessenger() noexcept = default;
+	CVkDebugUtilsMessenger(CVkInstance* instance, VkDebugUtilsMessengerEXT messenger)
+		: m_instance{ instance }
+		, m_messenger{ messenger }
+	{}
+
+	~CVkDebugUtilsMessenger()
+	{
+		Destroy();
+	}
+
+	VkDebugUtilsMessengerEXT Get() const noexcept { return m_messenger; }
+	operator VkDebugUtilsMessengerEXT() const noexcept { return Get(); }
+
+	void Destroy();
+
+private:
+	VkInstanceHandle m_instance;
+	VkDebugUtilsMessengerEXT m_messenger{ VK_NULL_HANDLE };
+};
+using VkDebugUtilsMessengerHandle = IntrusivePtr<CVkDebugUtilsMessenger>;
+
 } // namespace Kodiak::VK

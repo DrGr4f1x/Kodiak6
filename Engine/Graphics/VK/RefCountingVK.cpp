@@ -43,7 +43,7 @@ void CVkDevice::Destroy()
 
 void CVkSurface::Destroy()
 {
-	vkDestroySurfaceKHR(m_instance->Get(), m_surfaceKHR, nullptr);
+	vkDestroySurfaceKHR(*m_instance, m_surfaceKHR, nullptr);
 	m_surfaceKHR = VK_NULL_HANDLE;
 }
 
@@ -59,7 +59,7 @@ void CVkImage::Destroy()
 {
 	if (m_bOwnsImage)
 	{
-		vmaDestroyImage(m_allocator->Get(), m_image, m_allocation);
+		vmaDestroyImage(*m_allocator, m_image, m_allocation);
 		m_allocation = VK_NULL_HANDLE;
 	}
 	m_image = VK_NULL_HANDLE;
@@ -68,9 +68,22 @@ void CVkImage::Destroy()
 
 void CVkSwapchain::Destroy()
 {
-	vkDeviceWaitIdle(m_device->Get());
-	vkDestroySwapchainKHR(m_device->Get(), m_swapchainKHR, nullptr);
+	vkDeviceWaitIdle(*m_device);
+	vkDestroySwapchainKHR(*m_device, m_swapchainKHR, nullptr);
 	m_swapchainKHR = VK_NULL_HANDLE;
+}
+
+
+void CVkSemaphore::Destroy()
+{
+	vkDestroySemaphore(*m_device, m_semaphore, nullptr);
+}
+
+
+void CVkDebugUtilsMessenger::Destroy()
+{
+	vkDestroyDebugUtilsMessengerEXT(*m_instance, m_messenger, nullptr);
+	m_messenger = VK_NULL_HANDLE;
 }
 
 } // namespace Kodiak::VK

@@ -33,6 +33,9 @@ public:
 
 	void LogCaps();
 
+	VkPhysicalDeviceFeatures* GetPhysicalDeviceFeatures() { return &features2.features; }
+	VkPhysicalDeviceFeatures2* GetPhysicalDeviceFeatures2() { return &features2; }
+
 public:
 	VulkanVersionInfo version{};
 

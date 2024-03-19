@@ -18,6 +18,42 @@
 using namespace std;
 
 
+namespace
+{
+
+void DebugMessageCallback(
+	D3D12_MESSAGE_CATEGORY category,
+	D3D12_MESSAGE_SEVERITY severity,
+	D3D12_MESSAGE_ID id,
+	LPCSTR pDescription,
+	void* pContext)
+{
+	using namespace Kodiak;
+	using namespace Kodiak::DX12;
+
+	string debugMessage = format("{} Code {:#x} : {}", category, (uint64_t)id, pDescription);
+
+	switch (severity)
+	{
+	case D3D12_MESSAGE_SEVERITY_CORRUPTION:
+		LogFatal(LogDirectX) << debugMessage << endl;
+		break;
+	case D3D12_MESSAGE_SEVERITY_ERROR:
+		LogError(LogDirectX) << debugMessage << endl;
+		break;
+	case D3D12_MESSAGE_SEVERITY_WARNING:
+		LogWarning(LogDirectX) << debugMessage << endl;
+		break;
+	case D3D12_MESSAGE_SEVERITY_INFO:
+	case D3D12_MESSAGE_SEVERITY_MESSAGE:
+		LogInfo(LogDirectX) << debugMessage << endl;
+		break;
+	}
+}
+
+} // anonymous namespace
+
+
 namespace Kodiak::DX12
 {
 
@@ -70,6 +106,11 @@ DeviceManager12::~DeviceManager12()
 	{
 		WaitForSingleObject(fenceEvent, INFINITE);
 		CloseHandle(fenceEvent);
+	}
+
+	if (m_infoQueue)
+	{
+		m_infoQueue->UnregisterMessageCallback(m_callbackCookie);
 	}
 }
 
@@ -469,6 +510,13 @@ void DeviceManager12::ConfigureInfoQueue()
 
 		pInfoQueue->PushStorageFilter(&newFilter);
 		pInfoQueue->Release();
+	}
+
+	ID3D12InfoQueue1* infoQueue1{ nullptr };
+	if (SUCCEEDED(m_device->QueryInterface(IID_PPV_ARGS(&infoQueue1))))
+	{
+		infoQueue1->RegisterMessageCallback(DebugMessageCallback, D3D12_MESSAGE_CALLBACK_FLAG_NONE, nullptr, &m_callbackCookie);
+		m_infoQueue = infoQueue1;
 	}
 }
 

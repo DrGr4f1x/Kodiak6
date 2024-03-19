@@ -255,7 +255,7 @@ template <class T>
 class IntrusiveCounter : public T
 {
 private:
-	std::atomic_ulong m_refCount = 0;
+	std::atomic_ulong m_refCount = 1;
 
 public:
 	unsigned long AddRef() noexcept final

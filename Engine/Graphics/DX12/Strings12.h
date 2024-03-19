@@ -73,6 +73,28 @@ inline std::string D3DTypeToString(D3D12_MESH_SHADER_TIER meshShaderTier, bool b
 }
 
 
+inline std::string D3DTypeToString(D3D12_MESSAGE_CATEGORY messageCategory, bool bNumberOnly = false)
+{
+	switch (messageCategory)
+	{
+	case D3D12_MESSAGE_CATEGORY_APPLICATION_DEFINED: return "Application Defined"; break;
+	case D3D12_MESSAGE_CATEGORY_MISCELLANEOUS: return "Miscellaneous"; break;
+	case D3D12_MESSAGE_CATEGORY_INITIALIZATION: return "Initialization"; break;
+	case D3D12_MESSAGE_CATEGORY_CLEANUP: return "Cleanup"; break;
+	case D3D12_MESSAGE_CATEGORY_COMPILATION: return "Compilation"; break;
+	case D3D12_MESSAGE_CATEGORY_STATE_CREATION: return "State Creation"; break;
+	case D3D12_MESSAGE_CATEGORY_STATE_SETTING: return "State Setting"; break;
+	case D3D12_MESSAGE_CATEGORY_STATE_GETTING: return "State Getting"; break;
+	case D3D12_MESSAGE_CATEGORY_RESOURCE_MANIPULATION: return "Resource Manipulation"; break;
+	case D3D12_MESSAGE_CATEGORY_EXECUTION: return "Execution"; break;
+	case D3D12_MESSAGE_CATEGORY_SHADER: return "Shader"; break;
+	default:
+		return "Unknown";
+		break;
+	}
+}
+
+
 inline std::string D3DTypeToString(D3D12_PROGRAMMABLE_SAMPLE_POSITIONS_TIER programmableSamplePositionsTier, bool bNumberOnly = false)
 {
 	switch (programmableSamplePositionsTier)
@@ -255,6 +277,7 @@ DECLARE_STRING_FORMATTERS(D3D12_CONSERVATIVE_RASTERIZATION_TIER)
 DECLARE_STRING_FORMATTERS(D3D12_CROSS_NODE_SHARING_TIER)
 DECLARE_STRING_FORMATTERS(D3D_FEATURE_LEVEL)
 DECLARE_STRING_FORMATTERS(D3D12_MESH_SHADER_TIER)
+DECLARE_STRING_FORMATTERS(D3D12_MESSAGE_CATEGORY);
 DECLARE_STRING_FORMATTERS(D3D12_PROGRAMMABLE_SAMPLE_POSITIONS_TIER)
 DECLARE_STRING_FORMATTERS(D3D12_RAYTRACING_TIER)
 DECLARE_STRING_FORMATTERS(D3D12_RENDER_PASS_TIER)

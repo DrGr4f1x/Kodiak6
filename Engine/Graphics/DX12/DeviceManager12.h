@@ -41,6 +41,7 @@ protected:
 
 	void ConfigureInfoQueue();
 	bool CreateCommandQueues();
+	bool InstallDebugCallback();
 
 	void ReadCaps();
 
@@ -52,6 +53,8 @@ private:
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
 	IntrusivePtr<IDXGIAdapter> m_adapter;
 	IntrusivePtr<ID3D12Device> m_device;
+	IntrusivePtr< ID3D12InfoQueue1> m_infoQueue;
+	DWORD m_callbackCookie{ 0 };
 	IntrusivePtr<ID3D12CommandQueue> m_graphicsQueue;
 	IntrusivePtr<ID3D12CommandQueue> m_computeQueue;
 	IntrusivePtr<ID3D12CommandQueue> m_copyQueue;

@@ -37,6 +37,7 @@ protected:
 	bool CreateSwapChain() final;
 
 	void SetRequiredInstanceLayersAndExtensions();
+	bool InstallDebugMessenger();
 	std::vector<std::pair<AdapterInfo, VkPhysicalDevice>> EnumeratePhysicalDevices();
 	bool CreateWindowSurface();
 	bool SelectPhysicalDevice();
@@ -50,14 +51,19 @@ private:
 	VulkanVersionInfo m_versionInfo{};
 
 	VkInstanceHandle m_instance;
+	VkDebugUtilsMessengerHandle m_debugMessenger;
 	VkPhysicalDeviceHandle m_physicalDevice;
 	VkSurfaceHandle m_surface;
+	VkDeviceHandle m_device;
 
-	VkSurfaceFormatKHR m_swapChainFormat;
+	VkSurfaceFormatKHR m_swapChainFormat{};
 	VkSwapchainHandle m_swapChain;
 	std::vector<VkImageHandle> m_swapChainImages;
 	uint32_t m_swapChainIndex{ (uint32_t)-1 };
 	bool m_swapChainMutableFormatSupported{ false };
+
+	std::vector<VkSemaphoreHandle> m_presentSemaphores;
+	uint32_t m_presentSemaphoreIndex{ 0 };
 
 	std::unique_ptr<DeviceCaps> m_caps;
 
