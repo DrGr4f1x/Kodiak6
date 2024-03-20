@@ -31,7 +31,7 @@ void DebugMessageCallback(
 	using namespace Kodiak;
 	using namespace Kodiak::DX12;
 
-	string debugMessage = format("{} Code {:#x} : {}", category, (uint64_t)id, pDescription);
+	string debugMessage = format("[{}] Code {} : {}", category, (uint32_t)id, pDescription);
 
 	switch (severity)
 	{
