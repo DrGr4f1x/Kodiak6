@@ -13,11 +13,11 @@
 // DirectX 12 headers
 #define FORCE_DX12_DEBUG_LAYER 0
 #define ENABLE_DX12_DEBUG_LAYER (ENABLE_DEBUG_LAYER || FORCE_DX12_DEBUG_LAYER)
-#include <d3d12.h>
 #include <dxgi1_4.h>
 #include <dxgi1_6.h>
 #include <dxgiformat.h>
-
+#include "directx\d3d12.h"
+#include "directx\d3dx12.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")

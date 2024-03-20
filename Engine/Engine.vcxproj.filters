@@ -90,6 +90,12 @@
     <ClCompile Include="External\D3D12MemoryAllocator\D3D12MemAlloc.cpp">
       <Filter>External\D3D12MemoryAllocator</Filter>
     </ClCompile>
+    <ClCompile Include="External\DirectX-Headers\src\d3dx12_property_format_table.cpp">
+      <Filter>External\DirectX-Headers\src</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DirectX-Headers\src\dxguids.cpp">
+      <Filter>External\DirectX-Headers\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -304,6 +310,69 @@
     <ClInclude Include="External\VulkanMemoryAllocator\vk_mem_alloc.h">
       <Filter>External\VulkanMemoryAllocator</Filter>
     </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\dxguids\dxguids.h">
+      <Filter>External\DirectX-Headers\include\dxguids</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3d12sdklayers.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3d12shader.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\D3D12TokenizedProgramFormat.hpp">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3d12video.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dcommon.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_barriers.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_check_feature_support.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_core.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_default.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_pipeline_state_stream.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_property_format_table.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_render_pass.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_resource_helpers.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_root_signature.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_state_object.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxcore.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxcore_interface.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxgicommon.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxgiformat.h">
+      <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -335,6 +404,21 @@
     </Filter>
     <Filter Include="External\VulkanMemoryAllocator">
       <UniqueIdentifier>{4fd9ab76-b403-48fe-9966-c9e30126f096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectX-Headers">
+      <UniqueIdentifier>{e19ed28f-9039-4cf3-8c11-dd282d56d7fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectX-Headers\include">
+      <UniqueIdentifier>{b53f8190-5688-4d54-8073-a54e02af25cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectX-Headers\src">
+      <UniqueIdentifier>{91343ba9-8c60-4621-934c-655db949bed4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectX-Headers\include\directx">
+      <UniqueIdentifier>{46f9c472-d5da-4cd6-9557-2b55e28eb4f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DirectX-Headers\include\dxguids">
+      <UniqueIdentifier>{9999ad33-36bb-4567-8037-baf1e19d4949}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

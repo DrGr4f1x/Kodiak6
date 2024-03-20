@@ -36,6 +36,16 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="External\DirectX-Headers\src\d3dx12_property_format_table.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="External\DirectX-Headers\src\dxguids.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Graphics\DeviceManager.cpp" />
     <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp" />
@@ -109,6 +119,27 @@
     <ClInclude Include="External\CLI11\CLI\Validators.hpp" />
     <ClInclude Include="External\CLI11\CLI\Version.hpp" />
     <ClInclude Include="External\D3D12MemoryAllocator\D3D12MemAlloc.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3d12sdklayers.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3d12shader.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\D3D12TokenizedProgramFormat.hpp" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3d12video.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dcommon.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_barriers.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_check_feature_support.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_core.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_default.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_pipeline_state_stream.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_property_format_table.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_render_pass.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_resource_helpers.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_root_signature.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\d3dx12_state_object.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxcore.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxcore_interface.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxgicommon.h" />
+    <ClInclude Include="External\DirectX-Headers\include\directx\dxgiformat.h" />
+    <ClInclude Include="External\DirectX-Headers\include\dxguids\dxguids.h" />
     <ClInclude Include="External\VulkanMemoryAllocator\vk_mem_alloc.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Graphics\DeviceManager.h" />
@@ -210,7 +241,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)External\DirectX-Headers\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -228,7 +259,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)External\DirectX-Headers\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -248,7 +279,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)External\DirectX-Headers\include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
