@@ -19,19 +19,13 @@ namespace Kodiak::DX12
 
 void SetDebugName(IDXGIObject* object, const string& name)
 {
-	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
-	{
-		object->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)name.size(), name.data());
-	}
+	object->SetPrivateData(WKPDID_D3DDebugObjectName, (UINT)name.size(), name.data());
 }
 
 
 void SetDebugName(ID3D12Object* object, const string& name)
 {
-	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
-	{
-		object->SetName(MakeWStr(name).c_str());
-	}
+	object->SetName(MakeWStr(name).c_str());
 }
 
 } // namespace Kodiak::DX12

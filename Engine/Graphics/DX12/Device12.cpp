@@ -329,15 +329,3 @@ HRESULT GraphicsDevice::EnumAdapters(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpu
 		return dxgiFactory6->EnumAdapterByGpuPreference((UINT)adapterIdx, gpuPreference, IID_PPV_ARGS(adapter));
 	}
 }
-
-
-Kodiak::DX12::GraphicsDevice* Kodiak::DX12::CreateDevice12(const Kodiak::GraphicsDeviceDesc& desc)
-{
-	GraphicsDevice* device = new GraphicsDevice;
-
-	device->Initialize(desc);
-
-	g_graphicsDevice = device;
-
-	return device;
-}

@@ -19,6 +19,7 @@ namespace Kodiak::VK
 
 // Forward declarations
 struct DeviceCaps;
+class Device;
 class ExtensionManager;
 
 
@@ -44,30 +45,23 @@ protected:
 	void GetQueueFamilyIndices();
 	int32_t GetQueueFamilyIndex(VkQueueFlags queueFlags);
 
-	void DestroySwapChain();
-
 private:
 	std::unique_ptr<ExtensionManager> m_extensionManager;
 	VulkanVersionInfo m_versionInfo{};
 
-	VkInstanceHandle m_instance;
-	VkDebugUtilsMessengerHandle m_debugMessenger;
-	VkPhysicalDeviceHandle m_physicalDevice;
-	VkSurfaceHandle m_surface;
-	VkDeviceHandle m_device;
+	// Vulkan instance objects owned by the DeviceManager
+	VkInstanceHandle m_vkInstance;
+	VkDebugUtilsMessengerHandle m_vkDebugMessenger;
+	VkPhysicalDeviceHandle m_vkPhysicalDevice;
+	VkSurfaceHandle m_vkSurface;
 
-	VkSurfaceFormatKHR m_swapChainFormat{};
-	VkSwapchainHandle m_swapChain;
-	std::vector<VkImageHandle> m_swapChainImages;
-	uint32_t m_swapChainIndex{ (uint32_t)-1 };
-	bool m_swapChainMutableFormatSupported{ false };
-
-	std::vector<VkSemaphoreHandle> m_presentSemaphores;
-	uint32_t m_presentSemaphoreIndex{ 0 };
+	// Kodiak objects
+	DeviceHandle m_device;
 
 	std::unique_ptr<DeviceCaps> m_caps;
 
 	// Queues and queue families
+	// TODO - Move this stuff to GraphicsDevice and have it create it's own Vulkan object
 	std::vector<VkQueueFamilyProperties> m_queueFamilyProperties;
 	struct
 	{

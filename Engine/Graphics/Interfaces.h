@@ -114,6 +114,9 @@ class IGraphicsDevice : public IObject
 {
 public:
 	virtual ~IGraphicsDevice() = default;
+
+	virtual bool Initialize() = 0;
+	virtual bool CreateSwapChain() = 0;
 };
 using DeviceHandle = IntrusivePtr<IGraphicsDevice>;
 

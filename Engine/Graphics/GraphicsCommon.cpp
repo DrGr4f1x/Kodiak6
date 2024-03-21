@@ -22,25 +22,6 @@ using namespace std;
 namespace Kodiak
 {
 
-DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc)
-{
-	switch (desc.api)
-	{
-	case GraphicsApi::D3D12:
-		return Kodiak::DX12::CreateDevice12(desc);
-		break;
-
-	case GraphicsApi::Vulkan:
-		return Kodiak::VK::CreateDeviceVK(desc);
-		break;
-
-	case GraphicsApi::Unknown:
-	default:
-		LogFatal(LogGraphics) << "Unknown graphics API" << endl;
-		return DeviceHandle();
-	}
-}
-
 
 bool IsDeveloperModeEnabled()
 {

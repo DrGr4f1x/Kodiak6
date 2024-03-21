@@ -14,197 +14,124 @@
 
 #include "Generated\LoaderVk.h"
 
+#include <unordered_set>
 
-using namespace Kodiak;
-using namespace Kodiak::VK;
 using namespace std;
 
 
-namespace
+namespace Kodiak::VK
 {
-
-constexpr uint32_t g_requiredVulkanVersion{ VK_API_VERSION_1_3 };
-
-} // anonymous namespace
-
-
-GraphicsDevice::GraphicsDevice()
-{
-	LogInfo(LogVulkan) << "Creating Vulkan device" << endl;
-}
 
 
 GraphicsDevice::~GraphicsDevice()
 {
-	LogInfo(LogVulkan) << "Destroying Vulkan device" << endl;
+	LogInfo(LogVulkan) << "Destroying Vulkan device." << endl;
 }
 
 
-void GraphicsDevice::Initialize(const GraphicsDeviceDesc& desc)
+bool GraphicsDevice::Initialize()
 {
-	m_deviceDesc = desc;
+	LogInfo(LogVulkan) << "Initializing Vulkan device." << endl;
 
-	if (VK_SUCCESS != InitializeLoader())
-	{
-		LogFatal(LogVulkan) << "Failed to initialize Vulkan loader";
-	}
+	m_vkPhysicalDevice = m_deviceCreationParams.physicalDevice;
+	m_vkDevice = VkDeviceHandle::Create(new CVkDevice(m_vkPhysicalDevice, m_deviceCreationParams.device));
 
-	CreateInstance();
-
-	SelectPhysicalDevice();
+	return true;
 }
 
 
-void GraphicsDevice::CreateInstance()
+bool GraphicsDevice::CreateSwapChain()
 {
-	VkApplicationInfo appInfo{ VK_STRUCTURE_TYPE_APPLICATION_INFO };
-	appInfo.pApplicationName = m_deviceDesc.appName.c_str();
-	appInfo.pEngineName = "Kodiak";
-	appInfo.apiVersion = g_requiredVulkanVersion;
 
-	const vector<const char*> instanceExtensions =
+	VkExtent2D extent{ 
+		m_deviceCreationParams.backBufferWidth,	
+		m_deviceCreationParams.backBufferHeight };
+
+	unordered_set<uint32_t> uniqueQueues{ 
+		(uint32_t)m_deviceCreationParams.queueFamilyIndices.graphics, 
+		(uint32_t)m_deviceCreationParams.queueFamilyIndices.present };
+	vector<uint32_t> queues(uniqueQueues.begin(), uniqueQueues.end());
+
+	const bool enableSwapChainSharing = queues.size() > 1;
+
+	VkSwapchainCreateInfoKHR createInfo{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
+	createInfo.surface = m_deviceCreationParams.surface;
+	createInfo.minImageCount = m_deviceCreationParams.numSwapChainBuffers;
+	createInfo.imageFormat = m_swapChainFormat.format;
+	createInfo.imageColorSpace = m_swapChainFormat.colorSpace;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	createInfo.imageSharingMode = enableSwapChainSharing ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
+	createInfo.flags = m_swapChainMutableFormatSupported ? VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR : 0;
+	createInfo.queueFamilyIndexCount = enableSwapChainSharing ? (uint32_t)queues.size() : 0;
+	createInfo.pQueueFamilyIndices = enableSwapChainSharing ? queues.data() : nullptr;
+	createInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	createInfo.presentMode = m_deviceCreationParams.enableVSync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
+	createInfo.clipped = true;
+	createInfo.oldSwapchain = nullptr;
+
+	vector<VkFormat> imageFormats{ m_swapChainFormat.format };
+	switch (m_swapChainFormat.format)
 	{
-#if ENABLE_VULKAN_VALIDATION
-		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-		VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME,
-#endif
-		VK_KHR_SURFACE_EXTENSION_NAME,
-		VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
-		VK_KHR_WIN32_SURFACE_EXTENSION_NAME
-	};
-
-	const vector<const char*> instanceLayers =
-	{
-#if ENABLE_VULKAN_VALIDATION
-		"VK_LAYER_KHRONOS_validation"
-#endif
-	};
-
-	VkInstanceCreateInfo createInfo{ VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO };
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledExtensionCount = (uint32_t)instanceExtensions.size();
-	createInfo.ppEnabledExtensionNames = instanceExtensions.data();
-	createInfo.enabledLayerCount = (uint32_t)instanceLayers.size();
-	createInfo.ppEnabledLayerNames = instanceLayers.data();
-
-	VkInstance vkInstance{ VK_NULL_HANDLE };
-	auto res = vkCreateInstance(&createInfo, nullptr, &vkInstance);
-	if (VK_SUCCESS != res)
-	{
-		LogFatal(LogVulkan) << "Failed to create Vulkan instance";
+	case VK_FORMAT_R8G8B8A8_UNORM:
+		imageFormats.push_back(VK_FORMAT_R8G8B8A8_SRGB);
+		break;
+	case VK_FORMAT_R8G8B8A8_SRGB:
+		imageFormats.push_back(VK_FORMAT_R8G8B8A8_UNORM);
+		break;
+	case VK_FORMAT_B8G8R8A8_UNORM:
+		imageFormats.push_back(VK_FORMAT_B8G8R8A8_SRGB);
+		break;
+	case VK_FORMAT_B8G8R8A8_SRGB:
+		imageFormats.push_back(VK_FORMAT_B8G8R8A8_UNORM);
+		break;
 	}
 
-	uint32_t instanceVersion{ 0 };
-	res = vkEnumerateInstanceVersion(&instanceVersion);
-	if (res == VK_SUCCESS)
-	{
-		m_versionInfo = DecodeVulkanVersion(instanceVersion);
+	VkImageFormatListCreateInfo imageFormatListCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO };
+	imageFormatListCreateInfo.viewFormatCount = (uint32_t)imageFormats.size();
+	imageFormatListCreateInfo.pViewFormats = imageFormats.data();
 
-		LogInfo(LogVulkan) << format("Created Vulkan instance, variant {}, API version {}",
-			m_versionInfo.variant, m_versionInfo) << endl;
-	}
-	else
+	if (m_swapChainMutableFormatSupported)
 	{
-		LogInfo(LogVulkan) << "Created Vulkan instance, but failed to enumerate version" << endl;
+		createInfo.pNext = &imageFormatListCreateInfo;
 	}
 
-	LoadInstanceFunctionsOnly(vkInstance);
-
-	m_instance = VkInstanceHandle::Create(new CVkInstance(vkInstance));
-}
-
-
-void GraphicsDevice::SelectPhysicalDevice()
-{
-	uint32_t gpuCount{ 0 };
-	VkResult res{ VK_SUCCESS };
-
-	// Get number of available physical devices
-	res = vkEnumeratePhysicalDevices(*m_instance, &gpuCount, nullptr);
-	if (res != VK_SUCCESS)
+	VkSwapchainKHR swapchain{ VK_NULL_HANDLE };
+	if (VK_FAILED(vkCreateSwapchainKHR(*m_vkDevice, &createInfo, nullptr, &swapchain)))
 	{
-		LogFatal(LogVulkan) << "Failed to get physical device count" << endl;
+		LogError(LogVulkan) << "Failed to create Vulkan swapchain.  Error code: " << res << endl;
+		return false;
 	}
+	m_vkSwapChain = VkSwapchainHandle::Create(new CVkSwapchain(m_vkDevice, swapchain));
 
-	// Enumerate physical devices
-	vector<VkPhysicalDevice> physicalDevices(gpuCount);
-	res = vkEnumeratePhysicalDevices(*m_instance, &gpuCount, physicalDevices.data());
-	if (res != VK_SUCCESS)
+	m_presentSemaphores.reserve(m_deviceCreationParams.maxFramesInFlight);
+	for (uint32_t i = 0; i < m_deviceCreationParams.maxFramesInFlight; ++i)
 	{
-		LogFatal(LogVulkan) << "Failed to enumerate physical devices" << endl;
-	}
+		VkSemaphore semaphore{ VK_NULL_HANDLE };
+		VkSemaphoreCreateInfo createInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
 
-	int32_t firstDiscreteGpu{ -1 };
-	int32_t firstIntegratedGpu{ -1 };
-
-	LogInfo(LogVulkan) << "Enumerating Vulkan physical devices..." << endl;
-
-	for (size_t deviceIdx = 0; deviceIdx < physicalDevices.size(); ++deviceIdx)
-	{
-		DeviceCaps caps{};
-		caps.ReadCaps(physicalDevices[deviceIdx]);
-
-		auto deviceType = caps.properties.deviceType;
-
-		// Only consider discrete and integrated GPUs
-		if (deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceType != VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+		if (VK_FAILED(vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore)))
 		{
-			continue;
+			LogError(LogVulkan) << "Failed to create present semaphore.  Error code: " << res << endl;
+			return false;
 		}
-
-		if (deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && firstDiscreteGpu == -1)
-		{
-			firstDiscreteGpu = (uint32_t)deviceIdx;
-		}
-		else if (deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU && firstIntegratedGpu == -1)
-		{
-			firstIntegratedGpu = (uint32_t)deviceIdx;
-		}
-
-		const string deviceTypeStr = deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ? "Discrete" : "Integrated";
-
-		string deviceName = caps.properties.deviceName;
-		LogInfo(LogVulkan) << format("  {} physical device {} is Vulkan-capable: {} (VendorId: {:#x}, DeviceId: {:#x}, API version: {})",
-			deviceTypeStr,
-			deviceIdx,
-			deviceName,
-			caps.properties.vendorID, caps.properties.deviceID, caps.version)
-			<< endl;
+		m_presentSemaphores.push_back(VkSemaphoreHandle::Create(new CVkSemaphore(m_vkDevice, semaphore)));
 	}
 
-	// Now select a device, preferring discrete if available
-	if (firstDiscreteGpu != -1)
-	{
-		auto physicalDevice = physicalDevices[firstDiscreteGpu];
-		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
-
-		LogInfo(LogVulkan) << "Selected discrete Vulkan physical device " << firstDiscreteGpu << endl;
-	}
-	else if (firstIntegratedGpu != -1)
-	{
-		auto physicalDevice = physicalDevices[firstIntegratedGpu];
-		m_physicalDevice = VkPhysicalDeviceHandle::Create(new CVkPhysicalDevice(m_instance, physicalDevice));
-
-		LogInfo(LogVulkan) << "Selected integrated Vulkan physical device " << firstIntegratedGpu << endl;
-	}
-	else
-	{
-		LogFatal(LogVulkan) << "Failed to select a Vulkan physical device" << endl;
-	}
-
-	m_caps.ReadCaps(*m_physicalDevice);
-	if (g_graphicsDeviceOptions.logDeviceFeatures)
-	{
-		m_caps.LogCaps();
-	}
+	return true;
 }
 
 
-Kodiak::VK::GraphicsDevice* Kodiak::VK::CreateDeviceVK(const Kodiak::GraphicsDeviceDesc& desc)
+void GraphicsDevice::DestroySwapChain()
 {
-	GraphicsDevice* device = new GraphicsDevice;
+	if (m_vkSwapChain)
+	{
+		m_vkSwapChain->Destroy();
+	}
 
-	device->Initialize(desc);
-
-	return device;
+	m_vkSwapChainImages.clear();
 }
+
+} // namespace Kodiak::VK

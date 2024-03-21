@@ -19,12 +19,10 @@ namespace Kodiak
 {
 
 // Globals
-inline IGraphicsDevice* g_graphicsDevice{ nullptr };
 inline const uint32_t g_numSwapChainBuffers{ 3 };
 
 
 // Functions
-DeviceHandle CreateDevice(const GraphicsDeviceDesc& desc);
 bool IsDeveloperModeEnabled();
 bool IsRenderDocAvailable();
 
