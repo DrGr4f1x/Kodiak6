@@ -12,6 +12,8 @@
 
 #include "DeviceVK.h"
 
+#include "FormatsVK.h"
+#include "QueueVK.h"
 #include "Generated\LoaderVk.h"
 
 #include <unordered_set>
@@ -21,7 +23,6 @@ using namespace std;
 
 namespace Kodiak::VK
 {
-
 
 GraphicsDevice::~GraphicsDevice()
 {
@@ -36,12 +37,17 @@ bool GraphicsDevice::Initialize()
 	m_vkPhysicalDevice = m_deviceCreationParams.physicalDevice;
 	m_vkDevice = VkDeviceHandle::Create(new CVkDevice(m_vkPhysicalDevice, m_deviceCreationParams.device));
 
+	CreateQueue(QueueType::Graphics);
+	CreateQueue(QueueType::Compute);
+	CreateQueue(QueueType::Copy);
+
 	return true;
 }
 
 
 bool GraphicsDevice::CreateSwapChain()
 {
+	m_swapChainFormat = { FormatToVulkan(m_deviceCreationParams.swapChainFormat), VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
 	VkExtent2D extent{ 
 		m_deviceCreationParams.backBufferWidth,	
@@ -52,6 +58,11 @@ bool GraphicsDevice::CreateSwapChain()
 		(uint32_t)m_deviceCreationParams.queueFamilyIndices.present };
 	vector<uint32_t> queues(uniqueQueues.begin(), uniqueQueues.end());
 
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+
+	m_swapChainMutableFormatSupported = true;
+
 	const bool enableSwapChainSharing = queues.size() > 1;
 
 	VkSwapchainCreateInfoKHR createInfo{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
@@ -61,7 +72,7 @@ bool GraphicsDevice::CreateSwapChain()
 	createInfo.imageColorSpace = m_swapChainFormat.colorSpace;
 	createInfo.imageExtent = extent;
 	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	createInfo.imageUsage = usage;
 	createInfo.imageSharingMode = enableSwapChainSharing ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
 	createInfo.flags = m_swapChainMutableFormatSupported ? VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR : 0;
 	createInfo.queueFamilyIndexCount = enableSwapChainSharing ? (uint32_t)queues.size() : 0;
@@ -106,21 +117,137 @@ bool GraphicsDevice::CreateSwapChain()
 	}
 	m_vkSwapChain = VkSwapchainHandle::Create(new CVkSwapchain(m_vkDevice, swapchain));
 
-	m_presentSemaphores.reserve(m_deviceCreationParams.maxFramesInFlight);
-	for (uint32_t i = 0; i < m_deviceCreationParams.maxFramesInFlight; ++i)
+	// Get swapchain images
+	uint32_t imageCount{ 0 };
+	if (VK_FAILED(vkGetSwapchainImagesKHR(*m_vkDevice, *m_vkSwapChain, &imageCount, nullptr)))
 	{
-		VkSemaphore semaphore{ VK_NULL_HANDLE };
-		VkSemaphoreCreateInfo createInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+		LogError(LogVulkan) << "Failed to get swapchain image count.  Error code: " << res << endl;
+		return false;
+	}
 
-		if (VK_FAILED(vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore)))
+	vector<VkImage> images{ imageCount };
+	if (VK_FAILED(vkGetSwapchainImagesKHR(*m_vkDevice, *m_vkSwapChain, &imageCount, nullptr)))
+	{
+		LogError(LogVulkan) << "Failed to get swapchain images.  Error code: " << res << endl;
+		return false;
+	}
+	m_vkSwapChainImages.reserve(imageCount);
+	for (auto image : images)
+	{
+		m_vkSwapChainImages.push_back(VkImageHandle::Create(new CVkImage(m_vkDevice, image)));
+	}
+
+	// Create the semaphores and fences for present
+	m_presentSemaphores.reserve(m_deviceCreationParams.maxFramesInFlight + 1);
+	m_presentFences.reserve(m_deviceCreationParams.maxFramesInFlight + 1);
+	for (uint32_t i = 0; i < m_deviceCreationParams.maxFramesInFlight + 1; ++i)
+	{
+		VkSemaphoreHandle semaphore;
+		if (VK_FAILED(CreateSemaphore(VK_SEMAPHORE_TYPE_BINARY, 0, &semaphore)))
 		{
 			LogError(LogVulkan) << "Failed to create present semaphore.  Error code: " << res << endl;
 			return false;
 		}
-		m_presentSemaphores.push_back(VkSemaphoreHandle::Create(new CVkSemaphore(m_vkDevice, semaphore)));
+		m_presentSemaphores.push_back(semaphore);
+
+		VkFenceHandle fence;
+		if (VK_FAILED(CreateFence(true, &fence)))
+		{
+			LogError(LogVulkan) << "Failed to create present fence.  Error code: " << res << endl;
+			return false;
+		}
+		m_presentFences.push_back(fence);
 	}
 
 	return true;
+}
+
+
+VkResult GraphicsDevice::CreateFence(bool bSignalled, CVkFence** ppFence) const
+{
+	VkFenceCreateInfo createInfo{ VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
+	createInfo.flags = bSignalled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
+
+	VkFence fence{ VK_NULL_HANDLE };
+	auto res = vkCreateFence(*m_vkDevice, &createInfo, nullptr, &fence);
+
+	*ppFence = nullptr;
+	if (res == VK_SUCCESS)
+	{
+		*ppFence = new CVkFence(m_vkDevice, fence);
+		(*ppFence)->AddRef();
+	}
+
+	return res;
+}
+
+VkResult GraphicsDevice::CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const
+{
+	VkSemaphoreTypeCreateInfo typeCreateInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO };
+	typeCreateInfo.semaphoreType = semaphoreType;
+	typeCreateInfo.initialValue = initialValue;
+
+	VkSemaphoreCreateInfo createInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	createInfo.pNext = &typeCreateInfo;
+
+	VkSemaphore semaphore{ VK_NULL_HANDLE };
+	auto res = vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore);
+
+	*ppSemaphore = nullptr;
+	if (res == VK_SUCCESS)
+	{
+		*ppSemaphore = new CVkSemaphore(m_vkDevice, semaphore);
+		(*ppSemaphore)->AddRef();
+	}
+
+	return res;
+}
+
+
+void GraphicsDevice::BeginFrame()
+{
+	// TODO
+	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
+	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
+
+	if (VK_FAILED(vkAcquireNextImageKHR(*m_vkDevice, *m_vkSwapChain, numeric_limits<uint64_t>::max(), *semaphore, *fence, &m_swapChainIndex)))
+	{
+		LogFatal(LogVulkan) << "Failed to acquire next swapchain image in BeginFrame.  Error code: " << res << endl;
+		return;
+	}
+
+	QueueWaitForSemaphore(QueueType::Graphics, *semaphore, 0);
+}
+
+
+void GraphicsDevice::Present()
+{
+	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
+	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
+
+	Queue graphicsQueue = GetQueue(QueueType::Graphics);
+	QueueSignalSemaphore(QueueType::Graphics, *semaphore, 0);
+
+	UnblockPresent(QueueType::Graphics, *semaphore, graphicsQueue.GetNextFenceValue() - 1, *fence);
+
+	VkSwapchainKHR swapchain = *m_vkSwapChain;
+	VkSemaphore waitSemaphore = *semaphore;
+
+	VkPresentInfoKHR presentInfo = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &swapchain;
+	presentInfo.pImageIndices = &m_swapChainIndex;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = &waitSemaphore;
+
+	vkQueuePresentKHR(GetQueue(QueueType::Graphics).GetVkQueue(), &presentInfo);
+
+	m_presentSemaphoreIndex = (m_presentSemaphoreIndex + 1) % m_presentSemaphores.size();
+
+	const auto& nextFence = m_presentFences[m_presentSemaphoreIndex];
+	VkFence vkFence = *nextFence;
+	vkWaitForFences(*m_vkDevice, 1, &vkFence, TRUE, numeric_limits<uint64_t>::max());
+	vkResetFences(*m_vkDevice, 1, &vkFence);
 }
 
 
@@ -132,6 +259,37 @@ void GraphicsDevice::DestroySwapChain()
 	}
 
 	m_vkSwapChainImages.clear();
+}
+
+
+void GraphicsDevice::CreateQueue(QueueType queueType)
+{
+	VkQueue vkQueue{ VK_NULL_HANDLE };
+	vkGetDeviceQueue(*m_vkDevice, m_deviceCreationParams.queueFamilyIndices.graphics, 0, &vkQueue);
+	m_queues[(uint32_t)queueType] = make_unique<Queue>(this, vkQueue, queueType);
+}
+
+
+const Queue& GraphicsDevice::GetQueue(QueueType queueType)
+{
+	return *m_queues[(uint32_t)queueType];
+}
+
+void GraphicsDevice::QueueWaitForSemaphore(QueueType queueType, VkSemaphore semaphore, uint64_t value)
+{
+	m_queues[(uint32_t)queueType]->AddWaitSemaphore(semaphore, value);
+}
+
+
+void GraphicsDevice::QueueSignalSemaphore(QueueType queueType, VkSemaphore semaphore, uint64_t value)
+{
+	m_queues[(uint32_t)queueType]->AddSignalSemaphore(semaphore, value);
+}
+
+
+void GraphicsDevice::UnblockPresent(QueueType queueType, VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence)
+{
+	m_queues[(uint32_t)queueType]->UnblockPresent(signalSemaphore, waitValue, signalFence);
 }
 
 } // namespace Kodiak::VK

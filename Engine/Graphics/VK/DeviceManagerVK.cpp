@@ -16,6 +16,8 @@
 #include "DeviceCapsVK.h"
 #include "ExtensionManagerVK.h"
 #include "FormatsVK.h"
+#include "QueueVK.h"
+
 #include "Generated\LoaderVK.h"
 
 
@@ -259,7 +261,7 @@ bool DeviceManagerVK::CreateDevice()
 	}
 
 	// HACK - replace with real device extension handling
-	vector<const char*> extensions{ "VK_KHR_swapchain" };
+	vector<const char*> extensions{ "VK_KHR_swapchain", "VK_KHR_swapchain_mutable_format" };
 
 	VkDeviceCreateInfo createInfo{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
 	createInfo.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
@@ -317,21 +319,13 @@ bool DeviceManagerVK::CreateSwapChain()
 
 void DeviceManagerVK::BeginFrame()
 {
-	// TODO
-	/*const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
-
-	if (VK_FAILED(vkAcquireNextImageKHR(*m_device, *m_swapChain, numeric_limits<uint64_t>::max(), *semaphore, VK_NULL_HANDLE, &m_swapChainIndex)))
-	{
-		LogFatal(LogVulkan) << "Failed to acquire next swapchain image in BeginFrame.  Error code: " << res << endl;
-		return;
-	}*/
-
+	m_device->BeginFrame();
 }
 
 
 void DeviceManagerVK::Present()
 {
-
+	m_device->Present();
 }
 
 

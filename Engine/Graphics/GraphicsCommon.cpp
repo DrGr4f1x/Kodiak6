@@ -13,8 +13,7 @@
 #include "GraphicsCommon.h"
 
 #include "Application.h"
-#include "Graphics\DX12\Device12.h"
-#include "Graphics\VK\DeviceVK.h"
+
 
 using namespace std;
 

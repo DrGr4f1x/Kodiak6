@@ -96,6 +96,9 @@
     <ClCompile Include="External\DirectX-Headers\src\dxguids.cpp">
       <Filter>External\DirectX-Headers\src</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\VK\QueueVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -372,6 +375,9 @@
     </ClInclude>
     <ClInclude Include="External\DirectX-Headers\include\directx\dxgiformat.h">
       <Filter>External\DirectX-Headers\include\directx</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\QueueVK.h">
+      <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

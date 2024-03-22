@@ -207,7 +207,7 @@ class CVkSwapchain : public IntrusiveCounter<IObject>, public NonCopyable
 {
 public:
 	CVkSwapchain() noexcept = default;
-	CVkSwapchain(CVkDevice* device, VkSwapchainKHR swapchain)
+	CVkSwapchain(CVkDevice* device, VkSwapchainKHR swapchain) noexcept
 		: m_device{ device }
 		, m_swapchainKHR{ swapchain }
 	{}
@@ -236,7 +236,7 @@ class CVkSemaphore : public IntrusiveCounter<IObject>, public NonCopyable
 {
 public:
 	CVkSemaphore() noexcept = default;
-	CVkSemaphore(CVkDevice* device, VkSemaphore semaphore)
+	CVkSemaphore(CVkDevice* device, VkSemaphore semaphore) noexcept
 		: m_device{ device }
 		, m_semaphore{ semaphore }
 	{}
@@ -265,7 +265,7 @@ class CVkDebugUtilsMessenger : public IntrusiveCounter<IObject>, public NonCopya
 {
 public:
 	CVkDebugUtilsMessenger() noexcept = default;
-	CVkDebugUtilsMessenger(CVkInstance* instance, VkDebugUtilsMessengerEXT messenger)
+	CVkDebugUtilsMessenger(CVkInstance* instance, VkDebugUtilsMessengerEXT messenger) noexcept
 		: m_instance{ instance }
 		, m_messenger{ messenger }
 	{}
@@ -285,5 +285,34 @@ private:
 	VkDebugUtilsMessengerEXT m_messenger{ VK_NULL_HANDLE };
 };
 using VkDebugUtilsMessengerHandle = IntrusivePtr<CVkDebugUtilsMessenger>;
+
+
+//
+// VkFence
+//
+class CVkFence : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkFence() noexcept = default;
+	CVkFence(CVkDevice* device, VkFence fence) noexcept
+		: m_device{ device }
+		, m_fence{ fence }
+	{}
+
+	~CVkFence()
+	{
+		Destroy();
+	}
+
+	VkFence Get() const noexcept { return m_fence; }
+	operator VkFence() const noexcept { return Get(); }
+
+	void Destroy();
+
+private:
+	VkDeviceHandle m_device;
+	VkFence m_fence{ VK_NULL_HANDLE };
+};
+using VkFenceHandle = IntrusivePtr<CVkFence>;
 
 } // namespace Kodiak::VK

@@ -16,6 +16,10 @@
 namespace Kodiak::VK
 {
 
+// Forward declarations
+class Queue;
+
+
 struct DeviceCreationParams
 {
 	CVkPhysicalDevice* physicalDevice{ nullptr };
@@ -67,11 +71,22 @@ public:
 	bool Initialize() final;
 	bool CreateSwapChain() final;
 
+	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;
+	VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const;
+
+	void BeginFrame() final;
+	void Present() final;
+
 private:
 	void DestroySwapChain();
 
-	void GetQueueFamilyIndices();
-	int32_t GetQueueFamilyIndex(VkQueueFlags queueFlags);
+	void CreateQueue(QueueType queueType);
+
+	const Queue& GetQueue(QueueType queueType);
+	void QueueWaitForSemaphore(QueueType queueType, VkSemaphore semaphore, uint64_t value);
+	void QueueSignalSemaphore(QueueType queueType, VkSemaphore, uint64_t value);
+
+	void UnblockPresent(QueueType queueType, VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence);
 
 private:
 	DeviceCreationParams m_deviceCreationParams{};
@@ -90,7 +105,11 @@ private:
 
 	// Present synchronization
 	std::vector<VkSemaphoreHandle> m_presentSemaphores;
+	std::vector<VkFenceHandle> m_presentFences;
 	uint32_t m_presentSemaphoreIndex{ 0 };
+
+	// Submission queues
+	std::array<std::unique_ptr<Queue>, (uint32_t)QueueType::Count> m_queues;
 };
 
 } // namespace Kodiak::VK

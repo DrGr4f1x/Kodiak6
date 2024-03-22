@@ -388,6 +388,16 @@ enum class ResourceType : uint32_t
 template <> struct EnableBitmaskOperators<ResourceType> { static const bool enable = true; };
 
 
+enum class QueueType : uint8_t
+{
+	Graphics,
+	Compute,
+	Copy,
+
+	Count
+};
+
+
 enum class HardwareVendor
 {
 	Unknown,
@@ -396,6 +406,7 @@ enum class HardwareVendor
 	NVIDIA,
 	Microsoft
 };
+
 
 inline std::string HardwareVendorToString(HardwareVendor hardwareVendor)
 {
@@ -410,6 +421,7 @@ inline std::string HardwareVendorToString(HardwareVendor hardwareVendor)
 	default:		return "Unknown"; break;
 	}
 }
+
 
 inline HardwareVendor VendorIdToHardwareVendor(uint32_t vendorId)
 {
@@ -441,6 +453,7 @@ inline HardwareVendor VendorIdToHardwareVendor(uint32_t vendorId)
 		break;
 	}
 }
+
 
 inline std::string VendorIdToString(uint32_t vendorId)
 {

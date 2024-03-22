@@ -117,6 +117,9 @@ public:
 
 	virtual bool Initialize() = 0;
 	virtual bool CreateSwapChain() = 0;
+
+	virtual void BeginFrame() = 0;
+	virtual void Present() = 0;
 };
 using DeviceHandle = IntrusivePtr<IGraphicsDevice>;
 

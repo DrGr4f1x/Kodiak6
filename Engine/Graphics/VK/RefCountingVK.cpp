@@ -86,4 +86,11 @@ void CVkDebugUtilsMessenger::Destroy()
 	m_messenger = VK_NULL_HANDLE;
 }
 
+
+void CVkFence::Destroy()
+{
+	vkDestroyFence(*m_device, m_fence, nullptr);
+	m_fence = VK_NULL_HANDLE;
+}
+
 } // namespace Kodiak::VK
