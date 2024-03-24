@@ -75,7 +75,7 @@ void CommandBufferPool::DiscardCommandBuffer(uint64_t fenceValue, VkCommandBuffe
 
 void CommandBufferPool::Destroy()
 {
-	if (m_vkCommandPool == nullptr || m_vkCommandPool->Get() == VK_NULL_HANDLE)
+	if (m_vkCommandPool == nullptr || *m_vkCommandPool == VK_NULL_HANDLE)
 	{
 		return;
 	}

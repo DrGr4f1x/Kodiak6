@@ -148,7 +148,7 @@ void Queue::WaitForFence(uint64_t fenceValue)
 
 	lock_guard<mutex> guard{ m_fenceMutex };
 
-	VkSemaphore timelineSemaphore = m_vkTimelineSemaphore->Get();
+	VkSemaphore timelineSemaphore = *m_vkTimelineSemaphore;
 
 	VkSemaphoreWaitInfo waitInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO };
 	waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
