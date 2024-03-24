@@ -110,6 +110,36 @@ public:
 using DepthBufferHandle = IntrusivePtr<IDepthBuffer>;
 
 
+class ICommandContext : public IObject
+{
+public:
+	virtual ~ICommandContext() = default;
+
+	virtual void Finish(bool bWaitForCompletion = false) = 0;
+
+	virtual void BeginEvent(const std::string& label) = 0;
+	virtual void EndEvent() = 0;
+	virtual void SetMarker(const std::string& label) = 0;
+};
+using CommandContextHandle = IntrusivePtr<ICommandContext>;
+
+
+class IGraphicsContext : public ICommandContext
+{
+public:
+	virtual ~IGraphicsContext() = default;
+};
+using GraphicsContextHandle = IntrusivePtr<IGraphicsContext>;
+
+
+class IComputeContext : public ICommandContext
+{
+public:
+	virtual ~IComputeContext() = default;
+};
+using ComputeContextHandle = IntrusivePtr<IComputeContext>;
+
+
 class IGraphicsDevice : public IObject
 {
 public:
@@ -120,8 +150,11 @@ public:
 
 	virtual void BeginFrame() = 0;
 	virtual void Present() = 0;
+
+	virtual CommandContextHandle BeginCommandContext(const std::string& ID = "") = 0;
+	virtual GraphicsContextHandle BeginGraphicsContext(const std::string& ID = "") = 0;
+	virtual ComputeContextHandle BeginComputeContext(const std::string& ID = "", bool bAsync = false) = 0;
 };
 using DeviceHandle = IntrusivePtr<IGraphicsDevice>;
-
 
 } // namespace Kodiak

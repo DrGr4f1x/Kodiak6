@@ -13,7 +13,10 @@
 
 // Vulkan headers
 #define FORCE_VULKAN_VALIDATION 0
-#define ENABLE_VULKAN_VALIDATION (ENABLE_DEBUG_LAYER || FORCE_VULKAN_VALIDATION)
+#define ENABLE_VULKAN_VALIDATION (ENABLE_VALIDATION || FORCE_VULKAN_VALIDATION)
+
+#define FORCE_VULKAN_DEBUG_MARKERS 0
+#define ENABLE_VULKAN_DEBUG_MARKERS (ENABLE_DEBUG_MARKERS || FORCE_VULKAN_DEBUG_MARKERS)
 
 #define VK_USE_PLATFORM_WIN32_KHR
 #define VK_NO_PROTOTYPES 1
@@ -21,7 +24,7 @@
 #pragma comment(lib, "vulkan-1.lib")
 
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
-#define VMA_DYNAMIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include "External\VulkanMemoryAllocator\vk_mem_alloc.h"
 
 #include "Graphics\GraphicsCommon.h"
@@ -39,5 +42,35 @@ namespace Kodiak::VK
 
 inline const uint32_t g_requiredVulkanApiVersion = VK_API_VERSION_1_3;
 inline LogCategory LogVulkan{ "LogVulkan" };
+
+void SetDebugName(VkDevice device, VkInstance obj, const std::string& name);
+void SetDebugName(VkDevice device, VkPhysicalDevice obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDevice obj, const std::string& name);
+void SetDebugName(VkDevice device, VkQueue obj, const std::string& name);
+void SetDebugName(VkDevice device, VkSemaphore obj, const std::string& name);
+void SetDebugName(VkDevice device, VkCommandBuffer obj, const std::string& name);
+void SetDebugName(VkDevice device, VkFence obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDeviceMemory obj, const std::string& name);
+void SetDebugName(VkDevice device, VkBuffer obj, const std::string& name);
+void SetDebugName(VkDevice device, VkImage obj, const std::string& name);
+void SetDebugName(VkDevice device, VkEvent obj, const std::string& name);
+void SetDebugName(VkDevice device, VkQueryPool obj, const std::string& name);
+void SetDebugName(VkDevice device, VkBufferView obj, const std::string& name);
+void SetDebugName(VkDevice device, VkImageView obj, const std::string& name);
+void SetDebugName(VkDevice device, VkShaderModule obj, const std::string& name);
+void SetDebugName(VkDevice device, VkPipelineCache obj, const std::string& name);
+void SetDebugName(VkDevice device, VkPipelineLayout obj, const std::string& name);
+void SetDebugName(VkDevice device, VkRenderPass obj, const std::string& name);
+void SetDebugName(VkDevice device, VkPipeline obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDescriptorSetLayout obj, const std::string& name);
+void SetDebugName(VkDevice device, VkSampler obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDescriptorPool obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDescriptorSet obj, const std::string& name);
+void SetDebugName(VkDevice device, VkFramebuffer obj, const std::string& name);
+void SetDebugName(VkDevice device, VkCommandPool obj, const std::string& name);
+void SetDebugName(VkDevice device, VkSurfaceKHR obj, const std::string& name);
+void SetDebugName(VkDevice device, VkSwapchainKHR obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDebugReportCallbackEXT obj, const std::string& name);
+void SetDebugName(VkDevice device, VkDebugUtilsMessengerEXT obj, const std::string& name);
 
 } // namespace Kodiak::VK

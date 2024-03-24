@@ -63,6 +63,8 @@ public:
 	VkPhysicalDevice Get() const noexcept { return m_physicalDevice; }
 	operator VkPhysicalDevice() const noexcept { return Get(); }
 
+	VkInstance GetInstance() const noexcept { return *m_instance; }
+
 	void Destroy();
 
 private:
@@ -91,6 +93,8 @@ public:
 
 	VkDevice Get() const noexcept { return m_device; }
 	operator VkDevice() const { return Get(); }
+
+	VkPhysicalDevice GetPhysicalDevice() const noexcept { return *m_physicalDevice; }
 
 	void Destroy();
 
@@ -121,6 +125,8 @@ public:
 	VkSurfaceKHR Get() const noexcept { return m_surfaceKHR; }
 	operator VkSurfaceKHR() const noexcept { return Get(); }
 
+	VkInstance GetInstance() const noexcept { return *m_instance; }
+
 	void Destroy();
 
 private:
@@ -149,6 +155,8 @@ public:
 
 	VmaAllocator Get() const noexcept { return m_allocator; }
 	operator VmaAllocator() const noexcept { return Get(); }
+
+	VkDevice GetDevice() const noexcept { return *m_device; }
 
 	void Destroy();
 
@@ -188,6 +196,8 @@ public:
 	VkImage Get() const noexcept { return m_image; }
 	operator VkImage() const noexcept { return Get(); }
 
+	VkDevice GetDevice() const noexcept { return *m_device; }
+
 	void Destroy();
 
 private:
@@ -220,6 +230,8 @@ public:
 	VkSwapchainKHR Get() const noexcept { return m_swapchainKHR; }
 	operator VkSwapchainKHR() const noexcept { return Get(); }
 
+	VkDevice GetDevice() const noexcept { return *m_device; }
+
 	void Destroy();
 
 private:
@@ -248,6 +260,8 @@ public:
 
 	VkSemaphore Get() const noexcept { return m_semaphore; }
 	operator VkSemaphore() const noexcept { return Get(); }
+
+	VkDevice GetDevice() const noexcept { return *m_device; }
 
 	void Destroy();
 
@@ -278,6 +292,8 @@ public:
 	VkDebugUtilsMessengerEXT Get() const noexcept { return m_messenger; }
 	operator VkDebugUtilsMessengerEXT() const noexcept { return Get(); }
 
+	VkInstance GetInstance() const noexcept { return *m_instance; }
+
 	void Destroy();
 
 private:
@@ -307,6 +323,8 @@ public:
 	VkFence Get() const noexcept { return m_fence; }
 	operator VkFence() const noexcept { return Get(); }
 
+	VkDevice GetDevice() const noexcept { return *m_device; }
+
 	void Destroy();
 
 private:
@@ -314,5 +332,36 @@ private:
 	VkFence m_fence{ VK_NULL_HANDLE };
 };
 using VkFenceHandle = IntrusivePtr<CVkFence>;
+
+
+//
+// VkCommandPool
+//
+class CVkCommandPool : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkCommandPool() noexcept = default;
+	CVkCommandPool(CVkDevice* device, VkCommandPool commandPool) noexcept
+		: m_device{ device }
+		, m_commandPool{ commandPool }
+	{}
+
+	~CVkCommandPool()
+	{
+		Destroy();
+	}
+
+	VkCommandPool Get() const noexcept { return m_commandPool; }
+	operator VkCommandPool() const noexcept { return Get(); }
+
+	VkDevice GetDevice() const noexcept { return *m_device; }
+
+	void Destroy();
+
+private:
+	VkDeviceHandle m_device;
+	VkCommandPool m_commandPool{ VK_NULL_HANDLE };
+};
+using VkCommandPoolHandle = IntrusivePtr<CVkCommandPool>;
 
 } // namespace Kodiak::VK

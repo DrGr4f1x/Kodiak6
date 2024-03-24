@@ -99,6 +99,15 @@
     <ClCompile Include="Graphics\VK\QueueVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\VK\CommandContextVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\DX12\CommandContext12.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\VK\CommandBufferPoolVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -377,6 +386,15 @@
       <Filter>External\DirectX-Headers\include\directx</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\VK\QueueVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\CommandContextVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\CommandContext12.h">
+      <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\CommandBufferPoolVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,6 +11,7 @@
 #pragma once
 
 #include "Graphics\Interfaces.h"
+#include "Graphics\VK\CommandContextVK.h"
 #include "Graphics\VK\VulkanCommon.h"
 
 namespace Kodiak::VK
@@ -59,6 +60,7 @@ struct DeviceCreationParams
 
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
+	friend class CommandContext;
 	friend class DeviceManagerVK;
 
 public:
@@ -73,20 +75,33 @@ public:
 
 	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;
 	VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const;
+	VkResult CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const;
 
 	void BeginFrame() final;
 	void Present() final;
+
+	CommandContextHandle BeginCommandContext(const std::string& ID) final;
+	GraphicsContextHandle BeginGraphicsContext(const std::string& ID) final;
+	ComputeContextHandle BeginComputeContext(const std::string& ID, bool bAsync) final;
 
 private:
 	void DestroySwapChain();
 
 	void CreateQueue(QueueType queueType);
 
-	const Queue& GetQueue(QueueType queueType);
+	Queue& GetQueue(QueueType queueType);
+	Queue& GetQueue(CommandListType commandListType);
 	void QueueWaitForSemaphore(QueueType queueType, VkSemaphore semaphore, uint64_t value);
 	void QueueSignalSemaphore(QueueType queueType, VkSemaphore, uint64_t value);
 
+	// CommandContext management
+	CommandContext* AllocateContext(CommandListType commandListType);
+	void FreeContext(CommandContext* usedContext);
+	void WaitForFence(uint64_t fenceValue);
+
 	void UnblockPresent(QueueType queueType, VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence);
+
+	void WaitForGpuIdle();
 
 private:
 	DeviceCreationParams m_deviceCreationParams{};
@@ -110,6 +125,11 @@ private:
 
 	// Submission queues
 	std::array<std::unique_ptr<Queue>, (uint32_t)QueueType::Count> m_queues;
+
+	// Command contexts
+	std::array<std::vector<CommandContextHandle>, (uint32_t)CommandListType::Count> m_contextPool;
+	std::array<std::queue<CommandContext*>, (uint32_t)CommandListType::Count> m_availableContexts;
+	std::mutex m_contextAllocationMutex;
 };
 
 } // namespace Kodiak::VK

@@ -311,7 +311,9 @@ enum class CommandListType : uint8_t
 	Direct,
 	Bundle,
 	Compute,
-	Copy
+	Copy,
+
+	Count
 };
 
 

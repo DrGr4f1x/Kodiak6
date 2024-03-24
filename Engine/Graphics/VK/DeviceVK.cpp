@@ -27,6 +27,7 @@ namespace Kodiak::VK
 GraphicsDevice::~GraphicsDevice()
 {
 	LogInfo(LogVulkan) << "Destroying Vulkan device." << endl;
+	WaitForGpuIdle();
 }
 
 
@@ -126,7 +127,7 @@ bool GraphicsDevice::CreateSwapChain()
 	}
 
 	vector<VkImage> images{ imageCount };
-	if (VK_FAILED(vkGetSwapchainImagesKHR(*m_vkDevice, *m_vkSwapChain, &imageCount, nullptr)))
+	if (VK_FAILED(vkGetSwapchainImagesKHR(*m_vkDevice, *m_vkSwapChain, &imageCount, images.data())))
 	{
 		LogError(LogVulkan) << "Failed to get swapchain images.  Error code: " << res << endl;
 		return false;
@@ -151,7 +152,7 @@ bool GraphicsDevice::CreateSwapChain()
 		m_presentSemaphores.push_back(semaphore);
 
 		VkFenceHandle fence;
-		if (VK_FAILED(CreateFence(true, &fence)))
+		if (VK_FAILED(CreateFence(false, &fence)))
 		{
 			LogError(LogVulkan) << "Failed to create present fence.  Error code: " << res << endl;
 			return false;
@@ -175,7 +176,6 @@ VkResult GraphicsDevice::CreateFence(bool bSignalled, CVkFence** ppFence) const
 	if (res == VK_SUCCESS)
 	{
 		*ppFence = new CVkFence(m_vkDevice, fence);
-		(*ppFence)->AddRef();
 	}
 
 	return res;
@@ -191,16 +191,42 @@ VkResult GraphicsDevice::CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t
 	createInfo.pNext = &typeCreateInfo;
 
 	VkSemaphore semaphore{ VK_NULL_HANDLE };
-	auto res = vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore);
+	auto result = vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore);
 
 	*ppSemaphore = nullptr;
-	if (res == VK_SUCCESS)
+	if (VK_SUCCEEDED(result))
 	{
 		*ppSemaphore = new CVkSemaphore(m_vkDevice, semaphore);
-		(*ppSemaphore)->AddRef();
 	}
 
-	return res;
+	return result;
+}
+
+
+VkResult GraphicsDevice::CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const
+{
+	uint32_t queueFamilyIndex{ 0 };
+	switch (commandListType)
+	{
+	case CommandListType::Compute: queueFamilyIndex = m_deviceCreationParams.queueFamilyIndices.compute; break;
+	case CommandListType::Copy: queueFamilyIndex = m_deviceCreationParams.queueFamilyIndices.transfer; break;
+	default: queueFamilyIndex = m_deviceCreationParams.queueFamilyIndices.graphics; break;
+	}
+
+	VkCommandPoolCreateInfo createInfo{ VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
+	createInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	createInfo.queueFamilyIndex = queueFamilyIndex;
+
+	VkCommandPool vkCommandPool{ VK_NULL_HANDLE };
+	auto result = vkCreateCommandPool(*m_vkDevice, &createInfo, nullptr, &vkCommandPool);
+
+	*ppCommandPool = nullptr;
+	if (VK_SUCCEEDED(result))
+	{
+		*ppCommandPool = new CVkCommandPool(m_vkDevice, vkCommandPool);
+	}
+
+	return result;
 }
 
 
@@ -225,10 +251,13 @@ void GraphicsDevice::Present()
 	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
 	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
 
-	Queue graphicsQueue = GetQueue(QueueType::Graphics);
 	QueueSignalSemaphore(QueueType::Graphics, *semaphore, 0);
 
-	UnblockPresent(QueueType::Graphics, *semaphore, graphicsQueue.GetNextFenceValue() - 1, *fence);
+	// Need to submit a command list to kick Present...
+	auto context = BeginCommandContext("Present");
+	auto vkContext = dynamic_cast<CommandContext*>(context.Get());
+	vkContext->HACK_TransitionImageToPresent(*m_vkSwapChainImages[m_swapChainIndex]);
+	context->Finish();
 
 	VkSwapchainKHR swapchain = *m_vkSwapChain;
 	VkSemaphore waitSemaphore = *semaphore;
@@ -251,6 +280,49 @@ void GraphicsDevice::Present()
 }
 
 
+CommandContextHandle GraphicsDevice::BeginCommandContext(const std::string& ID)
+{
+	auto* newContext = AllocateContext(CommandListType::Direct);
+
+	// TODO
+#if 0
+	NewContext->SetID(ID);
+	if (ID.length() > 0)
+	{
+		EngineProfiling::BeginBlock(ID, NewContext);
+	}
+#endif
+
+	newContext->m_device = this;
+	newContext->m_bInvertedViewport = true;
+
+	VkCommandBufferBeginInfo beginInfo{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+	vkBeginCommandBuffer(newContext->m_commandBuffer, &beginInfo);
+
+#if ENABLE_VULKAN_DEBUG_MARKERS
+	if (!ID.empty())
+	{
+		newContext->BeginEvent(ID);
+		newContext->m_hasPendingDebugEvent = true;
+	}
+#endif
+
+	return newContext;
+}
+
+
+GraphicsContextHandle GraphicsDevice::BeginGraphicsContext(const std::string& ID)
+{
+	return nullptr;
+}
+
+
+ComputeContextHandle GraphicsDevice::BeginComputeContext(const std::string& ID, bool bAsync)
+{
+	return nullptr;
+}
+
+
 void GraphicsDevice::DestroySwapChain()
 {
 	if (m_vkSwapChain)
@@ -270,10 +342,22 @@ void GraphicsDevice::CreateQueue(QueueType queueType)
 }
 
 
-const Queue& GraphicsDevice::GetQueue(QueueType queueType)
+Queue& GraphicsDevice::GetQueue(QueueType queueType)
 {
 	return *m_queues[(uint32_t)queueType];
 }
+
+
+Queue& GraphicsDevice::GetQueue(CommandListType commandListType)
+{
+	switch (commandListType)
+	{
+	case CommandListType::Compute: return GetQueue(QueueType::Compute); break;
+	case CommandListType::Copy: return GetQueue(QueueType::Copy); break;
+	default: return GetQueue(QueueType::Graphics); break;
+	}
+}
+
 
 void GraphicsDevice::QueueWaitForSemaphore(QueueType queueType, VkSemaphore semaphore, uint64_t value)
 {
@@ -287,9 +371,63 @@ void GraphicsDevice::QueueSignalSemaphore(QueueType queueType, VkSemaphore semap
 }
 
 
+CommandContext* GraphicsDevice::AllocateContext(CommandListType commandListType)
+{
+	lock_guard<mutex> guard{ m_contextAllocationMutex };
+
+	auto& availableContexts = m_availableContexts[(uint32_t)commandListType];
+
+	CommandContext* context{ nullptr };
+	if (availableContexts.empty())
+	{
+		context = new CommandContext(commandListType);
+		CommandContextHandle handle;
+		handle.Attach(context);
+		m_contextPool[(uint32_t)commandListType].emplace_back(handle);
+		
+		context->m_commandBuffer = GetQueue(commandListType).RequestCommandBuffer();
+	}
+	else
+	{
+		context = availableContexts.front();
+		availableContexts.pop();
+		context->Reset();
+	}
+
+	assert(context != nullptr);
+	assert(context->m_type == commandListType);
+
+	return context;
+}
+
+
+void GraphicsDevice::FreeContext(CommandContext* usedContext)
+{
+	lock_guard<mutex> guard{ m_contextAllocationMutex };
+
+	m_availableContexts[(uint32_t)usedContext->m_type].push(usedContext);
+}
+
+
+void GraphicsDevice::WaitForFence(uint64_t fenceValue)
+{
+	auto& queue = GetQueue((CommandListType)(fenceValue >> 56));
+	queue.WaitForFence(fenceValue);
+}
+
+
 void GraphicsDevice::UnblockPresent(QueueType queueType, VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence)
 {
 	m_queues[(uint32_t)queueType]->UnblockPresent(signalSemaphore, waitValue, signalFence);
+}
+
+
+void GraphicsDevice::WaitForGpuIdle()
+{
+	for (auto& queue : m_queues)
+	{
+		queue->WaitForIdle();
+	}
 }
 
 } // namespace Kodiak::VK

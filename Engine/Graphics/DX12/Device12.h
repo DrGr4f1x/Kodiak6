@@ -53,6 +53,4 @@ private:
 };
 
 
-Kodiak::DX12::GraphicsDevice* CreateDevice12(const GraphicsDeviceDesc& desc);
-
 } // namespace Kodiak::DX12
