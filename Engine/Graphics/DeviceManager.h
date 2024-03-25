@@ -111,8 +111,6 @@ protected:
 
 	bool m_bIsDeveloperModeEnabled{ false };
 	bool m_bIsRenderDocAvailable{ false };
-
-	bool m_bIsWindowVisible{ true };
 };
 
 } // namespace Kodiak

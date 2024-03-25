@@ -478,10 +478,32 @@ inline std::string AdapterTypeToString(AdapterType adapterType)
 
 	switch (adapterType)
 	{
-	case Discrete: return "Discrete"; break;
-	case Integrated: return "Integrated"; break;
-	case Software: return "Software"; break;
-	default: return "Other"; break;
+	case Discrete:		return "Discrete"; break;
+	case Integrated:	return "Integrated"; break;
+	case Software:		return "Software"; break;
+	default:			return "Other"; break;
+	}
+}
+
+
+inline CommandListType QueueTypeToCommandListType(QueueType queueType)
+{
+	switch (queueType)
+	{
+	case QueueType::Compute:	return CommandListType::Compute; break;
+	case QueueType::Copy:		return CommandListType::Copy; break;
+	default:					return CommandListType::Direct; break;
+	}
+}
+
+
+inline QueueType CommandListTypeToQueueType(CommandListType commandListType)
+{
+	switch (commandListType)
+	{
+	case CommandListType::Compute:	return QueueType::Compute; break;
+	case CommandListType::Copy:		return QueueType::Copy; break;
+	default:						return QueueType::Graphics; break;
 	}
 }
 

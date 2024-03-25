@@ -1,4 +1,3 @@
-
 //
 // This code is licensed under the MIT License (MIT).
 // THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
@@ -28,8 +27,6 @@ public:
 
 	void AddWaitSemaphore(VkSemaphore semaphore, uint64_t value);
 	void AddSignalSemaphore(VkSemaphore semaphore, uint64_t value);
-
-	void UnblockPresent(VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence);
 
 	VkQueue GetVkQueue() const noexcept { return m_vkQueue; }
 	VkSemaphore GetTimelineSemaphore() const noexcept { return *m_vkTimelineSemaphore; }

@@ -350,12 +350,8 @@ Queue& GraphicsDevice::GetQueue(QueueType queueType)
 
 Queue& GraphicsDevice::GetQueue(CommandListType commandListType)
 {
-	switch (commandListType)
-	{
-	case CommandListType::Compute: return GetQueue(QueueType::Compute); break;
-	case CommandListType::Copy: return GetQueue(QueueType::Copy); break;
-	default: return GetQueue(QueueType::Graphics); break;
-	}
+	const auto queueType = CommandListTypeToQueueType(commandListType);
+	return GetQueue(queueType);
 }
 
 
@@ -413,12 +409,6 @@ void GraphicsDevice::WaitForFence(uint64_t fenceValue)
 {
 	auto& queue = GetQueue((CommandListType)(fenceValue >> 56));
 	queue.WaitForFence(fenceValue);
-}
-
-
-void GraphicsDevice::UnblockPresent(QueueType queueType, VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence)
-{
-	m_queues[(uint32_t)queueType]->UnblockPresent(signalSemaphore, waitValue, signalFence);
 }
 
 

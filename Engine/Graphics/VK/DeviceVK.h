@@ -99,14 +99,11 @@ private:
 	void FreeContext(CommandContext* usedContext);
 	void WaitForFence(uint64_t fenceValue);
 
-	void UnblockPresent(QueueType queueType, VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence);
-
 	void WaitForGpuIdle();
 
 private:
 	DeviceCreationParams m_deviceCreationParams{};
-	bool m_bIsInitialize{ false };
-
+	
 	// Device owns the following Vulkan objects
 	VkPhysicalDeviceHandle m_vkPhysicalDevice;
 	VkDeviceHandle m_vkDevice;

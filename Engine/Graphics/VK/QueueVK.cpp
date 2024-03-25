@@ -30,12 +30,7 @@ Queue::Queue(GraphicsDevice* device, VkQueue queue, QueueType queueType)
 {
 	device->CreateSemaphore(VK_SEMAPHORE_TYPE_TIMELINE, m_lastCompletedFenceValue, &m_vkTimelineSemaphore);
 	
-	auto commandListType = CommandListType::Direct;
-	switch (queueType)
-	{
-	case QueueType::Compute: commandListType = CommandListType::Compute; break;
-	case QueueType::Copy: commandListType = CommandListType::Copy; break;
-	}
+	const auto commandListType = QueueTypeToCommandListType(queueType);
 
 	CVkCommandPool* commandPool{ nullptr };
 	device->CreateCommandPool(commandListType, &commandPool);
@@ -66,36 +61,6 @@ void Queue::AddSignalSemaphore(VkSemaphore semaphore, uint64_t value)
 
 	m_signalSemaphores.push_back(semaphore);
 	m_signalSemaphoreValues.push_back(value);
-}
-
-
-void Queue::UnblockPresent(VkSemaphore signalSemaphore, uint64_t waitValue, VkFence signalFence)
-{
-	uint64_t dummy = 0;
-
-	VkTimelineSemaphoreSubmitInfo timelineSubmitInfo{ VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO };
-	timelineSubmitInfo.waitSemaphoreValueCount = (uint32_t)m_waitSemaphoreValues.size();
-	timelineSubmitInfo.pWaitSemaphoreValues = m_waitSemaphoreValues.data();
-	timelineSubmitInfo.signalSemaphoreValueCount = (uint32_t)m_signalSemaphoreValues.size();
-	timelineSubmitInfo.pSignalSemaphoreValues = m_signalSemaphoreValues.data();
-
-	VkPipelineStageFlags waitFlag = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-
-	VkSemaphore waitSemaphore = *m_vkTimelineSemaphore;
-
-	VkSubmitInfo submitInfo{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
-	submitInfo.pNext = &timelineSubmitInfo;
-	submitInfo.waitSemaphoreCount = (uint32_t)m_waitSemaphores.size();
-	submitInfo.pWaitSemaphores = m_waitSemaphores.data();
-	submitInfo.pWaitDstStageMask = &waitFlag;
-	submitInfo.signalSemaphoreCount = (uint32_t)m_signalSemaphores.size();
-	submitInfo.pSignalSemaphores = m_signalSemaphores.data();
-	submitInfo.commandBufferCount = 0;
-	submitInfo.pCommandBuffers = nullptr;
-
-	vkQueueSubmit(m_vkQueue, 1, &submitInfo, signalFence);
-
-	ClearSemaphores();
 }
 
 

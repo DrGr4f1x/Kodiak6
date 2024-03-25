@@ -37,34 +37,20 @@ protected:
 
 	std::vector<AdapterInfo> EnumerateAdapters();
 	HRESULT EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
-	bool SelectAdapterAndCreateDevice();
-
-	void ConfigureInfoQueue();
-	bool CreateCommandQueues();
-	bool InstallDebugCallback();
-
-	void ReadCaps();
-
+	
 private:
 	D3D_FEATURE_LEVEL m_bestFeatureLevel{ D3D_FEATURE_LEVEL_12_2 };
 	D3D_SHADER_MODEL m_bestShaderModel{ D3D_SHADER_MODEL_6_7 };
-	std::string m_deviceName{ "Unknown" };
 
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
 	IntrusivePtr<IDXGIAdapter> m_adapter;
-	IntrusivePtr<ID3D12Device> m_device;
-	IntrusivePtr< ID3D12InfoQueue1> m_infoQueue;
-	DWORD m_callbackCookie{ 0 };
-	IntrusivePtr<ID3D12CommandQueue> m_graphicsQueue;
-	IntrusivePtr<ID3D12CommandQueue> m_computeQueue;
-	IntrusivePtr<ID3D12CommandQueue> m_copyQueue;
 	IntrusivePtr<IDXGISwapChain3> m_swapChain;
+
 	bool m_bIsWarpAdapter{ false };
 	bool m_bIsTearingSupported{ false };
 
-	IntrusivePtr<ID3D12Fence> m_frameFence;
-	std::vector<HANDLE> m_frameFenceEvents;
-	uint32_t m_frameCount{ 0 };
+	// Kodiak objects
+	DeviceHandle m_device;
 
 	std::unique_ptr<DeviceCaps> m_caps;
 };

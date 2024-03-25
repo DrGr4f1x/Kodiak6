@@ -108,6 +108,9 @@
     <ClCompile Include="Graphics\VK\CommandBufferPoolVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\DX12\Queue12.cpp">
+      <Filter>Graphics\DX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -396,6 +399,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\VK\CommandBufferPoolVK.h">
       <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DX12\Queue12.h">
+      <Filter>Graphics\DX12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -85,18 +85,4 @@ bool DeviceManager::CreateInstance()
 	return m_instanceCreated;
 }
 
-
-bool DeviceManager::CreateDevice()
-{
-
-	return true;
-}
-
-
-bool DeviceManager::CreateSwapChain()
-{
-
-	return true;
-}
-
 } // namespace Kodiak
