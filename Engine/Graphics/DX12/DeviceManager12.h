@@ -44,7 +44,6 @@ private:
 
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
 	IntrusivePtr<IDXGIAdapter> m_adapter;
-	IntrusivePtr<IDXGISwapChain3> m_swapChain;
 
 	bool m_bIsWarpAdapter{ false };
 	bool m_bIsTearingSupported{ false };

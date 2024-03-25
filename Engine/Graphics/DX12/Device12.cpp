@@ -117,7 +117,7 @@ GraphicsDevice::GraphicsDevice(const DeviceCreationParams& deviceCreationParams)
 	LogInfo(LogDirectX) << "Creating DirectX 12 device." << endl;
 
 	m_dxgiFactory = m_deviceCreationParams.dxgiFactory;
-	m_dxDevice = m_deviceCreationParams.dx12Device;
+	m_dxDevice.Attach(m_deviceCreationParams.dx12Device);
 
 	SetDebugName(m_dxDevice.Get(), "Device");
 }
@@ -136,6 +136,12 @@ GraphicsDevice::~GraphicsDevice()
 	if (m_dxInfoQueue)
 	{
 		m_dxInfoQueue->UnregisterMessageCallback(m_callbackCookie);
+		m_dxInfoQueue.Reset();
+	}
+
+	for (auto& queue : m_queues)
+	{
+		queue.reset();
 	}
 
 	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
@@ -283,8 +289,7 @@ void GraphicsDevice::ReadCaps()
 
 void GraphicsDevice::InstallDebugCallback()
 {
-	ID3D12InfoQueue* pInfoQueue{ nullptr };
-	if (SUCCEEDED(m_dxDevice->QueryInterface(IID_PPV_ARGS(&pInfoQueue))))
+	if (SUCCEEDED(m_dxDevice->QueryInterface(IID_PPV_ARGS(&m_dxInfoQueue))))
 	{
 		// Suppress whole categories of messages
 		//D3D12_MESSAGE_CATEGORY Categories[] = {};
@@ -329,18 +334,8 @@ void GraphicsDevice::InstallDebugCallback()
 		newFilter.DenyList.NumIDs = _countof(denyIds);
 		newFilter.DenyList.pIDList = denyIds;
 
-		pInfoQueue->PushStorageFilter(&newFilter);
-		pInfoQueue->Release();
-	}
-
-	if (SUCCEEDED(m_dxDevice->QueryInterface(IID_PPV_ARGS(&m_dxInfoQueue))))
-	{
+		m_dxInfoQueue->PushStorageFilter(&newFilter);
 		m_dxInfoQueue->RegisterMessageCallback(DebugMessageCallback, D3D12_MESSAGE_CALLBACK_FLAG_NONE, nullptr, &m_callbackCookie);
-		LogInfo(LogDirectX) << "DirectX debug callback installed." << endl;
-	}
-	else
-	{
-		LogWarning(LogDirectX) << "Failed to installed DirectX debug callback." << endl;
 	}
 }
 

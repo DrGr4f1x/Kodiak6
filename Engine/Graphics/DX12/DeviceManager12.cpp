@@ -41,7 +41,7 @@ bool TestCreateDevice(IDXGIAdapter* adapter, D3D_FEATURE_LEVEL minFeatureLevel, 
 AdapterType GetAdapterType(IDXGIAdapter* adapter)
 {
 	IntrusivePtr<IDXGIAdapter3> adapter3;
-	adapter->QueryInterface(IID_PPV_ARGS(adapter3.GetAddressOf()));
+	adapter->QueryInterface(IID_PPV_ARGS(&adapter3));
 
 	// Check for integrated adapter
 	DXGI_QUERY_VIDEO_MEMORY_INFO nonLocalVideoMemoryInfo{};
@@ -201,14 +201,12 @@ bool DeviceManager12::CreateDevice()
 
 	// Create device, either WARP or hardware
 	IntrusivePtr<IDXGIAdapter> tempAdapter;
-	IntrusivePtr<ID3D12Device> tempDevice;
 	ID3D12Device* device{ nullptr };
 	if (chosenAdapterIdx == warpAdapterIdx)
 	{
 		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&tempAdapter)));
-		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&tempDevice)));
+		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
-		device = tempDevice;
 		m_adapter = tempAdapter;
 		m_bIsWarpAdapter = true;
 
@@ -217,9 +215,8 @@ bool DeviceManager12::CreateDevice()
 	else
 	{
 		assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapterIdx, &tempAdapter));
-		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&tempDevice)));
+		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
-		device = tempDevice;
 		m_adapter = tempAdapter;
 
 		LogInfo(LogDirectX) << "Selected D3D12 adapter " << chosenAdapterIdx << endl;
