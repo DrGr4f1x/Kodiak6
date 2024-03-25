@@ -42,19 +42,33 @@ struct DeviceCreationParams
 	bool enableVSync{ false };
 	uint32_t maxFramesInFlight{ 2 };
 
-	constexpr DeviceCreationParams& SetPhysicalDevice(CVkPhysicalDevice* value) { physicalDevice = value; return *this; }
-	constexpr DeviceCreationParams& SetDevice(VkDevice value) { device = value; return *this; }
-	constexpr DeviceCreationParams& SetGraphicsQueueIndex(int32_t value) { queueFamilyIndices.graphics = value; return *this; }
-	constexpr DeviceCreationParams& SetComputeQueueIndex(int32_t value) { queueFamilyIndices.compute = value; return *this; }
-	constexpr DeviceCreationParams& SetTransferQueueIndex(int32_t value) { queueFamilyIndices.transfer = value; return *this; }
-	constexpr DeviceCreationParams& SetPresentQueueIndex(int32_t value) { queueFamilyIndices.present = value; return *this; }
-	constexpr DeviceCreationParams& SetBackBufferWidth(uint32_t value) { backBufferWidth = value; return *this; }
-	constexpr DeviceCreationParams& SetBackBufferHeight(uint32_t value) { backBufferHeight = value; return *this; }
-	constexpr DeviceCreationParams& SetNumSwapChainBuffers(uint32_t value) { numSwapChainBuffers = value; return *this; }
-	constexpr DeviceCreationParams& SetSwapChainFormat(Format value) { swapChainFormat = value; return *this; }
-	constexpr DeviceCreationParams& SetSurface(VkSurfaceKHR value) { surface = value; return *this; }
-	constexpr DeviceCreationParams& SetEnableVSync(bool value) { enableVSync = value; return *this; }
-	constexpr DeviceCreationParams& SetMaxFramesInFlight(uint32_t value) { maxFramesInFlight = value; return *this; }
+#if ENABLE_VULKAN_VALIDATION
+	bool enableValidation{ true };
+#else
+	bool enableValidation{ false };
+#endif
+
+#if ENABLE_VULKAN_DEBUG_MARKERS
+	bool enableDebugMarkers{ true };
+#else
+	bool enableDebugMarkers{ false };
+#endif
+
+	constexpr DeviceCreationParams& SetPhysicalDevice(CVkPhysicalDevice* value) noexcept { physicalDevice = value; return *this; }
+	constexpr DeviceCreationParams& SetDevice(VkDevice value) noexcept { device = value; return *this; }
+	constexpr DeviceCreationParams& SetGraphicsQueueIndex(int32_t value) noexcept { queueFamilyIndices.graphics = value; return *this; }
+	constexpr DeviceCreationParams& SetComputeQueueIndex(int32_t value) noexcept { queueFamilyIndices.compute = value; return *this; }
+	constexpr DeviceCreationParams& SetTransferQueueIndex(int32_t value) noexcept { queueFamilyIndices.transfer = value; return *this; }
+	constexpr DeviceCreationParams& SetPresentQueueIndex(int32_t value) noexcept { queueFamilyIndices.present = value; return *this; }
+	constexpr DeviceCreationParams& SetBackBufferWidth(uint32_t value) noexcept { backBufferWidth = value; return *this; }
+	constexpr DeviceCreationParams& SetBackBufferHeight(uint32_t value) noexcept { backBufferHeight = value; return *this; }
+	constexpr DeviceCreationParams& SetNumSwapChainBuffers(uint32_t value) noexcept { numSwapChainBuffers = value; return *this; }
+	constexpr DeviceCreationParams& SetSwapChainFormat(Format value) noexcept { swapChainFormat = value; return *this; }
+	constexpr DeviceCreationParams& SetSurface(VkSurfaceKHR value) noexcept { surface = value; return *this; }
+	constexpr DeviceCreationParams& SetEnableVSync(bool value) noexcept { enableVSync = value; return *this; }
+	constexpr DeviceCreationParams& SetMaxFramesInFlight(uint32_t value) noexcept { maxFramesInFlight = value; return *this; }
+	constexpr DeviceCreationParams& SetEnableValidation(bool value) noexcept { enableValidation = value; return *this; }
+	constexpr DeviceCreationParams& SetEnableDebugMarkers(bool value) noexcept { enableDebugMarkers = value; return *this; }
 };
 
 

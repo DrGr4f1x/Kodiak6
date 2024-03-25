@@ -297,7 +297,9 @@ bool DeviceManagerVK::CreateDevice()
 		.SetSwapChainFormat(m_desc.swapChainFormat)
 		.SetSurface(*m_vkSurface)
 		.SetEnableVSync(m_desc.enableVSync)
-		.SetMaxFramesInFlight(m_desc.maxFramesInFlight);
+		.SetMaxFramesInFlight(m_desc.maxFramesInFlight)
+		.SetEnableValidation(m_desc.enableValidation)
+		.SetEnableDebugMarkers(m_desc.enableDebugMarkers);
 
 	m_device = DeviceHandle::Create(new GraphicsDevice(creationParams));
 
@@ -332,7 +334,7 @@ void DeviceManagerVK::Present()
 void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 {
 	vector<string> requiredLayers{};
-	if (m_desc.enableDebugRuntime)
+	if (m_desc.enableValidation)
 	{
 		requiredLayers.push_back("VK_LAYER_KHRONOS_validation");
 	}
@@ -349,7 +351,7 @@ void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 
 bool DeviceManagerVK::InstallDebugMessenger()
 {
-	if (!m_desc.enableDebugRuntime)
+	if (!m_desc.enableValidation)
 	{
 		return true;
 	}
@@ -548,7 +550,9 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 	LogInfo(LogVulkan) << "Selected physical device " << chosenAdapterIdx << endl;
 
 	m_caps->ReadCaps(*m_vkPhysicalDevice);
-	if (g_graphicsDeviceOptions.logDeviceFeatures)
+	// TODO
+	//if (g_graphicsDeviceOptions.logDeviceFeatures)
+	if (false)
 	{
 		m_caps->LogCaps();
 	}

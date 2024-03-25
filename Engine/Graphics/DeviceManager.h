@@ -33,7 +33,8 @@ struct AdapterInfo
 struct DeviceDesc
 {
 	std::string appName{};
-	bool enableDebugRuntime{ false };
+	bool enableValidation{ false };
+	bool enableDebugMarkers{ false };
 	bool logDeviceCaps{ true };
 	bool allowSoftwareDevice{ false };
 	bool preferDiscreteDevice{ true };
@@ -61,27 +62,28 @@ struct DeviceDesc
 
 	// Setters
 	DeviceDesc& SetAppName(const std::string& value) { appName = value; return *this; }
-	constexpr DeviceDesc& SetEnableDebugRuntime(bool value) { enableDebugRuntime = value; return *this; }
-	constexpr DeviceDesc& SetLogDeviceCaps(bool value) { logDeviceCaps = value; return *this; }
-	constexpr DeviceDesc& SetAllowSoftwareDevice(bool value) { allowSoftwareDevice = value; return *this; }
-	constexpr DeviceDesc& SetPreferDiscreteDevice(bool value) { preferDiscreteDevice = value; return *this; }
-	constexpr DeviceDesc& SetStartMaximized(bool value) { startMaximized = value; return *this; }
-	constexpr DeviceDesc& SetStartFullscreed(bool value) { startFullscreen = value; return *this; }
-	constexpr DeviceDesc& SetAllowModeSwitch(bool value) { allowModeSwitch = value; return *this; }
-	constexpr DeviceDesc& SetWindowPosX(uint32_t value) { windowPosX = value; return *this; }
-	constexpr DeviceDesc& SetWindowPosY(uint32_t value) { windowPosY = value; return *this; }
-	constexpr DeviceDesc& SetBackBufferWidth(uint32_t value) { backBufferWidth = value; return *this; }
-	constexpr DeviceDesc& SetBackBufferHeight(uint32_t value) { backBufferHeight = value; return *this; }
-	constexpr DeviceDesc& SetRefreshRate(uint32_t value) { refreshRate = value; return *this; }
-	constexpr DeviceDesc& SetEnableVSync(bool value) { enableVSync = value; return *this; }
-	constexpr DeviceDesc& SetNumSwapChainBuffers(uint32_t value) { numSwapChainBuffers = value; return *this; }
-	constexpr DeviceDesc& SetSwapChainFormat(Format value) { swapChainFormat = value; return *this; }
-	constexpr DeviceDesc& SetSwapChainSampleCount(uint32_t value) { swapChainSampleCount = value; return *this; }
-	constexpr DeviceDesc& SetSwapChainSampleQuality(uint32_t value) { swapChainSampleQuality = value; return *this; }
-	constexpr DeviceDesc& SetMaxFramesInFlight(uint32_t value) { maxFramesInFlight = value; return *this; }
-	constexpr DeviceDesc& SetEnablePerMonitorDPI(bool value) { enablePerMonitorDPI = value; return *this; }
-	constexpr DeviceDesc& SetHwnd(HWND value) { hwnd = value; return *this; }
-	constexpr DeviceDesc& SetHinstance(HINSTANCE value) { hinstance = value; return *this; }
+	constexpr DeviceDesc& SetEnableValidation(bool value) noexcept { enableValidation = value; return *this; }
+	constexpr DeviceDesc& SetEnableDebugMarkers(bool value) noexcept { enableDebugMarkers = value; return *this; }
+	constexpr DeviceDesc& SetLogDeviceCaps(bool value) noexcept { logDeviceCaps = value; return *this; }
+	constexpr DeviceDesc& SetAllowSoftwareDevice(bool value) noexcept { allowSoftwareDevice = value; return *this; }
+	constexpr DeviceDesc& SetPreferDiscreteDevice(bool value) noexcept { preferDiscreteDevice = value; return *this; }
+	constexpr DeviceDesc& SetStartMaximized(bool value) noexcept { startMaximized = value; return *this; }
+	constexpr DeviceDesc& SetStartFullscreed(bool value) noexcept { startFullscreen = value; return *this; }
+	constexpr DeviceDesc& SetAllowModeSwitch(bool value) noexcept { allowModeSwitch = value; return *this; }
+	constexpr DeviceDesc& SetWindowPosX(uint32_t value) noexcept { windowPosX = value; return *this; }
+	constexpr DeviceDesc& SetWindowPosY(uint32_t value) noexcept { windowPosY = value; return *this; }
+	constexpr DeviceDesc& SetBackBufferWidth(uint32_t value) noexcept { backBufferWidth = value; return *this; }
+	constexpr DeviceDesc& SetBackBufferHeight(uint32_t value) noexcept { backBufferHeight = value; return *this; }
+	constexpr DeviceDesc& SetRefreshRate(uint32_t value) noexcept { refreshRate = value; return *this; }
+	constexpr DeviceDesc& SetEnableVSync(bool value) noexcept { enableVSync = value; return *this; }
+	constexpr DeviceDesc& SetNumSwapChainBuffers(uint32_t value) noexcept { numSwapChainBuffers = value; return *this; }
+	constexpr DeviceDesc& SetSwapChainFormat(Format value) noexcept { swapChainFormat = value; return *this; }
+	constexpr DeviceDesc& SetSwapChainSampleCount(uint32_t value) noexcept { swapChainSampleCount = value; return *this; }
+	constexpr DeviceDesc& SetSwapChainSampleQuality(uint32_t value) noexcept { swapChainSampleQuality = value; return *this; }
+	constexpr DeviceDesc& SetMaxFramesInFlight(uint32_t value) noexcept { maxFramesInFlight = value; return *this; }
+	constexpr DeviceDesc& SetEnablePerMonitorDPI(bool value) noexcept { enablePerMonitorDPI = value; return *this; }
+	constexpr DeviceDesc& SetHwnd(HWND value) noexcept { hwnd = value; return *this; }
+	constexpr DeviceDesc& SetHinstance(HINSTANCE value) noexcept { hinstance = value; return *this; }
 };
 
 

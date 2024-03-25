@@ -268,7 +268,8 @@ void Application::CreateDeviceManager()
 
 	auto deviceDesc = DeviceDesc{}
 		.SetAppName(m_appDesc.name)
-		.SetEnableDebugRuntime(m_appDesc.useDebugLayer)
+		.SetEnableValidation(m_appDesc.useValidation)
+		.SetEnableDebugMarkers(m_appDesc.useDebugMarkers)
 		.SetBackBufferWidth(m_appDesc.width)
 		.SetBackBufferHeight(m_appDesc.height)
 		.SetHwnd(m_hwnd)

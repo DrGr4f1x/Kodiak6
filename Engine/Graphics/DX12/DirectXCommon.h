@@ -19,6 +19,7 @@
 
 #include <dxgi1_4.h>
 #include <dxgi1_6.h>
+#include <dxgidebug.h>
 #include <dxgiformat.h>
 #include "directx\d3d12.h"
 #include "directx\d3dx12.h"

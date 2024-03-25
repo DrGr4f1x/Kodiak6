@@ -40,19 +40,33 @@ struct DeviceCreationParams
 
 	HWND hwnd{ nullptr };
 
-	constexpr DeviceCreationParams& SetDxgiFactory(IDXGIFactory4* value) { dxgiFactory = value; return *this; }
-	constexpr DeviceCreationParams& SetDevice(ID3D12Device* value) { dx12Device = value; return *this; }
-	constexpr DeviceCreationParams& SetBackBufferWidth(uint32_t value) { backBufferWidth = value; return *this; }
-	constexpr DeviceCreationParams& SetBackBufferHeight(uint32_t value) { backBufferHeight = value; return *this; }
-	constexpr DeviceCreationParams& SetNumSwapChainBuffers(uint32_t value) { numSwapChainBuffers = value; return *this; }
-	constexpr DeviceCreationParams& SetSwapChainFormat(Format value) { swapChainFormat = value; return *this; }
-	constexpr DeviceCreationParams& SetSwapChainSampleCount(uint32_t value) { swapChainSampleCount = value; return* this; }
-	constexpr DeviceCreationParams& SetSwapChainSampleQuality(uint32_t value) { swapChainSampleQuality = value; return *this; }
-	constexpr DeviceCreationParams& SetAllowModeSwitch(bool value) { allowModeSwitch = value; return *this; }
-	constexpr DeviceCreationParams& SetIsTearingSupported(bool value) { isTearingSupported = value; return *this; }
-	constexpr DeviceCreationParams& SetEnableVSync(bool value) { enableVSync = value; return *this; }
-	constexpr DeviceCreationParams& SetMaxFramesInFlight(uint32_t value) { maxFramesInFlight = value; return *this; }
-	constexpr DeviceCreationParams& SetHwnd(HWND value) { hwnd = value; return *this; }
+#if ENABLE_D3D12_VALIDATION
+	bool enableValidation{ true };
+#else
+	bool enableValidation{ false };
+#endif
+
+#if ENABLE_D3D12_DEBUG_MARKERS
+	bool enableDebugMarkers{ true };
+#else
+	bool enableDebugMarkers{ false };
+#endif
+
+	constexpr DeviceCreationParams& SetDxgiFactory(IDXGIFactory4* value) noexcept { dxgiFactory = value; return *this; }
+	constexpr DeviceCreationParams& SetDevice(ID3D12Device* value) noexcept { dx12Device = value; return *this; }
+	constexpr DeviceCreationParams& SetBackBufferWidth(uint32_t value) noexcept { backBufferWidth = value; return *this; }
+	constexpr DeviceCreationParams& SetBackBufferHeight(uint32_t value) noexcept { backBufferHeight = value; return *this; }
+	constexpr DeviceCreationParams& SetNumSwapChainBuffers(uint32_t value) noexcept { numSwapChainBuffers = value; return *this; }
+	constexpr DeviceCreationParams& SetSwapChainFormat(Format value) noexcept { swapChainFormat = value; return *this; }
+	constexpr DeviceCreationParams& SetSwapChainSampleCount(uint32_t value) noexcept { swapChainSampleCount = value; return*this; }
+	constexpr DeviceCreationParams& SetSwapChainSampleQuality(uint32_t value) noexcept { swapChainSampleQuality = value; return *this; }
+	constexpr DeviceCreationParams& SetAllowModeSwitch(bool value) noexcept { allowModeSwitch = value; return *this; }
+	constexpr DeviceCreationParams& SetIsTearingSupported(bool value) noexcept { isTearingSupported = value; return *this; }
+	constexpr DeviceCreationParams& SetEnableVSync(bool value) noexcept { enableVSync = value; return *this; }
+	constexpr DeviceCreationParams& SetMaxFramesInFlight(uint32_t value) noexcept { maxFramesInFlight = value; return *this; }
+	constexpr DeviceCreationParams& SetHwnd(HWND value) noexcept { hwnd = value; return *this; }
+	constexpr DeviceCreationParams& SetEnableValidation(bool value) noexcept { enableValidation = value; return *this; }
+	constexpr DeviceCreationParams& SetEnableDebugMarkers(bool value) noexcept { enableDebugMarkers = value; return *this; }
 };
 
 

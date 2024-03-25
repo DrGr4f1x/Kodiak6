@@ -144,7 +144,7 @@ GraphicsDevice::~GraphicsDevice()
 		queue.reset();
 	}
 
-	if (g_graphicsDeviceOptions.ShouldUseDebugLayer())
+	if (m_deviceCreationParams.enableValidation)
 	{
 		ID3D12DebugDevice* debugInterface{ nullptr };
 		if (SUCCEEDED(m_dxDevice->QueryInterface(&debugInterface)))
@@ -280,7 +280,9 @@ void GraphicsDevice::ReadCaps()
 
 	m_caps->ReadFullCaps(m_dxDevice.Get(), minFeatureLevel, maxShaderModel);
 
-	if (g_graphicsDeviceOptions.logDeviceFeatures)
+	// TODO
+	//if (g_graphicsDeviceOptions.logDeviceFeatures)
+	if (false)
 	{
 		m_caps->LogCaps();
 	}

@@ -68,6 +68,15 @@ AdapterType GetAdapterType(IDXGIAdapter* adapter)
 
 DeviceManager12::~DeviceManager12()
 {
+	if (m_desc.enableValidation)
+	{
+		IDXGIDebug1* pDebug{ nullptr };
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
+		{
+			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, (DXGI_DEBUG_RLO_FLAGS)(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+			pDebug->Release();
+		}
+	}
 }
 
 
@@ -87,9 +96,9 @@ bool DeviceManager12::CreateInstanceInternal()
 {
 	if (!m_dxgiFactory)
 	{
-		if (!SUCCEEDED(CreateDXGIFactory2(m_desc.enableDebugRuntime ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory))))
+		if (!SUCCEEDED(CreateDXGIFactory2(m_desc.enableValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory))))
 		{
-			LogFatal(LogDirectX) << "Failed to create DXGIFactory" << endl;
+			LogFatal(LogDirectX) << "Failed to create DXGIFactory." << endl;
 			return false;
 		}
 	}
@@ -104,7 +113,7 @@ bool DeviceManager12::CreateInstanceInternal()
 		}
 	}
 
-	if (m_desc.enableDebugRuntime)
+	if (m_desc.enableValidation)
 	{
 		IntrusivePtr<ID3D12Debug> debugInterface;
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
@@ -247,7 +256,9 @@ bool DeviceManager12::CreateDevice()
 		.SetIsTearingSupported(m_bIsTearingSupported)
 		.SetEnableVSync(m_desc.enableVSync)
 		.SetMaxFramesInFlight(m_desc.maxFramesInFlight)
-		.SetHwnd(m_desc.hwnd);
+		.SetHwnd(m_desc.hwnd)
+		.SetEnableValidation(m_desc.enableValidation)
+		.SetEnableDebugMarkers(m_desc.enableDebugMarkers);
 
 	m_device = DeviceHandle::Create(new GraphicsDevice(creationParams));
 

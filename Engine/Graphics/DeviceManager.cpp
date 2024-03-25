@@ -47,9 +47,6 @@ DeviceManager* DeviceManager::Create(GraphicsApi api)
 bool DeviceManager::CreateDeviceAndSwapChain(const DeviceDesc& desc)
 {
 	m_desc = desc;
-#if ENABLE_D3D12_VALIDATION || ENABLE_VULKAN_VALIDATION
-	m_desc.enableDebugRuntime = true;
-#endif
 
 	if (!CreateInstance())
 	{

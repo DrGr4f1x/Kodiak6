@@ -31,17 +31,25 @@ struct ApplicationDesc
 	uint32_t width{ 1920 };
 	uint32_t height{ 1080 };
 	GraphicsApi api{ GraphicsApi::D3D12 };
-#if ENABLE_DEBUG_LAYER
-	bool useDebugLayer{ true };
+#if ENABLE_VALIDATION
+	bool useValidation{ true };
 #else
-	bool useDebugLayer{ false };
-#endif // ENABLE_DEBUG_LAYER
+	bool useValidation{ false };
+#endif // ENABLE_VALIDATION
+
+#if ENABLE_DEBUG_MARKERS
+	bool useDebugMarkers{ true };
+#else
+	bool useDebugMarkers{ false };
+#endif
+
 
 	ApplicationDesc& SetName(const std::string& value) { name = value; return *this; }
-	constexpr ApplicationDesc& SetWidth(uint32_t value) { width = value; return *this; }
-	constexpr ApplicationDesc& SetHeight(uint32_t value) { height = value; return *this; }
-	constexpr ApplicationDesc& SetApi(GraphicsApi value) { api = value; return *this; }
-	constexpr ApplicationDesc& SetUseDebugLayer(bool value) { useDebugLayer = value; return *this; }
+	constexpr ApplicationDesc& SetWidth(uint32_t value) noexcept { width = value; return *this; }
+	constexpr ApplicationDesc& SetHeight(uint32_t value) noexcept { height = value; return *this; }
+	constexpr ApplicationDesc& SetApi(GraphicsApi value) noexcept { api = value; return *this; }
+	constexpr ApplicationDesc& SetUseValidation(bool value) noexcept { useValidation = value; return *this; }
+	constexpr ApplicationDesc& SetUseDebugMarkers(bool value) noexcept { useDebugMarkers = value; return *this; }
 };
 
 
