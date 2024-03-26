@@ -57,6 +57,7 @@
     <ClCompile Include="Graphics\DX12\Enums12.cpp" />
     <ClCompile Include="Graphics\DX12\DeviceManager12.cpp" />
     <ClCompile Include="Graphics\DX12\Queue12.cpp" />
+    <ClCompile Include="Graphics\DX12\DescriptorHeap12.cpp" />
     <ClCompile Include="Graphics\Formats.cpp" />
     <ClCompile Include="Graphics\GraphicsCommon.cpp" />
     <ClCompile Include="Graphics\VK\CommandBufferPoolVK.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Graphics\DeviceManager.h" />
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h" />
     <ClInclude Include="Graphics\DX12\CommandContext12.h" />
+    <ClInclude Include="Graphics\DX12\DescriptorHeap12.h" />
     <ClInclude Include="Graphics\DX12\DeviceCaps12.h" />
     <ClInclude Include="Graphics\DX12\DeviceManager12.h" />
     <ClInclude Include="Graphics\DX12\DirectXCommon.h" />

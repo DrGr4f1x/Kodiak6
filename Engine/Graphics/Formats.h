@@ -60,7 +60,6 @@ enum class Format : uint8_t
 	RG32_Float,
 	RGB32_UInt,
 	RGB32_SInt,
-	RGB32_UNorm,
 	RGB32_Float,
 	RGBA32_UInt,
 	RGBA32_SInt,

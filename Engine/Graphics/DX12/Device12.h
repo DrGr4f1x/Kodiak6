@@ -17,64 +17,66 @@ namespace Kodiak::DX12
 {
 
 // Forward declarations
+class DescriptorAllocator;
 class Queue;
 struct DeviceCaps;
 
 
-struct DeviceCreationParams
+class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
-	IDXGIFactory4* dxgiFactory{ nullptr };
-	ID3D12Device* dx12Device{ nullptr };
+	friend class ColorBuffer;
 
-	uint32_t backBufferWidth{ 0 };
-	uint32_t backBufferHeight{ 0 };
-	uint32_t numSwapChainBuffers{ 3 };
-	Format swapChainFormat{ Format::Unknown };
-	uint32_t swapChainSampleCount{ 1 };
-	uint32_t swapChainSampleQuality{ 0 };
-	bool allowModeSwitch{ false };
-	bool isTearingSupported{ false };
+public:
+	struct CreationParams
+	{
+		IDXGIFactory4* dxgiFactory{ nullptr };
+		ID3D12Device* dx12Device{ nullptr };
 
-	bool enableVSync{ false };
-	uint32_t maxFramesInFlight{ 2 };
+		uint32_t backBufferWidth{ 0 };
+		uint32_t backBufferHeight{ 0 };
+		uint32_t numSwapChainBuffers{ 3 };
+		Format swapChainFormat{ Format::Unknown };
+		uint32_t swapChainSampleCount{ 1 };
+		uint32_t swapChainSampleQuality{ 0 };
+		bool allowModeSwitch{ false };
+		bool isTearingSupported{ false };
 
-	HWND hwnd{ nullptr };
+		bool enableVSync{ false };
+		uint32_t maxFramesInFlight{ 2 };
+
+		HWND hwnd{ nullptr };
 
 #if ENABLE_D3D12_VALIDATION
-	bool enableValidation{ true };
+		bool enableValidation{ true };
 #else
-	bool enableValidation{ false };
+		bool enableValidation{ false };
 #endif
 
 #if ENABLE_D3D12_DEBUG_MARKERS
-	bool enableDebugMarkers{ true };
+		bool enableDebugMarkers{ true };
 #else
-	bool enableDebugMarkers{ false };
+		bool enableDebugMarkers{ false };
 #endif
 
-	constexpr DeviceCreationParams& SetDxgiFactory(IDXGIFactory4* value) noexcept { dxgiFactory = value; return *this; }
-	constexpr DeviceCreationParams& SetDevice(ID3D12Device* value) noexcept { dx12Device = value; return *this; }
-	constexpr DeviceCreationParams& SetBackBufferWidth(uint32_t value) noexcept { backBufferWidth = value; return *this; }
-	constexpr DeviceCreationParams& SetBackBufferHeight(uint32_t value) noexcept { backBufferHeight = value; return *this; }
-	constexpr DeviceCreationParams& SetNumSwapChainBuffers(uint32_t value) noexcept { numSwapChainBuffers = value; return *this; }
-	constexpr DeviceCreationParams& SetSwapChainFormat(Format value) noexcept { swapChainFormat = value; return *this; }
-	constexpr DeviceCreationParams& SetSwapChainSampleCount(uint32_t value) noexcept { swapChainSampleCount = value; return*this; }
-	constexpr DeviceCreationParams& SetSwapChainSampleQuality(uint32_t value) noexcept { swapChainSampleQuality = value; return *this; }
-	constexpr DeviceCreationParams& SetAllowModeSwitch(bool value) noexcept { allowModeSwitch = value; return *this; }
-	constexpr DeviceCreationParams& SetIsTearingSupported(bool value) noexcept { isTearingSupported = value; return *this; }
-	constexpr DeviceCreationParams& SetEnableVSync(bool value) noexcept { enableVSync = value; return *this; }
-	constexpr DeviceCreationParams& SetMaxFramesInFlight(uint32_t value) noexcept { maxFramesInFlight = value; return *this; }
-	constexpr DeviceCreationParams& SetHwnd(HWND value) noexcept { hwnd = value; return *this; }
-	constexpr DeviceCreationParams& SetEnableValidation(bool value) noexcept { enableValidation = value; return *this; }
-	constexpr DeviceCreationParams& SetEnableDebugMarkers(bool value) noexcept { enableDebugMarkers = value; return *this; }
-};
+		constexpr CreationParams& SetDxgiFactory(IDXGIFactory4* value) noexcept { dxgiFactory = value; return *this; }
+		constexpr CreationParams& SetDevice(ID3D12Device* value) noexcept { dx12Device = value; return *this; }
+		constexpr CreationParams& SetBackBufferWidth(uint32_t value) noexcept { backBufferWidth = value; return *this; }
+		constexpr CreationParams& SetBackBufferHeight(uint32_t value) noexcept { backBufferHeight = value; return *this; }
+		constexpr CreationParams& SetNumSwapChainBuffers(uint32_t value) noexcept { numSwapChainBuffers = value; return *this; }
+		constexpr CreationParams& SetSwapChainFormat(Format value) noexcept { swapChainFormat = value; return *this; }
+		constexpr CreationParams& SetSwapChainSampleCount(uint32_t value) noexcept { swapChainSampleCount = value; return*this; }
+		constexpr CreationParams& SetSwapChainSampleQuality(uint32_t value) noexcept { swapChainSampleQuality = value; return *this; }
+		constexpr CreationParams& SetAllowModeSwitch(bool value) noexcept { allowModeSwitch = value; return *this; }
+		constexpr CreationParams& SetIsTearingSupported(bool value) noexcept { isTearingSupported = value; return *this; }
+		constexpr CreationParams& SetEnableVSync(bool value) noexcept { enableVSync = value; return *this; }
+		constexpr CreationParams& SetMaxFramesInFlight(uint32_t value) noexcept { maxFramesInFlight = value; return *this; }
+		constexpr CreationParams& SetHwnd(HWND value) noexcept { hwnd = value; return *this; }
+		constexpr CreationParams& SetEnableValidation(bool value) noexcept { enableValidation = value; return *this; }
+		constexpr CreationParams& SetEnableDebugMarkers(bool value) noexcept { enableDebugMarkers = value; return *this; }
+	};
 
-
-class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
-{
 public:
-	GraphicsDevice(const DeviceCreationParams& deviceCreationParams) noexcept;
-
+	explicit GraphicsDevice(const CreationParams& creationParams) noexcept;
 	~GraphicsDevice() final;
 
 	bool Initialize() final;
@@ -91,12 +93,20 @@ private:
 	void ReadCaps();
 	void InstallDebugCallback();
 	
+	// ColorBuffer
+	void CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer);
+
 	void CreateQueue(QueueType queueType);
 	Queue& GetQueue(QueueType queueType);
 	Queue& GetQueue(CommandListType commandListType);
 
+	D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t count = 1);
+	void CreateDescriptorAllocators();
+
+	ID3D12Device* GetD3D12Device() noexcept { return m_dxDevice; }
+
 private:
-	DeviceCreationParams m_deviceCreationParams{};
+	CreationParams m_creationParams{};
 	
 	// DirectX 12 objects
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
@@ -113,6 +123,9 @@ private:
 
 	// Queues
 	std::array<std::unique_ptr<Queue>, (uint32_t)QueueType::Count> m_queues;
+
+	// Descriptor allocators
+	std::array<std::unique_ptr<DescriptorAllocator>, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptorAllocators;
 
 	// DirectX caps
 	std::unique_ptr<DeviceCaps> m_caps;

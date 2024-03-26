@@ -102,6 +102,7 @@ bool DeviceManager12::CreateInstanceInternal()
 			return false;
 		}
 	}
+	SetDebugName(m_dxgiFactory, "DXGI Factory");
 
 	IntrusivePtr<IDXGIFactory5> dxgiFactory5;
 	if (SUCCEEDED(m_dxgiFactory->QueryInterface(IID_PPV_ARGS(&dxgiFactory5))))
@@ -217,6 +218,7 @@ bool DeviceManager12::CreateDevice()
 		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
 		m_adapter = tempAdapter;
+		SetDebugName(m_adapter, "WARP Adapter");
 		m_bIsWarpAdapter = true;
 
 		LogWarning(LogDirectX) << "Failed to find a hardware adapter, falling back to WARP." << endl;
@@ -227,6 +229,7 @@ bool DeviceManager12::CreateDevice()
 		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
 		m_adapter = tempAdapter;
+		SetDebugName(m_adapter, "Hardware Adapter");
 
 		LogInfo(LogDirectX) << "Selected D3D12 adapter " << chosenAdapterIdx << endl;
 	}
@@ -243,7 +246,7 @@ bool DeviceManager12::CreateDevice()
 #endif
 
 	// Create the Kodiak GraphicsDevice
-	auto creationParams = DeviceCreationParams{}
+	auto creationParams = GraphicsDevice::CreationParams{}
 		.SetDxgiFactory(m_dxgiFactory.Get())
 		.SetDevice(device)
 		.SetBackBufferWidth(m_desc.backBufferWidth)
@@ -283,7 +286,7 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 	vector<AdapterInfo> adapters;
 
 	IntrusivePtr<IDXGIFactory6> dxgiFactory6;
-	m_dxgiFactory->QueryInterface(IID_PPV_ARGS(dxgiFactory6.GetAddressOf()));
+	m_dxgiFactory->QueryInterface(IID_PPV_ARGS(&dxgiFactory6));
 
 	const D3D_FEATURE_LEVEL minRequiredLevel{ D3D_FEATURE_LEVEL_11_0 };
 	const DXGI_GPU_PREFERENCE gpuPreference{ DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE };
@@ -293,7 +296,7 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 
 	LogInfo(LogDirectX) << "Enumerating DXGI adapters..." << endl;
 
-	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != EnumAdapter((UINT)idx, gpuPreference, dxgiFactory6.Get(), tempAdapter.GetAddressOf()); ++idx)
+	for (int32_t idx = 0; DXGI_ERROR_NOT_FOUND != EnumAdapter((UINT)idx, gpuPreference, dxgiFactory6.Get(), &tempAdapter); ++idx)
 	{
 		DXGI_ADAPTER_DESC desc{};
 		tempAdapter->GetDesc(&desc);

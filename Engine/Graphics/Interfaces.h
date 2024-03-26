@@ -10,7 +10,9 @@
 
 #pragma once
 
+#include "Graphics\Enums.h"
 #include "Graphics\Formats.h"
+
 
 namespace Kodiak
 {
@@ -19,33 +21,28 @@ namespace Kodiak
 enum class Format : uint8_t;
 enum class ResourceType : uint32_t;
 
-
-struct GraphicsDeviceDesc
+struct ColorBufferCreationParams
 {
-	GraphicsApi api{ GraphicsApi::Unknown };
-
-	std::string appName;
-
-	HINSTANCE hinstance{ 0 };
-	HWND hwnd{ 0 };
-
-	uint32_t width{ 0 };
+	std::string name;
+	ResourceType resourceType{ ResourceType::Texture2D };
+	uint64_t width{ 0 };
 	uint32_t height{ 0 };
-	bool vsync{ false };
+	uint32_t arraySizeOrDepth{ 0 };
+	uint32_t numMips{ 1 };
+	uint32_t numSamples{ 1 };
+	Format format{ Format::Unknown };
+	Color clearColor{ DirectX::Colors::Black };
 
-	Format colorFormat{ Format::SRGBA8_UNorm };
-	Format depthFormat{ Format::D32S8 };
-
-	// Setters
-	constexpr GraphicsDeviceDesc& SetAPI(GraphicsApi value) { api = value; return *this; }
-	GraphicsDeviceDesc& SetAppName(const std::string& value) { appName = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetHInstance(HINSTANCE value) { hinstance = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetHWnd(HWND value) { hwnd = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetWidth(uint32_t value) { width = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetHeight(uint32_t value) { height = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetVSync(bool value) { vsync = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetColorFormat(Format value) { colorFormat = value; return *this; }
-	constexpr GraphicsDeviceDesc& SetDepthFormat(Format value) { depthFormat = value; return *this; }
+	ColorBufferCreationParams& SetName(const std::string& value) { name = value; return *this; }
+	constexpr ColorBufferCreationParams& SetResourceType(ResourceType value) noexcept { resourceType = value; return *this; }
+	constexpr ColorBufferCreationParams& SetWidth(uint64_t value) noexcept { width = value; return *this; }
+	constexpr ColorBufferCreationParams& SetHeight(uint32_t value) noexcept { height = value; return *this; }
+	constexpr ColorBufferCreationParams& SetArraySize(uint32_t value) noexcept { arraySizeOrDepth = value; return *this; }
+	constexpr ColorBufferCreationParams& SetDepth(uint32_t value) noexcept { arraySizeOrDepth = value; return *this; }
+	constexpr ColorBufferCreationParams& SetNumMips(uint32_t value) noexcept { numMips = value; return *this; }
+	constexpr ColorBufferCreationParams& SetNumSamples(uint32_t value) noexcept { numSamples = value; return *this; }
+	constexpr ColorBufferCreationParams& SetFormat(Format value) noexcept { format = value; return *this; }
+	ColorBufferCreationParams& SetClearColor(Color value) noexcept { clearColor = value; return *this; }
 };
 
 
@@ -60,7 +57,7 @@ using GpuResourceHandle = IntrusivePtr<IGpuResource>;
 class IPixelBuffer : public IGpuResource
 {
 public:
-	virtual uint32_t GetWidth() const noexcept = 0;
+	virtual uint64_t GetWidth() const noexcept = 0;
 	virtual uint32_t GetHeight() const noexcept = 0;
 	virtual uint32_t GetDepth() const noexcept = 0;
 	virtual uint32_t GetArraySize() const noexcept = 0;

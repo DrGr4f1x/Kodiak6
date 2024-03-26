@@ -48,6 +48,18 @@ inline std::string D3DTypeToString(D3D12_CROSS_NODE_SHARING_TIER crossNodeSharin
 }
 
 
+inline std::string D3DTypeToString(D3D12_DESCRIPTOR_HEAP_TYPE descriptorHeapType, bool bNumberOnly = false)
+{
+	switch (descriptorHeapType)
+	{
+	case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:	return "Sampler"; break;
+	case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:		return "RTV"; break;
+	case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:		return "DSV"; break;
+	default:									return "CbvSrvUav"; break;
+	}
+}
+
+
 inline std::string D3DTypeToString(D3D_FEATURE_LEVEL featureLevel, bool bNumberOnly = false)
 {
 	switch (featureLevel)
@@ -275,6 +287,7 @@ inline std::ostream& operator<<(D3D_TYPE type, std::ostream& os) { os << Kodiak:
 DECLARE_STRING_FORMATTERS(D3D12_COMMAND_LIST_SUPPORT_FLAGS)
 DECLARE_STRING_FORMATTERS(D3D12_CONSERVATIVE_RASTERIZATION_TIER)
 DECLARE_STRING_FORMATTERS(D3D12_CROSS_NODE_SHARING_TIER)
+DECLARE_STRING_FORMATTERS(D3D12_DESCRIPTOR_HEAP_TYPE)
 DECLARE_STRING_FORMATTERS(D3D_FEATURE_LEVEL)
 DECLARE_STRING_FORMATTERS(D3D12_MESH_SHADER_TIER)
 DECLARE_STRING_FORMATTERS(D3D12_MESSAGE_CATEGORY);

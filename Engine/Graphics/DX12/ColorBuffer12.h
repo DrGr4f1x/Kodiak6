@@ -16,16 +16,36 @@
 namespace Kodiak::DX12
 {
 
+// Forward declarations
+class GraphicsDevice;
+
+
+struct ColorBufferCreationParamsExt
+{
+	ID3D12Resource* resource{ nullptr };
+	uint32_t numFragments{ 1 };
+	ResourceState usageState{ ResourceState::Undefined };
+	ResourceState transitioningState{ ResourceState::Undefined };
+
+	constexpr ColorBufferCreationParamsExt& SetResource(ID3D12Resource* value) noexcept { resource = value; return *this; }
+	constexpr ColorBufferCreationParamsExt& SetNumFragments(uint32_t value) noexcept { numFragments = value; return *this; }
+	constexpr ColorBufferCreationParamsExt& SetUsageState(ResourceState value) noexcept { usageState = value; return *this; }
+	constexpr ColorBufferCreationParamsExt& SetTransitioningState(ResourceState value) noexcept { transitioningState = value; return *this; }
+};
+
+
 class ColorBuffer : IntrusiveCounter<IColorBuffer>
 {
+	friend class GraphicsDevice;
+
 public:
-	~ColorBuffer() final;
+	~ColorBuffer() final = default;
 
 	// IGpuResource implementation
 	ResourceType GetType() const noexcept final { return m_resourceType; }
 
 	// IPixelBuffer implementation
-	uint32_t GetWidth() const noexcept final { return m_width; };
+	uint64_t GetWidth() const noexcept final { return m_width; };
 	uint32_t GetHeight() const noexcept final { return m_height; }
 	uint32_t GetDepth() const noexcept final { return m_resourceType == ResourceType::Texture3D ? m_arraySizeOrDepth : 1; }
 	uint32_t GetArraySize() const noexcept final { return m_resourceType == ResourceType::Texture3D ? 1 : m_arraySizeOrDepth; }
@@ -44,11 +64,16 @@ public:
 	}
 
 private:
+	explicit ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
+
+	void InitializeFromSwapChain(GraphicsDevice* device);
+	void Initialize(GraphicsDevice* device);
+
 	void CreateDerivedViews(Format format, uint32_t arraySize, uint32_t numMips);
 
 private:
 	ResourceType m_resourceType{ ResourceType::Texture2D };
-	uint32_t m_width{ 0 };
+	uint64_t m_width{ 0 };
 	uint32_t m_height{ 0 };
 	uint32_t m_arraySizeOrDepth{ 0 };
 	uint32_t m_numMips{ 1 };

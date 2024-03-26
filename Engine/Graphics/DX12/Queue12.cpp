@@ -32,7 +32,7 @@ Queue::Queue(ID3D12Device* device, QueueType queueType)
 		LogError(LogDirectX) << "Failed to create DirectX queue." << endl;
 
 		// TODO - same thing for debug name
-		SetDebugName(m_dxQueue.Get(), "Queue");
+		SetDebugName(m_dxQueue, "Queue");
 	}
 }
 

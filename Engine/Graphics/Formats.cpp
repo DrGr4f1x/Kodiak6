@@ -29,7 +29,6 @@ uint32_t BitsPerPixel(Format format)
 	case RGB32_Float:
 	case RGB32_SInt:
 	case RGB32_UInt:
-	case RGB32_UNorm:
 		return 96;
 
 	case RGBA16_Float:
@@ -126,7 +125,6 @@ uint32_t BlockSize(Format format)
 	case RGB32_Float:
 	case RGB32_SInt:
 	case RGB32_UInt:
-	case RGB32_UNorm:
 		return 12;
 
 	case RGBA16_Float:

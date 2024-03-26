@@ -12,6 +12,8 @@
 
 #include "Device12.h"
 
+#include "ColorBuffer12.h"
+#include "DescriptorHeap12.h"
 #include "DeviceCaps12.h"
 #include "Formats12.h"
 #include "Queue12.h"
@@ -50,7 +52,7 @@ bool IsDirectXAgilitySDKAvailable()
 bool IsAdapterIntegrated(IDXGIAdapter* adapter)
 {
 	IntrusivePtr<IDXGIAdapter3> adapter3;
-	adapter->QueryInterface(IID_PPV_ARGS(adapter3.GetAddressOf()));
+	adapter->QueryInterface(IID_PPV_ARGS(&adapter3));
 
 	DXGI_QUERY_VIDEO_MEMORY_INFO nonLocalVideoMemoryInfo{};
 	if (adapter3 && SUCCEEDED(adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL, &nonLocalVideoMemoryInfo)))
@@ -111,13 +113,13 @@ void DebugMessageCallback(
 } // anonymous namespace
 
 
-GraphicsDevice::GraphicsDevice(const DeviceCreationParams& deviceCreationParams) noexcept
-	: m_deviceCreationParams{ deviceCreationParams }
+GraphicsDevice::GraphicsDevice(const CreationParams& creationParams) noexcept
+	: m_creationParams{ creationParams }
 {
 	LogInfo(LogDirectX) << "Creating DirectX 12 device." << endl;
 
-	m_dxgiFactory = m_deviceCreationParams.dxgiFactory;
-	m_dxDevice.Attach(m_deviceCreationParams.dx12Device);
+	m_dxgiFactory = m_creationParams.dxgiFactory;
+	m_dxDevice.Attach(m_creationParams.dx12Device);
 
 	SetDebugName(m_dxDevice.Get(), "Device");
 }
@@ -144,7 +146,7 @@ GraphicsDevice::~GraphicsDevice()
 		queue.reset();
 	}
 
-	if (m_deviceCreationParams.enableValidation)
+	if (m_creationParams.enableValidation)
 	{
 		ID3D12DebugDevice* debugInterface{ nullptr };
 		if (SUCCEEDED(m_dxDevice->QueryInterface(&debugInterface)))
@@ -162,6 +164,8 @@ bool GraphicsDevice::Initialize()
 	CreateQueue(QueueType::Compute);
 	CreateQueue(QueueType::Copy);
 
+	CreateDescriptorAllocators();
+
 	m_caps = make_unique<DeviceCaps>();
 	ReadCaps();
 
@@ -172,16 +176,16 @@ bool GraphicsDevice::Initialize()
 bool GraphicsDevice::CreateSwapChain()
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-	swapChainDesc.Width = m_deviceCreationParams.backBufferWidth;
-	swapChainDesc.Height = m_deviceCreationParams.backBufferHeight;
-	swapChainDesc.SampleDesc.Count = m_deviceCreationParams.swapChainSampleCount;
-	swapChainDesc.SampleDesc.Quality = m_deviceCreationParams.swapChainSampleQuality;
+	swapChainDesc.Width = m_creationParams.backBufferWidth;
+	swapChainDesc.Height = m_creationParams.backBufferHeight;
+	swapChainDesc.SampleDesc.Count = m_creationParams.swapChainSampleCount;
+	swapChainDesc.SampleDesc.Quality = m_creationParams.swapChainSampleQuality;
 	swapChainDesc.BufferUsage = DXGI_USAGE_SHADER_INPUT | DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = m_deviceCreationParams.numSwapChainBuffers;
-	swapChainDesc.Flags = m_deviceCreationParams.allowModeSwitch ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
+	swapChainDesc.BufferCount = m_creationParams.numSwapChainBuffers;
+	swapChainDesc.Flags = m_creationParams.allowModeSwitch ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
-	switch (m_deviceCreationParams.swapChainFormat)
+	switch (m_creationParams.swapChainFormat)
 	{
 	case Format::SRGBA8_UNorm:
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -190,17 +194,17 @@ bool GraphicsDevice::CreateSwapChain()
 		swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		break;
 	default:
-		swapChainDesc.Format = FormatToDxgi(m_deviceCreationParams.swapChainFormat).srvFormat;
+		swapChainDesc.Format = FormatToDxgi(m_creationParams.swapChainFormat).srvFormat;
 		break;
 	}
 
-	if (m_deviceCreationParams.isTearingSupported)
+	if (m_creationParams.isTearingSupported)
 	{
 		swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 	}
 
 	IntrusivePtr<IDXGISwapChain1> swapChain1;
-	if (FAILED(m_dxgiFactory->CreateSwapChainForHwnd(GetQueue(QueueType::Graphics).GetCommandQueue(), m_deviceCreationParams.hwnd, &swapChainDesc, nullptr, nullptr, &swapChain1)))
+	if (FAILED(m_dxgiFactory->CreateSwapChainForHwnd(GetQueue(QueueType::Graphics).GetCommandQueue(), m_creationParams.hwnd, &swapChainDesc, nullptr, nullptr, &swapChain1)))
 	{
 		LogError(LogDirectX) << "Failed to create swap chain." << endl;
 		return false;
@@ -211,12 +215,14 @@ bool GraphicsDevice::CreateSwapChain()
 		LogError(LogDirectX) << "Failed to get IDXGISwapChain3 interface." << endl;
 		return false;
 	}
+	SetDebugName(m_dxgiSwapChain, "DXGI SwapChain");
 
 	if (FAILED(m_dxDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_frameFence))))
 	{
 		LogError(LogDirectX) << "Failed to create frame fence." << endl;
 		return false;
 	}
+	SetDebugName(m_frameFence, "Frame Fence");
 
 	for (uint32_t bufferIdx = 0; bufferIdx < swapChainDesc.BufferCount; ++bufferIdx)
 	{
@@ -247,7 +253,7 @@ void GraphicsDevice::Present()
 
 	UINT presentFlags = 0;
 
-	m_dxgiSwapChain->Present(m_deviceCreationParams.enableVSync ? 1 : 0, presentFlags);
+	m_dxgiSwapChain->Present(m_creationParams.enableVSync ? 1 : 0, presentFlags);
 
 	m_frameFence->SetEventOnCompletion(m_frameCount, m_frameFenceEvents[bufferIndex]);
 	GetQueue(QueueType::Graphics).GetCommandQueue()->Signal(m_frameFence, m_frameCount);
@@ -342,6 +348,37 @@ void GraphicsDevice::InstallDebugCallback()
 }
 
 
+void GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer)
+{
+	IntrusivePtr<ID3D12Resource> displayPlane;
+	assert_succeeded(m_dxgiSwapChain->GetBuffer(imageIndex, IID_PPV_ARGS(&displayPlane)));
+
+	const string name = format("Primary SwapChain Image {}", imageIndex);
+	SetDebugName(displayPlane, name);
+
+	D3D12_RESOURCE_DESC resourceDesc = displayPlane->GetDesc();
+	
+	auto creationParams = ColorBufferCreationParams{}
+		.SetName(name)
+		.SetResourceType(ResourceType::Texture2D)
+		.SetWidth(resourceDesc.Width)
+		.SetHeight(resourceDesc.Height)
+		.SetArraySize(resourceDesc.DepthOrArraySize)
+		.SetNumSamples(resourceDesc.SampleDesc.Count)
+		.SetFormat(DxgiToFormat(resourceDesc.Format));
+
+	auto creationParamsExt = ColorBufferCreationParamsExt{}
+		.SetResource(displayPlane.Detach())
+		.SetUsageState(ResourceState::Present);
+
+	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+	
+	colorBuffer->InitializeFromSwapChain(this);
+
+	*ppColorBuffer = colorBuffer;
+}
+
+
 void GraphicsDevice::CreateQueue(QueueType queueType)
 {
 	m_queues[(uint32_t)queueType] = make_unique<Queue>(m_dxDevice.Get(), queueType);
@@ -358,4 +395,19 @@ Queue& GraphicsDevice::GetQueue(CommandListType commandListType)
 {
 	const auto queueType = CommandListTypeToQueueType(commandListType);
 	return GetQueue(queueType);
+}
+
+
+D3D12_CPU_DESCRIPTOR_HANDLE GraphicsDevice::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t count)
+{
+	return m_descriptorAllocators[type]->Allocate(m_dxDevice, count);
+}
+
+
+void GraphicsDevice::CreateDescriptorAllocators()
+{
+	m_descriptorAllocators[0] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_descriptorAllocators[1] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+	m_descriptorAllocators[2] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	m_descriptorAllocators[3] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
