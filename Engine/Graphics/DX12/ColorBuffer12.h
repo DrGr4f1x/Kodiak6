@@ -69,9 +69,10 @@ private:
 	void InitializeFromSwapChain(GraphicsDevice* device);
 	void Initialize(GraphicsDevice* device);
 
-	void CreateDerivedViews(Format format, uint32_t arraySize, uint32_t numMips);
+	void CreateDerivedViews(GraphicsDevice* device, uint32_t numMips);
 
 private:
+	const std::string m_name;
 	ResourceType m_resourceType{ ResourceType::Texture2D };
 	uint64_t m_width{ 0 };
 	uint32_t m_height{ 0 };

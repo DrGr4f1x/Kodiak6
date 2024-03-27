@@ -68,7 +68,7 @@ struct DeviceDesc
 	constexpr DeviceDesc& SetAllowSoftwareDevice(bool value) noexcept { allowSoftwareDevice = value; return *this; }
 	constexpr DeviceDesc& SetPreferDiscreteDevice(bool value) noexcept { preferDiscreteDevice = value; return *this; }
 	constexpr DeviceDesc& SetStartMaximized(bool value) noexcept { startMaximized = value; return *this; }
-	constexpr DeviceDesc& SetStartFullscreed(bool value) noexcept { startFullscreen = value; return *this; }
+	constexpr DeviceDesc& SetStartFullscreen(bool value) noexcept { startFullscreen = value; return *this; }
 	constexpr DeviceDesc& SetAllowModeSwitch(bool value) noexcept { allowModeSwitch = value; return *this; }
 	constexpr DeviceDesc& SetWindowPosX(uint32_t value) noexcept { windowPosX = value; return *this; }
 	constexpr DeviceDesc& SetWindowPosY(uint32_t value) noexcept { windowPosY = value; return *this; }

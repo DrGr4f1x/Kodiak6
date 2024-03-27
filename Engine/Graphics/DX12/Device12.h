@@ -85,6 +85,8 @@ public:
 	void BeginFrame() final;
 	void Present() final;
 
+	void CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer) final;
+
 	CommandContextHandle BeginCommandContext(const std::string& ID = "") final;
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID = "") final;
 	ComputeContextHandle BeginComputeContext(const std::string& ID = "", bool bAsync = false) final;

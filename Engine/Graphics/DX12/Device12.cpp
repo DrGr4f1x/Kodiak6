@@ -261,6 +261,19 @@ void GraphicsDevice::Present()
 }
 
 
+void GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer)
+{
+	auto creationParamsExt = ColorBufferCreationParamsExt{}
+		.SetUsageState(ResourceState::Common);
+
+	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+
+	colorBuffer->Initialize(this);
+
+	*ppColorBuffer = colorBuffer;
+}
+
+
 CommandContextHandle GraphicsDevice::BeginCommandContext(const string& ID)
 {
 	return nullptr;

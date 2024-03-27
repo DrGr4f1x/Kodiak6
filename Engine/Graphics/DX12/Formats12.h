@@ -28,4 +28,6 @@ struct DxgiFormatMapping
 const DxgiFormatMapping& FormatToDxgi(Format engineFormat);
 Format DxgiToFormat(DXGI_FORMAT dxgiFormat);
 
+DXGI_FORMAT GetUAVFormat(DXGI_FORMAT format);
+
 } // namespace Kodiak::DX12
