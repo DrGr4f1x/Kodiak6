@@ -384,9 +384,13 @@ enum class ResourceType : uint32_t
 	IndirectArgsBuffer =	0x2000,
 	StructuredBuffer =		0x4000,
 	TypedBuffer =			0x8000,
-	ReadbackBuffer =		0x010000
-};
+	ReadbackBuffer =		0x010000,
 
+	Texture1D_Type =		Texture1D | Texture1D_Array,
+	Texture2D_Type =		Texture2D | Texture2D_Array | Texture2DMS | Texture2DMS_Array,
+	TextureCube_Type =		TextureCube | TextureCube_Array,
+	TextureArray_Type =		Texture1D_Array | Texture2D_Array | Texture2DMS_Array | TextureCube_Array
+};
 template <> struct EnableBitmaskOperators<ResourceType> { static const bool enable = true; };
 
 
@@ -528,5 +532,17 @@ enum class ImageAspect
 	Stencil =	1 << 2
 };
 template <> struct EnableBitmaskOperators<ImageAspect> { static const bool enable = true; };
+
+
+enum class MemoryAccess
+{
+	Unknown =		0,
+	GpuRead =		1 << 0,
+	GpuWrite =		1 << 1,
+	CpuRead =		1 << 2,
+	CpuWrite =		1 << 3,
+	CpuMapped =		1 << 4
+};
+template <> struct EnableBitmaskOperators<MemoryAccess> { static const bool enable = true; };
 
 } // namespace Kodiak

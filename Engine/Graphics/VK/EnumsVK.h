@@ -77,4 +77,16 @@ VkImageAspectFlags GetImageAspect(ImageAspect imageAspect);
 
 VkImageLayout GetImageLayout(ResourceState state);
 
+VkImageCreateFlagBits GetImageCreateFlags(ResourceType type);
+
+VkImageType GetImageType(ResourceType type);
+
+VkSampleCountFlagBits GetSampleCountFlags(uint32_t numSamples);
+
+VkImageUsageFlags GetImageUsageFlags(GpuImageUsage usage);
+
+VmaAllocationCreateFlags GetMemoryFlags(MemoryAccess access);
+
+VmaMemoryUsage GetMemoryUsage(MemoryAccess access);
+
 } // namespace Kodiak::VK

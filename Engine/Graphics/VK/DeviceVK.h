@@ -19,6 +19,7 @@ namespace Kodiak::VK
 
 // Forward declarations
 class Queue;
+struct ImageCreationParams;
 struct ImageViewCreationParams;
 
 
@@ -78,6 +79,7 @@ class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 	friend class ColorBuffer;
 	friend class CommandContext;
 	friend class DeviceManagerVK;
+	friend class Queue;
 
 public:
 	GraphicsDevice(DeviceCreationParams& deviceCreationParams) noexcept
@@ -107,7 +109,11 @@ private:
 	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;
 	VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const;
 	VkResult CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const;
+	VmaAllocatorHandle CreateVmaAllocator() const;
+	VkImageHandle CreateImage(const ImageCreationParams& creationParams) const;
 	VkImageViewHandle CreateImageView(const ImageViewCreationParams& creationParams) const;
+
+	VkFormatProperties GetFormatProperties(Format format) const;
 
 	Queue& GetQueue(QueueType queueType);
 	Queue& GetQueue(CommandListType commandListType);
@@ -121,7 +127,7 @@ private:
 
 	void WaitForGpuIdle();
 
-	VkDevice GetVkDevice() noexcept { return *m_vkDevice; }
+	VkDevice GetVkDevice() const noexcept { return *m_vkDevice; }
 
 private:
 	DeviceCreationParams m_deviceCreationParams{};
@@ -152,6 +158,9 @@ private:
 	std::array<std::vector<CommandContextHandle>, (uint32_t)CommandListType::Count> m_contextPool;
 	std::array<std::queue<CommandContext*>, (uint32_t)CommandListType::Count> m_availableContexts;
 	std::mutex m_contextAllocationMutex;
+
+	// VmaAllocator
+	VmaAllocatorHandle m_vmaAllocator;
 };
 
 } // namespace Kodiak::VK

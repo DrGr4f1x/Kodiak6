@@ -14,6 +14,7 @@
 
 #include "CreationParamsVK.h"
 #include "DeviceVK.h"
+#include "QueueVK.h"
 
 
 namespace Kodiak::VK
@@ -45,7 +46,38 @@ void ColorBuffer::InitializeFromSwapChain(GraphicsDevice* device)
 
 void ColorBuffer::Initialize(GraphicsDevice* device)
 {
+	auto creationParams = ImageCreationParams{}
+		.SetName(m_name)
+		.SetWidth(m_width)
+		.SetHeight(m_height)
+		.SetNumMips(m_numMips)
+		.SetNumSamples(m_numSamples)
+		.SetFormat(m_format)
+		.SetResourceType(m_resourceType)
+		.SetImageUsage(GpuImageUsage::RenderTarget | GpuImageUsage::ShaderResource | GpuImageUsage::UnorderedAccess | GpuImageUsage::CopyDest | GpuImageUsage::CopySource)
+		.SetMemoryAccess(MemoryAccess::GpuRead | MemoryAccess::GpuWrite);
 
+	if (HasFlag(m_resourceType, ResourceType::Texture3D))
+	{
+		creationParams.SetNumMips(1);
+		creationParams.SetDepth(m_arraySizeOrDepth);
+	}
+	else if (HasAnyFlag(m_resourceType, ResourceType::Texture2D_Type))
+	{
+		if (HasAnyFlag(m_resourceType, ResourceType::TextureArray_Type))
+		{
+			creationParams.SetResourceType(m_numSamples == 1 ? ResourceType::Texture2D_Array : ResourceType::Texture2DMS_Array);
+			creationParams.SetArraySize(m_arraySizeOrDepth);
+		}
+		else
+		{
+			creationParams.SetResourceType(m_numSamples == 1 ? ResourceType::Texture2D : ResourceType::Texture2DMS_Array);
+		}
+	}
+
+	m_image = device->CreateImage(creationParams);
+
+	CreateDerivedViews(device, m_numMips);
 }
 
 

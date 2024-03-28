@@ -594,4 +594,110 @@ VkImageLayout GetImageLayout(ResourceState state)
 	}
 }
 
+
+VkImageCreateFlagBits GetImageCreateFlags(ResourceType type)
+{
+	using enum ResourceType;
+
+	switch (type)
+	{
+	case TextureCube:
+	case TextureCube_Array:		return VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT; break;
+	case Texture3D:				return VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT; break;
+	default:					return (VkImageCreateFlagBits)0; break;
+	}
+}
+
+
+VkImageType GetImageType(ResourceType type)
+{
+	using enum ResourceType;
+
+	switch (type)
+	{
+	case Texture1D:
+	case Texture1D_Array:		return VK_IMAGE_TYPE_1D; break;
+
+	case Texture2D:
+	case Texture2D_Array:
+	case Texture2DMS:
+	case Texture2DMS_Array:
+	case TextureCube:
+	case TextureCube_Array:		return VK_IMAGE_TYPE_2D; break;
+
+	case Texture3D:				return VK_IMAGE_TYPE_3D; break;
+
+	default:
+		assert(false);
+		return VK_IMAGE_TYPE_2D;
+		break;
+	}
+}
+
+
+VkSampleCountFlagBits GetSampleCountFlags(uint32_t numSamples)
+{
+	switch (numSamples)
+	{
+	case 1:		return VK_SAMPLE_COUNT_1_BIT; break;
+	case 2:		return VK_SAMPLE_COUNT_2_BIT; break;
+	case 4:		return VK_SAMPLE_COUNT_4_BIT; break;
+	case 8:		return VK_SAMPLE_COUNT_8_BIT; break;
+	case 16:	return VK_SAMPLE_COUNT_16_BIT; break;
+	case 32:	return VK_SAMPLE_COUNT_32_BIT; break;
+	case 64:	return VK_SAMPLE_COUNT_64_BIT; break;
+
+	default:
+		assert(false);
+		return VK_SAMPLE_COUNT_1_BIT;
+	}
+}
+
+
+VkImageUsageFlags GetImageUsageFlags(GpuImageUsage usage)
+{
+	using enum GpuImageUsage;
+
+	VkImageUsageFlags flags = 0;
+
+	flags |= HasFlag(usage, RenderTarget) ? VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT : 0;
+	flags |= HasFlag(usage, DepthStencilTarget) ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : 0;
+	flags |= HasFlag(usage, CopySource) ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : 0;
+	flags |= HasFlag(usage, CopyDest) ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : 0;
+	flags |= HasFlag(usage, ShaderResource) ? VK_IMAGE_USAGE_SAMPLED_BIT : 0;
+	flags |= HasFlag(usage, UnorderedAccess) ? VK_IMAGE_USAGE_STORAGE_BIT : 0;
+
+	return flags;
+}
+
+
+VmaAllocationCreateFlags GetMemoryFlags(MemoryAccess access)
+{
+	return HasFlag(access, MemoryAccess::CpuMapped) ? VMA_ALLOCATION_CREATE_MAPPED_BIT : 0;
+}
+
+
+VmaMemoryUsage GetMemoryUsage(MemoryAccess access)
+{
+	using enum MemoryAccess;
+
+	bool bGpuAccessAny = HasAnyFlag(access, GpuRead | GpuWrite);
+	bool bCpuAccessAny = HasAnyFlag(access, CpuRead | CpuWrite | CpuMapped);
+
+	if (bGpuAccessAny && !bCpuAccessAny)
+		return VMA_MEMORY_USAGE_GPU_ONLY;
+
+	if (bCpuAccessAny && !bGpuAccessAny)
+		return VMA_MEMORY_USAGE_CPU_ONLY;
+
+	if (bGpuAccessAny && HasFlag(access, CpuWrite))
+		return VMA_MEMORY_USAGE_CPU_TO_GPU;
+
+	if (bGpuAccessAny && HasFlag(access, CpuRead))
+		return VMA_MEMORY_USAGE_GPU_TO_CPU;
+
+	assert(false);
+	return VMA_MEMORY_USAGE_GPU_ONLY;
+}
+
 } // Minimumnamespace Kodiak::VK

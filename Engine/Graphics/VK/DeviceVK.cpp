@@ -22,6 +22,30 @@
 using namespace std;
 
 
+namespace
+{
+
+// TODO - Move this elsewhere?
+bool QueryLinearTilingFeature(VkFormatProperties properties, VkFormatFeatureFlagBits flags)
+{
+	return (properties.linearTilingFeatures & flags) != 0;
+}
+
+
+bool QueryOptimalTilingFeature(VkFormatProperties properties, VkFormatFeatureFlagBits flags)
+{
+	return (properties.optimalTilingFeatures & flags) != 0;
+}
+
+
+bool QueryBufferFeature(VkFormatProperties properties, VkFormatFeatureFlagBits flags)
+{
+	return (properties.bufferFeatures & flags) != 0;
+}
+
+} // anonymous namespace
+
+
 namespace Kodiak::VK
 {
 
@@ -42,6 +66,8 @@ bool GraphicsDevice::Initialize()
 	CreateQueue(QueueType::Graphics);
 	CreateQueue(QueueType::Compute);
 	CreateQueue(QueueType::Copy);
+
+	m_vmaAllocator = CreateVmaAllocator();
 
 	return true;
 }
@@ -354,9 +380,70 @@ VkResult GraphicsDevice::CreateCommandPool(CommandListType commandListType, CVkC
 }
 
 
+VmaAllocatorHandle GraphicsDevice::CreateVmaAllocator() const
+{
+	VmaAllocatorCreateInfo createInfo{};
+	createInfo.physicalDevice = m_vkDevice->GetPhysicalDevice();
+	createInfo.device = GetVkDevice();
+
+	VmaAllocator vmaAllocator{ VK_NULL_HANDLE };
+	if (VK_SUCCEEDED(vmaCreateAllocator(&createInfo, &vmaAllocator)))
+	{
+		return VmaAllocatorHandle::Create(new CVmaAllocator(m_vkDevice, vmaAllocator));
+	}
+	else
+	{
+		LogError(LogVulkan) << "Failed to create VmaAllocator.  Error code: " << res << endl;
+	}
+
+	return nullptr;
+}
+
+
+VkImageHandle GraphicsDevice::CreateImage(const ImageCreationParams& creationParams) const
+{
+	VkImageCreateInfo imageCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+	imageCreateInfo.flags = GetImageCreateFlags(creationParams.resourceType);
+	imageCreateInfo.imageType = GetImageType(creationParams.resourceType);
+	imageCreateInfo.format = FormatToVulkan(creationParams.format);
+	imageCreateInfo.extent = { (uint32_t)creationParams.width, creationParams.height };
+	imageCreateInfo.mipLevels = creationParams.numMips;
+	imageCreateInfo.arrayLayers = HasAnyFlag(creationParams.resourceType, ResourceType::TextureArray_Type) ? creationParams.arraySizeOrDepth : 1;
+	imageCreateInfo.samples = GetSampleCountFlags(creationParams.numSamples);
+	imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	imageCreateInfo.usage = GetImageUsageFlags(creationParams.imageUsage);
+
+	// Remove storage flag if this format doesn't support it.
+	// TODO - Make a table with all the format properties?
+	VkFormatProperties properties = GetFormatProperties(creationParams.format);
+	if (!QueryOptimalTilingFeature(properties, VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT))
+	{
+		imageCreateInfo.usage &= ~VK_IMAGE_USAGE_STORAGE_BIT;
+	}
+
+	VmaAllocationCreateInfo imageAllocCreateInfo{};
+	imageAllocCreateInfo.flags = GetMemoryFlags(creationParams.memoryAccess);
+	imageAllocCreateInfo.usage = GetMemoryUsage(creationParams.memoryAccess);
+
+	VkImage vkImage{ VK_NULL_HANDLE };
+	VmaAllocation vmaAllocation{ VK_NULL_HANDLE };
+	if (VK_SUCCEEDED(vmaCreateImage(*m_vmaAllocator, &imageCreateInfo, &imageAllocCreateInfo, &vkImage, &vmaAllocation, nullptr)))
+	{
+		SetDebugName(*m_vkDevice, vkImage, creationParams.name);
+		return VkImageHandle::Create(new CVkImage(m_vkDevice, m_vmaAllocator, vkImage, vmaAllocation));
+	}
+	else
+	{
+		LogError(LogVulkan) << "Failed to create VkImage.  Error code: " << res << endl;
+	}
+
+	return nullptr;
+}
+
+
 VkImageViewHandle GraphicsDevice::CreateImageView(const ImageViewCreationParams& creationParams) const 
 {
-	VkImageViewCreateInfo createInfo{};
+	VkImageViewCreateInfo createInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
 	createInfo.viewType = GetImageViewType(creationParams.resourceType, creationParams.imageUsage);
 	createInfo.format = FormatToVulkan(creationParams.format);
 	if (IsColorFormat(creationParams.format))
@@ -385,6 +472,17 @@ VkImageViewHandle GraphicsDevice::CreateImageView(const ImageViewCreationParams&
 	}
 
 	return nullptr;
+}
+
+
+VkFormatProperties GraphicsDevice::GetFormatProperties(Format format) const
+{
+	VkFormat vkFormat = static_cast<VkFormat>(format);
+	VkFormatProperties properties{};
+
+	vkGetPhysicalDeviceFormatProperties(m_vkDevice->GetPhysicalDevice(), vkFormat, &properties);
+
+	return properties;
 }
 
 
