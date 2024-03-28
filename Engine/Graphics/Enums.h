@@ -507,4 +507,26 @@ inline QueueType CommandListTypeToQueueType(CommandListType commandListType)
 	}
 }
 
+
+enum class GpuImageUsage
+{
+	Unknown =				0,
+	RenderTarget =			1 << 0,
+	DepthStencilTarget =	1 << 1,
+	ShaderResource =		1 << 2,
+	UnorderedAccess =		1 << 3,
+	CopySource =			1 << 4,
+	CopyDest =				1 << 5,
+};
+template <> struct EnableBitmaskOperators<GpuImageUsage> { static const bool enable = true; };
+
+
+enum class ImageAspect
+{
+	Color =		1 << 0,
+	Depth =		1 << 1,
+	Stencil =	1 << 2
+};
+template <> struct EnableBitmaskOperators<ImageAspect> { static const bool enable = true; };
+
 } // namespace Kodiak

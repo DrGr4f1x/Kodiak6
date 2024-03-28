@@ -12,6 +12,7 @@
 
 #include "DeviceVK.h"
 
+#include "CreationParamsVK.h"
 #include "FormatsVK.h"
 #include "QueueVK.h"
 #include "Generated\LoaderVk.h"
@@ -164,6 +165,129 @@ bool GraphicsDevice::CreateSwapChain()
 }
 
 
+void GraphicsDevice::BeginFrame()
+{
+	// TODO
+	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
+	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
+
+	if (VK_FAILED(vkAcquireNextImageKHR(*m_vkDevice, *m_vkSwapChain, numeric_limits<uint64_t>::max(), *semaphore, *fence, &m_swapChainIndex)))
+	{
+		LogFatal(LogVulkan) << "Failed to acquire next swapchain image in BeginFrame.  Error code: " << res << endl;
+		return;
+	}
+
+	QueueWaitForSemaphore(QueueType::Graphics, *semaphore, 0);
+}
+
+
+void GraphicsDevice::Present()
+{
+	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
+	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
+
+	QueueSignalSemaphore(QueueType::Graphics, *semaphore, 0);
+
+	// Need to submit a command list to kick Present...
+	auto context = BeginCommandContext("Present");
+	auto vkContext = dynamic_cast<CommandContext*>(context.Get());
+	vkContext->HACK_TransitionImageToPresent(*m_vkSwapChainImages[m_swapChainIndex]);
+	context->Finish();
+
+	VkSwapchainKHR swapchain = *m_vkSwapChain;
+	VkSemaphore waitSemaphore = *semaphore;
+
+	VkPresentInfoKHR presentInfo = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &swapchain;
+	presentInfo.pImageIndices = &m_swapChainIndex;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = &waitSemaphore;
+
+	vkQueuePresentKHR(GetQueue(QueueType::Graphics).GetVkQueue(), &presentInfo);
+
+	m_presentSemaphoreIndex = (m_presentSemaphoreIndex + 1) % m_presentSemaphores.size();
+
+	const auto& nextFence = m_presentFences[m_presentSemaphoreIndex];
+	VkFence vkFence = *nextFence;
+	vkWaitForFences(*m_vkDevice, 1, &vkFence, TRUE, numeric_limits<uint64_t>::max());
+	vkResetFences(*m_vkDevice, 1, &vkFence);
+}
+
+
+void GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer)
+{
+}
+
+
+CommandContextHandle GraphicsDevice::BeginCommandContext(const std::string& ID)
+{
+	auto* newContext = AllocateContext(CommandListType::Direct);
+
+	// TODO
+#if 0
+	NewContext->SetID(ID);
+	if (ID.length() > 0)
+	{
+		EngineProfiling::BeginBlock(ID, NewContext);
+	}
+#endif
+
+	newContext->m_device = this;
+	newContext->m_bInvertedViewport = true;
+
+	VkCommandBufferBeginInfo beginInfo{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+	vkBeginCommandBuffer(newContext->m_commandBuffer, &beginInfo);
+
+#if ENABLE_VULKAN_DEBUG_MARKERS
+	if (!ID.empty())
+	{
+		newContext->BeginEvent(ID);
+		newContext->m_hasPendingDebugEvent = true;
+	}
+#endif
+
+	return newContext;
+}
+
+
+GraphicsContextHandle GraphicsDevice::BeginGraphicsContext(const std::string& ID)
+{
+	return nullptr;
+}
+
+
+ComputeContextHandle GraphicsDevice::BeginComputeContext(const std::string& ID, bool bAsync)
+{
+	return nullptr;
+}
+
+
+void GraphicsDevice::DestroySwapChain()
+{
+	if (m_vkSwapChain)
+	{
+		m_vkSwapChain->Destroy();
+	}
+
+	m_vkSwapChainImages.clear();
+}
+
+
+void GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer)
+{
+
+}
+
+
+void GraphicsDevice::CreateQueue(QueueType queueType)
+{
+	VkQueue vkQueue{ VK_NULL_HANDLE };
+	vkGetDeviceQueue(*m_vkDevice, m_deviceCreationParams.queueFamilyIndices.graphics, 0, &vkQueue);
+	m_queues[(uint32_t)queueType] = make_unique<Queue>(this, vkQueue, queueType);
+}
+
+
 VkResult GraphicsDevice::CreateFence(bool bSignalled, CVkFence** ppFence) const
 {
 	VkFenceCreateInfo createInfo{ VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
@@ -230,115 +354,37 @@ VkResult GraphicsDevice::CreateCommandPool(CommandListType commandListType, CVkC
 }
 
 
-void GraphicsDevice::BeginFrame()
+VkImageViewHandle GraphicsDevice::CreateImageView(const ImageViewCreationParams& creationParams) const 
 {
-	// TODO
-	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
-	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
-
-	if (VK_FAILED(vkAcquireNextImageKHR(*m_vkDevice, *m_vkSwapChain, numeric_limits<uint64_t>::max(), *semaphore, *fence, &m_swapChainIndex)))
+	VkImageViewCreateInfo createInfo{};
+	createInfo.viewType = GetImageViewType(creationParams.resourceType, creationParams.imageUsage);
+	createInfo.format = FormatToVulkan(creationParams.format);
+	if (IsColorFormat(creationParams.format))
 	{
-		LogFatal(LogVulkan) << "Failed to acquire next swapchain image in BeginFrame.  Error code: " << res << endl;
-		return;
+		createInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+		createInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+		createInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+		createInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+	}
+	createInfo.subresourceRange = {};
+	createInfo.subresourceRange.aspectMask = GetImageAspect(creationParams.imageAspect);
+	createInfo.subresourceRange.baseMipLevel = 0;
+	createInfo.subresourceRange.levelCount = creationParams.mipCount;
+	createInfo.subresourceRange.baseArrayLayer = 0;
+	createInfo.subresourceRange.layerCount = creationParams.resourceType == ResourceType::Texture3D ? 1 : creationParams.arraySize;
+	createInfo.image = creationParams.image->Get();
+
+	VkImageView vkImageView{ VK_NULL_HANDLE };
+	if (VK_SUCCEEDED(vkCreateImageView(*m_vkDevice, &createInfo, nullptr, &vkImageView)))
+	{
+		return VkImageViewHandle::Create(new CVkImageView(m_vkDevice, creationParams.image, vkImageView));
+	}
+	else
+	{
+		LogWarning(LogVulkan) << "Failed to create VkImageView.  Error code: " << res << endl;
 	}
 
-	QueueWaitForSemaphore(QueueType::Graphics, *semaphore, 0);
-}
-
-
-void GraphicsDevice::Present()
-{
-	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
-	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
-
-	QueueSignalSemaphore(QueueType::Graphics, *semaphore, 0);
-
-	// Need to submit a command list to kick Present...
-	auto context = BeginCommandContext("Present");
-	auto vkContext = dynamic_cast<CommandContext*>(context.Get());
-	vkContext->HACK_TransitionImageToPresent(*m_vkSwapChainImages[m_swapChainIndex]);
-	context->Finish();
-
-	VkSwapchainKHR swapchain = *m_vkSwapChain;
-	VkSemaphore waitSemaphore = *semaphore;
-
-	VkPresentInfoKHR presentInfo = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = &swapchain;
-	presentInfo.pImageIndices = &m_swapChainIndex;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = &waitSemaphore;
-
-	vkQueuePresentKHR(GetQueue(QueueType::Graphics).GetVkQueue(), &presentInfo);
-
-	m_presentSemaphoreIndex = (m_presentSemaphoreIndex + 1) % m_presentSemaphores.size();
-
-	const auto& nextFence = m_presentFences[m_presentSemaphoreIndex];
-	VkFence vkFence = *nextFence;
-	vkWaitForFences(*m_vkDevice, 1, &vkFence, TRUE, numeric_limits<uint64_t>::max());
-	vkResetFences(*m_vkDevice, 1, &vkFence);
-}
-
-
-CommandContextHandle GraphicsDevice::BeginCommandContext(const std::string& ID)
-{
-	auto* newContext = AllocateContext(CommandListType::Direct);
-
-	// TODO
-#if 0
-	NewContext->SetID(ID);
-	if (ID.length() > 0)
-	{
-		EngineProfiling::BeginBlock(ID, NewContext);
-	}
-#endif
-
-	newContext->m_device = this;
-	newContext->m_bInvertedViewport = true;
-
-	VkCommandBufferBeginInfo beginInfo{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
-	vkBeginCommandBuffer(newContext->m_commandBuffer, &beginInfo);
-
-#if ENABLE_VULKAN_DEBUG_MARKERS
-	if (!ID.empty())
-	{
-		newContext->BeginEvent(ID);
-		newContext->m_hasPendingDebugEvent = true;
-	}
-#endif
-
-	return newContext;
-}
-
-
-GraphicsContextHandle GraphicsDevice::BeginGraphicsContext(const std::string& ID)
-{
 	return nullptr;
-}
-
-
-ComputeContextHandle GraphicsDevice::BeginComputeContext(const std::string& ID, bool bAsync)
-{
-	return nullptr;
-}
-
-
-void GraphicsDevice::DestroySwapChain()
-{
-	if (m_vkSwapChain)
-	{
-		m_vkSwapChain->Destroy();
-	}
-
-	m_vkSwapChainImages.clear();
-}
-
-
-void GraphicsDevice::CreateQueue(QueueType queueType)
-{
-	VkQueue vkQueue{ VK_NULL_HANDLE };
-	vkGetDeviceQueue(*m_vkDevice, m_deviceCreationParams.queueFamilyIndices.graphics, 0, &vkQueue);
-	m_queues[(uint32_t)queueType] = make_unique<Queue>(this, vkQueue, queueType);
 }
 
 

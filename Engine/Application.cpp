@@ -277,7 +277,7 @@ void Application::CreateDeviceManager()
 
 	if (!m_deviceManager->CreateDeviceAndSwapChain(deviceDesc))
 	{
-		LogFatal(LogApplication) << "Failed to create graphics device and swap chain" << endl;
+		LogFatal(LogApplication) << "Failed to create graphics device and swap chain." << endl;
 	}
 }
 

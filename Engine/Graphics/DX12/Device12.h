@@ -95,7 +95,6 @@ private:
 	void ReadCaps();
 	void InstallDebugCallback();
 	
-	// ColorBuffer
 	void CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer);
 
 	void CreateQueue(QueueType queueType);
@@ -116,6 +115,10 @@ private:
 	IntrusivePtr<IDXGISwapChain3> m_dxgiSwapChain;
 	IntrusivePtr<ID3D12InfoQueue1> m_dxInfoQueue;
 	DWORD m_callbackCookie{ 0 };
+
+	// Swapchain color buffers
+	std::vector<ColorBufferHandle> m_swapChainBuffers;
+	uint32_t m_currentBufferIndex{ 0 };
 
 	// Present synchronization
 	IntrusivePtr<ID3D12Fence> m_frameFence;

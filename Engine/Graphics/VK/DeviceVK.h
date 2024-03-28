@@ -19,6 +19,7 @@ namespace Kodiak::VK
 
 // Forward declarations
 class Queue;
+struct ImageViewCreationParams;
 
 
 struct DeviceCreationParams
@@ -74,6 +75,7 @@ struct DeviceCreationParams
 
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
+	friend class ColorBuffer;
 	friend class CommandContext;
 	friend class DeviceManagerVK;
 
@@ -87,12 +89,10 @@ public:
 	bool Initialize() final;
 	bool CreateSwapChain() final;
 
-	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;
-	VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const;
-	VkResult CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const;
-
 	void BeginFrame() final;
 	void Present() final;
+
+	void CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer) final;
 
 	CommandContextHandle BeginCommandContext(const std::string& ID) final;
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID) final;
@@ -101,7 +101,13 @@ public:
 private:
 	void DestroySwapChain();
 
+	void CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer);
+
 	void CreateQueue(QueueType queueType);
+	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;
+	VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const;
+	VkResult CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const;
+	VkImageViewHandle CreateImageView(const ImageViewCreationParams& creationParams) const;
 
 	Queue& GetQueue(QueueType queueType);
 	Queue& GetQueue(CommandListType commandListType);
@@ -114,6 +120,8 @@ private:
 	void WaitForFence(uint64_t fenceValue);
 
 	void WaitForGpuIdle();
+
+	VkDevice GetVkDevice() noexcept { return *m_vkDevice; }
 
 private:
 	DeviceCreationParams m_deviceCreationParams{};
@@ -128,6 +136,9 @@ private:
 	uint32_t m_swapChainIndex{ (uint32_t)-1 };
 	bool m_swapChainMutableFormatSupported{ false };
 	VkSurfaceFormatKHR m_swapChainFormat{};
+
+	// Swapchain color buffers
+	std::vector<ColorBufferHandle> m_swapChainBuffers;
 
 	// Present synchronization
 	std::vector<VkSemaphoreHandle> m_presentSemaphores;

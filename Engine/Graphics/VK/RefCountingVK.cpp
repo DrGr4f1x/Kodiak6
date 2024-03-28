@@ -103,4 +103,11 @@ void CVkCommandPool::Destroy()
 	m_commandPool = VK_NULL_HANDLE;
 }
 
+
+void CVkImageView::Destroy()
+{
+	vkDestroyImageView(*m_device, m_imageView, nullptr);
+	m_imageView = VK_NULL_HANDLE;
+}
+
 } // namespace Kodiak::VK

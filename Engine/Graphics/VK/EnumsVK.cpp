@@ -493,4 +493,105 @@ AdapterType VkPhysicalDeviceTypeToEngine(VkPhysicalDeviceType physicalDeviceType
 	}
 }
 
+
+VkImageViewType GetImageViewType(ResourceType type, GpuImageUsage imageUsage)
+{
+	switch (type)
+	{
+	case ResourceType::Texture1D:
+		return VK_IMAGE_VIEW_TYPE_1D;
+		break;
+
+	case ResourceType::Texture1D_Array:
+		return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+		break;
+
+	case ResourceType::Texture2D:
+	case ResourceType::Texture2DMS:
+		return VK_IMAGE_VIEW_TYPE_2D;
+		break;
+
+	case ResourceType::Texture2D_Array:
+	case ResourceType::Texture2DMS_Array:
+		return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+		break;
+
+	case ResourceType::TextureCube:
+		return VK_IMAGE_VIEW_TYPE_CUBE;
+		break;
+
+	case ResourceType::TextureCube_Array:
+		return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+		break;
+
+	case ResourceType::Texture3D:
+		return HasFlag(imageUsage, GpuImageUsage::RenderTarget) ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_3D;
+		break;
+
+	default:
+		assert(false);
+		return VK_IMAGE_VIEW_TYPE_2D;
+		break;
+	}
+}
+
+
+VkImageAspectFlags GetImageAspect(ImageAspect aspect)
+{
+	VkImageAspectFlags flags{ 0 };
+
+	flags |= HasFlag(aspect, ImageAspect::Color) ? VK_IMAGE_ASPECT_COLOR_BIT : 0;
+	flags |= HasFlag(aspect, ImageAspect::Depth) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
+	flags |= HasFlag(aspect, ImageAspect::Stencil) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
+
+	return flags;
+}
+
+
+VkImageLayout GetImageLayout(ResourceState state)
+{
+	static const auto s_invalidLayout = VkImageLayout(-1);
+
+	switch (state)
+	{
+	case ResourceState::Undefined:
+		return VK_IMAGE_LAYOUT_UNDEFINED;
+	case ResourceState::Common:
+		return VK_IMAGE_LAYOUT_GENERAL;
+	case ResourceState::VertexBuffer:
+	case ResourceState::IndexBuffer:
+	case ResourceState::ConstantBuffer:
+		return s_invalidLayout;
+	case ResourceState::RenderTarget:
+		return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	case ResourceState::UnorderedAccess:
+		return VK_IMAGE_LAYOUT_GENERAL;
+	case ResourceState::DepthRead:
+	case ResourceState::DepthWrite:
+		return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	case ResourceState::NonPixelShaderResource:
+	case ResourceState::PixelShaderResource:
+	case ResourceState::ShaderResource:
+		return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	case ResourceState::StreamOut:
+	case ResourceState::IndirectArgument:
+		return s_invalidLayout;
+	case ResourceState::CopyDest:
+	case ResourceState::ResolveDest:
+		return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	case ResourceState::CopySource:
+	case ResourceState::ResolveSource:
+	case ResourceState::GenericRead:
+		return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+	case ResourceState::Present:
+		return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	case ResourceState::Predication:
+		return s_invalidLayout;
+
+	default:
+		assert(false);
+		return s_invalidLayout;
+	}
+}
+
 } // Minimumnamespace Kodiak::VK

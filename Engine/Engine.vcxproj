@@ -60,6 +60,7 @@
     <ClCompile Include="Graphics\DX12\DescriptorHeap12.cpp" />
     <ClCompile Include="Graphics\Formats.cpp" />
     <ClCompile Include="Graphics\GraphicsCommon.cpp" />
+    <ClCompile Include="Graphics\VK\ColorBufferVK.cpp" />
     <ClCompile Include="Graphics\VK\CommandBufferPoolVK.cpp" />
     <ClCompile Include="Graphics\VK\CommandContextVK.cpp" />
     <ClCompile Include="Graphics\VK\DeviceCapsVK.cpp" />
@@ -165,8 +166,10 @@
     <ClInclude Include="Graphics\GraphicsCommon.h" />
     <ClInclude Include="Graphics\Enums.h" />
     <ClInclude Include="Graphics\Interfaces.h" />
+    <ClInclude Include="Graphics\VK\ColorBufferVK.h" />
     <ClInclude Include="Graphics\VK\CommandBufferPoolVK.h" />
     <ClInclude Include="Graphics\VK\CommandContextVK.h" />
+    <ClInclude Include="Graphics\VK\CreationParamsVK.h" />
     <ClInclude Include="Graphics\VK\DeviceCapsVK.h" />
     <ClInclude Include="Graphics\VK\DeviceManagerVK.h" />
     <ClInclude Include="Graphics\VK\ExtensionManagerVK.h" />

@@ -71,4 +71,10 @@ VkQueryType QueryTypeToVulkan(QueryType queryHeapType);
 
 AdapterType VkPhysicalDeviceTypeToEngine(VkPhysicalDeviceType physicalDeviceType);
 
+VkImageViewType GetImageViewType(ResourceType type, GpuImageUsage imageUsage);
+
+VkImageAspectFlags GetImageAspect(ImageAspect imageAspect);
+
+VkImageLayout GetImageLayout(ResourceState state);
+
 } // namespace Kodiak::VK

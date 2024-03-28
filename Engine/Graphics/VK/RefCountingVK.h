@@ -364,4 +364,38 @@ private:
 };
 using VkCommandPoolHandle = IntrusivePtr<CVkCommandPool>;
 
+
+//
+// VkImageView
+//
+class CVkImageView : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkImageView() noexcept = default;
+	CVkImageView(CVkDevice* device, CVkImage* image, VkImageView imageView)
+		: m_device{ device }
+		, m_image{ image }
+		, m_imageView{ imageView }
+	{}
+
+	~CVkImageView()
+	{
+		Destroy();
+	}
+
+	VkImageView Get() const noexcept { return m_imageView; }
+	operator VkImageView() const noexcept { return Get(); }
+
+	VkDevice GetDevice() const noexcept { return *m_device; }
+	VkImage GetImage() const noexcept { return *m_image; }
+
+	void Destroy();
+
+private:
+	VkDeviceHandle m_device;
+	VkImageHandle m_image;
+	VkImageView m_imageView{ VK_NULL_HANDLE };
+};
+using VkImageViewHandle = IntrusivePtr<CVkImageView>;
+
 } // namespace Kodiak::VK

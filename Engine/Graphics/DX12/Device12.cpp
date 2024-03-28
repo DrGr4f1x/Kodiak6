@@ -203,8 +203,11 @@ bool GraphicsDevice::CreateSwapChain()
 		swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 	}
 
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDesc{};
+	fullscreenDesc.Windowed = TRUE;
+
 	IntrusivePtr<IDXGISwapChain1> swapChain1;
-	if (FAILED(m_dxgiFactory->CreateSwapChainForHwnd(GetQueue(QueueType::Graphics).GetCommandQueue(), m_creationParams.hwnd, &swapChainDesc, nullptr, nullptr, &swapChain1)))
+	if (FAILED(m_dxgiFactory->CreateSwapChainForHwnd(GetQueue(QueueType::Graphics).GetCommandQueue(), m_creationParams.hwnd, &swapChainDesc, &fullscreenDesc, nullptr, &swapChain1)))
 	{
 		LogError(LogDirectX) << "Failed to create swap chain." << endl;
 		return false;
@@ -216,6 +219,13 @@ bool GraphicsDevice::CreateSwapChain()
 		return false;
 	}
 	SetDebugName(m_dxgiSwapChain, "DXGI SwapChain");
+
+	for (uint32_t i = 0; i < m_creationParams.numSwapChainBuffers; ++i)
+	{
+		ColorBufferHandle bufferHandle;
+		CreateColorBufferFromSwapChain(i, &bufferHandle);
+		m_swapChainBuffers.emplace_back(bufferHandle);
+	}
 
 	if (FAILED(m_dxDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_frameFence))))
 	{
@@ -237,8 +247,8 @@ void GraphicsDevice::BeginFrame()
 {
 	// TODO Handle window resize here
 
-	auto bufferIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
-	WaitForSingleObject(m_frameFenceEvents[bufferIndex], INFINITE);
+	m_currentBufferIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
+	WaitForSingleObject(m_frameFenceEvents[m_currentBufferIndex], INFINITE);
 }
 
 
@@ -249,13 +259,11 @@ void GraphicsDevice::Present()
 		return;
 	}
 
-	auto bufferIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
-
 	UINT presentFlags = 0;
 
 	m_dxgiSwapChain->Present(m_creationParams.enableVSync ? 1 : 0, presentFlags);
 
-	m_frameFence->SetEventOnCompletion(m_frameCount, m_frameFenceEvents[bufferIndex]);
+	m_frameFence->SetEventOnCompletion(m_frameCount, m_frameFenceEvents[m_currentBufferIndex]);
 	GetQueue(QueueType::Graphics).GetCommandQueue()->Signal(m_frameFence, m_frameCount);
 	++m_frameCount;
 }

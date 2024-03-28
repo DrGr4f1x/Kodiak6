@@ -95,4 +95,33 @@ uint32_t BitsPerPixel(Format format);
 
 uint32_t BlockSize(Format format);
 
+
+inline bool IsDepthFormat(Format format)
+{
+	using enum Format;
+
+	return format == D16 || format == D24S8 || format == X24G8_UInt || format == D32 || format == D32S8 || format == X32G8_UInt;
+		
+}
+
+
+inline bool IsStencilFormat(Format format)
+{
+	using enum Format;
+
+	return format == D24S8 || format == X24G8_UInt || format == D32S8 || format == X32G8_UInt;
+}
+
+
+inline bool IsDepthStencilFormat(Format format)
+{
+	return IsDepthFormat(format) || IsStencilFormat(format);
+}
+
+
+inline bool IsColorFormat(Format format)
+{
+	return !IsDepthStencilFormat(format);
+}
+
 } // namespace Kodiak
