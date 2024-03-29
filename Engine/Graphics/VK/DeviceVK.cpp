@@ -165,9 +165,10 @@ bool GraphicsDevice::CreateSwapChain()
 	{
 		m_vkSwapChainImages.push_back(VkImageHandle::Create(new CVkImage(m_vkDevice, image)));
 	}
+	m_swapChainBuffers.reserve(imageCount);
 	for (uint32_t i = 0; i < imageCount; ++i)
 	{
-		m_swapChainBuffers[i] = CreateColorBufferFromSwapChain(i);
+		m_swapChainBuffers.push_back(CreateColorBufferFromSwapChain(i));
 	}
 
 	// Create the semaphores and fences for present
@@ -395,9 +396,15 @@ VkCommandPoolHandle GraphicsDevice::CreateCommandPool(CommandListType commandLis
 
 VmaAllocatorHandle GraphicsDevice::CreateVmaAllocator() const
 {
+	VmaVulkanFunctions vmaFunctions{};
+	vmaFunctions.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+	vmaFunctions.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+
 	VmaAllocatorCreateInfo createInfo{};
 	createInfo.physicalDevice = m_vkDevice->GetPhysicalDevice();
 	createInfo.device = GetVkDevice();
+	createInfo.instance = m_deviceCreationParams.instance;
+	createInfo.pVulkanFunctions = &vmaFunctions;
 
 	VmaAllocator vmaAllocator{ VK_NULL_HANDLE };
 	if (VK_SUCCEEDED(vmaCreateAllocator(&createInfo, &vmaAllocator)))

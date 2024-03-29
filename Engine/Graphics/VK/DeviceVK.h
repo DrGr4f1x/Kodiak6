@@ -25,6 +25,7 @@ struct ImageViewCreationParams;
 
 struct DeviceCreationParams
 {
+	VkInstance instance{ VK_NULL_HANDLE };
 	CVkPhysicalDevice* physicalDevice{ nullptr };
 	VkDevice device{ VK_NULL_HANDLE };
 
@@ -56,6 +57,7 @@ struct DeviceCreationParams
 	bool enableDebugMarkers{ false };
 #endif
 
+	constexpr DeviceCreationParams& SetInstance(VkInstance value) noexcept { instance = value; return *this; }
 	constexpr DeviceCreationParams& SetPhysicalDevice(CVkPhysicalDevice* value) noexcept { physicalDevice = value; return *this; }
 	constexpr DeviceCreationParams& SetDevice(VkDevice value) noexcept { device = value; return *this; }
 	constexpr DeviceCreationParams& SetGraphicsQueueIndex(int32_t value) noexcept { queueFamilyIndices.graphics = value; return *this; }

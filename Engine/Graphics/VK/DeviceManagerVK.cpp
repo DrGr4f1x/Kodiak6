@@ -100,7 +100,10 @@ VkBool32 DebugMessageCallback(
 namespace Kodiak::VK
 {
 
-DeviceManagerVK::~DeviceManagerVK() = default;
+DeviceManagerVK::~DeviceManagerVK()
+{
+	LogInfo(LogVulkan) << "Destroying Vulkan DeviceManager." << endl;
+}
 
 
 bool DeviceManagerVK::CreateInstanceInternal()
@@ -285,6 +288,7 @@ bool DeviceManagerVK::CreateDevice()
 
 	// Create the Kodiak GraphicsDevice
 	auto creationParams = DeviceCreationParams{}
+		.SetInstance(*m_vkInstance)
 		.SetPhysicalDevice(m_vkPhysicalDevice)
 		.SetDevice(device)
 		.SetGraphicsQueueIndex(m_queueFamilyIndices.graphics)
