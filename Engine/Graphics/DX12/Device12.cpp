@@ -123,7 +123,7 @@ DeviceRLDOHelper::~DeviceRLDOHelper()
 		ID3D12DebugDevice* debugInterface{ nullptr };
 		if (SUCCEEDED(device->QueryInterface(&debugInterface)))
 		{
-			debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+			debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_SUMMARY | D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
 			debugInterface->Release();
 		}
 	}
@@ -136,7 +136,7 @@ GraphicsDevice::GraphicsDevice(const CreationParams& creationParams) noexcept
 	LogInfo(LogDirectX) << "Creating DirectX 12 device." << endl;
 
 	m_dxgiFactory = m_creationParams.dxgiFactory;
-	m_dxDevice.Attach(m_creationParams.dx12Device);
+	m_dxDevice = m_creationParams.dx12Device;
 
 	SetDebugName(m_dxDevice.Get(), "Device");
 }

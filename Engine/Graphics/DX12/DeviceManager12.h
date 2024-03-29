@@ -22,9 +22,9 @@ struct DeviceCaps;
 
 struct DxgiRLOHelper
 {
-	const bool doReport{ false };
+	bool doReport{ false };
 
-	explicit DxgiRLOHelper(bool bDoReport) noexcept : doReport{ bDoReport } {}
+	DxgiRLOHelper() noexcept = default;
 	~DxgiRLOHelper();
 };
 

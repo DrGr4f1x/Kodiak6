@@ -73,7 +73,7 @@ DxgiRLOHelper::~DxgiRLOHelper()
 		IDXGIDebug1* pDebug{ nullptr };
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
 		{
-			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, (DXGI_DEBUG_RLO_FLAGS)(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+			pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 			pDebug->Release();
 		}
 	}
@@ -81,8 +81,8 @@ DxgiRLOHelper::~DxgiRLOHelper()
 
 
 DeviceManager12::DeviceManager12()
-	: m_dxgiRLOHelper{ m_desc.enableValidation }
-{}
+{
+}
 
 
 DeviceManager12::~DeviceManager12() noexcept = default;
@@ -102,6 +102,8 @@ void DeviceManager12::Present()
 
 bool DeviceManager12::CreateInstanceInternal()
 {
+	m_dxgiRLOHelper.doReport = m_desc.enableValidation;
+
 	if (!m_dxgiFactory)
 	{
 		if (!SUCCEEDED(CreateDXGIFactory2(m_desc.enableValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory))))
@@ -219,7 +221,7 @@ bool DeviceManager12::CreateDevice()
 
 	// Create device, either WARP or hardware
 	IntrusivePtr<IDXGIAdapter> tempAdapter;
-	ID3D12Device* device{ nullptr };
+	IntrusivePtr<ID3D12Device> device{ nullptr };
 	if (chosenAdapterIdx == warpAdapterIdx)
 	{
 		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&tempAdapter)));
