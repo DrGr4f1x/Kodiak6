@@ -106,9 +106,9 @@ private:
 	ColorBufferHandle CreateColorBufferFromSwapChain(uint32_t imageIndex);
 
 	void CreateQueue(QueueType queueType);
-	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;
-	VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const;
-	VkResult CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const;
+	VkFenceHandle CreateFence(bool bSignalled) const;
+	VkSemaphoreHandle CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue) const;
+	VkCommandPoolHandle CreateCommandPool(CommandListType commandListType) const;
 	VmaAllocatorHandle CreateVmaAllocator() const;
 	VkImageHandle CreateImage(const ImageCreationParams& creationParams) const;
 	VkImageViewHandle CreateImageView(const ImageViewCreationParams& creationParams) const;
@@ -138,6 +138,7 @@ private:
 
 	// Swapchain
 	VkSwapchainHandle m_vkSwapChain;
+	// TODO - get rid of this, just use m_swapChainBuffers below
 	std::vector<VkImageHandle> m_vkSwapChainImages;
 	uint32_t m_swapChainIndex{ (uint32_t)-1 };
 	bool m_swapChainMutableFormatSupported{ false };

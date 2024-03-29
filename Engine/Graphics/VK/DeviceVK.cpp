@@ -175,20 +175,14 @@ bool GraphicsDevice::CreateSwapChain()
 	m_presentFences.reserve(m_deviceCreationParams.maxFramesInFlight + 1);
 	for (uint32_t i = 0; i < m_deviceCreationParams.maxFramesInFlight + 1; ++i)
 	{
-		VkSemaphoreHandle semaphore;
-		if (VK_FAILED(CreateSemaphore(VK_SEMAPHORE_TYPE_BINARY, 0, &semaphore)))
-		{
-			LogError(LogVulkan) << "Failed to create present semaphore.  Error code: " << res << endl;
-			return false;
-		}
+		// Create semaphore
+		auto semaphore = CreateSemaphore(VK_SEMAPHORE_TYPE_BINARY, 0);
+		assert(semaphore);
 		m_presentSemaphores.push_back(semaphore);
-
-		VkFenceHandle fence;
-		if (VK_FAILED(CreateFence(false, &fence)))
-		{
-			LogError(LogVulkan) << "Failed to create present fence.  Error code: " << res << endl;
-			return false;
-		}
+		
+		// Create fence
+		auto fence = CreateFence(false);
+		assert(fence);
 		m_presentFences.push_back(fence);
 	}
 
@@ -341,24 +335,22 @@ void GraphicsDevice::CreateQueue(QueueType queueType)
 }
 
 
-VkResult GraphicsDevice::CreateFence(bool bSignalled, CVkFence** ppFence) const
+VkFenceHandle GraphicsDevice::CreateFence(bool bSignalled) const
 {
 	VkFenceCreateInfo createInfo{ VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
 	createInfo.flags = bSignalled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
 
 	VkFence fence{ VK_NULL_HANDLE };
-	auto res = vkCreateFence(*m_vkDevice, &createInfo, nullptr, &fence);
-
-	*ppFence = nullptr;
-	if (res == VK_SUCCESS)
+	if (VK_SUCCEEDED(vkCreateFence(*m_vkDevice, &createInfo, nullptr, &fence)))
 	{
-		*ppFence = new CVkFence(m_vkDevice, fence);
+		return VkFenceHandle::Create(new CVkFence(m_vkDevice, fence));
 	}
 
-	return res;
+	return nullptr;
 }
 
-VkResult GraphicsDevice::CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, CVkSemaphore** ppSemaphore) const
+
+VkSemaphoreHandle GraphicsDevice::CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue) const
 {
 	VkSemaphoreTypeCreateInfo typeCreateInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO };
 	typeCreateInfo.semaphoreType = semaphoreType;
@@ -368,19 +360,16 @@ VkResult GraphicsDevice::CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t
 	createInfo.pNext = &typeCreateInfo;
 
 	VkSemaphore semaphore{ VK_NULL_HANDLE };
-	auto result = vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore);
-
-	*ppSemaphore = nullptr;
-	if (VK_SUCCEEDED(result))
+	if (VK_SUCCEEDED(vkCreateSemaphore(*m_vkDevice, &createInfo, nullptr, &semaphore)))
 	{
-		*ppSemaphore = new CVkSemaphore(m_vkDevice, semaphore);
+		return VkSemaphoreHandle::Create(new CVkSemaphore(m_vkDevice, semaphore));
 	}
 
-	return result;
+	return nullptr;
 }
 
 
-VkResult GraphicsDevice::CreateCommandPool(CommandListType commandListType, CVkCommandPool** ppCommandPool) const
+VkCommandPoolHandle GraphicsDevice::CreateCommandPool(CommandListType commandListType) const
 {
 	uint32_t queueFamilyIndex{ 0 };
 	switch (commandListType)
@@ -395,15 +384,12 @@ VkResult GraphicsDevice::CreateCommandPool(CommandListType commandListType, CVkC
 	createInfo.queueFamilyIndex = queueFamilyIndex;
 
 	VkCommandPool vkCommandPool{ VK_NULL_HANDLE };
-	auto result = vkCreateCommandPool(*m_vkDevice, &createInfo, nullptr, &vkCommandPool);
-
-	*ppCommandPool = nullptr;
-	if (VK_SUCCEEDED(result))
+	if (VK_SUCCEEDED(vkCreateCommandPool(*m_vkDevice, &createInfo, nullptr, &vkCommandPool)))
 	{
-		*ppCommandPool = new CVkCommandPool(m_vkDevice, vkCommandPool);
+		return VkCommandPoolHandle::Create(new CVkCommandPool(m_vkDevice, vkCommandPool));
 	}
 
-	return result;
+	return nullptr;
 }
 
 

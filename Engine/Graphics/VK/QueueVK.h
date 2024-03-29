@@ -52,7 +52,7 @@ private:
 	VkQueue m_vkQueue{};
 	QueueType m_queueType{};
 
-	std::unique_ptr<CommandBufferPool> m_commandBufferPool;
+	CommandBufferPoolHandle m_commandBufferPool;
 	std::mutex m_fenceMutex;
 
 	VkSemaphoreHandle m_vkTimelineSemaphore;

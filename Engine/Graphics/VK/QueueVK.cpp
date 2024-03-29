@@ -28,14 +28,15 @@ Queue::Queue(GraphicsDevice* device, VkQueue queue, QueueType queueType)
 	, m_nextFenceValue{ (uint64_t)queueType << 56 | 1 }
 	, m_lastCompletedFenceValue{ (uint64_t)queueType << 56 }
 {
-	device->CreateSemaphore(VK_SEMAPHORE_TYPE_TIMELINE, m_lastCompletedFenceValue, &m_vkTimelineSemaphore);
-	
+	m_vkTimelineSemaphore = device->CreateSemaphore(VK_SEMAPHORE_TYPE_TIMELINE, m_lastCompletedFenceValue);
+	assert(m_vkTimelineSemaphore);
+
 	const auto commandListType = QueueTypeToCommandListType(queueType);
 
-	CVkCommandPool* commandPool{ nullptr };
-	device->CreateCommandPool(commandListType, &commandPool);
+	auto commandPool = device->CreateCommandPool(commandListType);
+	assert(commandPool);
 
-	m_commandBufferPool = make_unique<CommandBufferPool>(commandPool, commandListType);
+	m_commandBufferPool = CommandBufferPoolHandle::Create(new CommandBufferPool(commandPool, commandListType));
 }
 
 

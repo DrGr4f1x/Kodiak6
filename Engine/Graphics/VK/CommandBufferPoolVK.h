@@ -16,7 +16,7 @@
 namespace Kodiak::VK
 {
 
-class CommandBufferPool
+class CommandBufferPool : public IntrusiveCounter<IObject>, public NonCopyable
 {
 public:
 	CommandBufferPool(CVkCommandPool* commandPool, CommandListType commandListType) noexcept
@@ -45,5 +45,6 @@ private:
 	std::queue<std::pair<uint64_t, VkCommandBuffer>> m_readyCommandBuffers;
 	std::mutex m_commandBufferMutex;
 };
+using CommandBufferPoolHandle = IntrusivePtr<CommandBufferPool>;
 
 } // namespace Kodiak::VK
