@@ -128,7 +128,7 @@ public:
 	virtual void BeginFrame() = 0;
 	virtual void Present() = 0;
 
-	virtual void CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer) = 0;
+	virtual ColorBufferHandle CreateColorBuffer(const ColorBufferCreationParams& creationParams) = 0;
 
 	virtual CommandContextHandle BeginCommandContext(const std::string& ID = "") = 0;
 	virtual GraphicsContextHandle BeginGraphicsContext(const std::string& ID = "") = 0;

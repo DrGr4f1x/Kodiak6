@@ -681,8 +681,8 @@ VmaMemoryUsage GetMemoryUsage(MemoryAccess access)
 {
 	using enum MemoryAccess;
 
-	bool bGpuAccessAny = HasAnyFlag(access, GpuRead | GpuWrite);
-	bool bCpuAccessAny = HasAnyFlag(access, CpuRead | CpuWrite | CpuMapped);
+	const bool bGpuAccessAny = HasAnyFlag(access, GpuRead | GpuWrite);
+	const bool bCpuAccessAny = HasAnyFlag(access, CpuRead | CpuWrite | CpuMapped);
 
 	if (bGpuAccessAny && !bCpuAccessAny)
 		return VMA_MEMORY_USAGE_GPU_ONLY;

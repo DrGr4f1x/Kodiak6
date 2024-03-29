@@ -101,7 +101,6 @@ inline bool IsDepthFormat(Format format)
 	using enum Format;
 
 	return format == D16 || format == D24S8 || format == X24G8_UInt || format == D32 || format == D32S8 || format == X32G8_UInt;
-		
 }
 
 

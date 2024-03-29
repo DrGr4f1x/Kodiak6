@@ -222,8 +222,7 @@ bool GraphicsDevice::CreateSwapChain()
 
 	for (uint32_t i = 0; i < m_creationParams.numSwapChainBuffers; ++i)
 	{
-		ColorBufferHandle bufferHandle;
-		CreateColorBufferFromSwapChain(i, &bufferHandle);
+		auto bufferHandle = CreateColorBufferFromSwapChain(i);
 		m_swapChainBuffers.emplace_back(bufferHandle);
 	}
 
@@ -269,7 +268,7 @@ void GraphicsDevice::Present()
 }
 
 
-void GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer)
+ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams)
 {
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
 		.SetUsageState(ResourceState::Common);
@@ -278,7 +277,7 @@ void GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creation
 
 	colorBuffer->Initialize(this);
 
-	*ppColorBuffer = colorBuffer;
+	return ColorBufferHandle::Create(colorBuffer);
 }
 
 
@@ -369,7 +368,7 @@ void GraphicsDevice::InstallDebugCallback()
 }
 
 
-void GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer)
+ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex)
 {
 	IntrusivePtr<ID3D12Resource> displayPlane;
 	assert_succeeded(m_dxgiSwapChain->GetBuffer(imageIndex, IID_PPV_ARGS(&displayPlane)));
@@ -396,7 +395,7 @@ void GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorB
 	
 	colorBuffer->InitializeFromSwapChain(this);
 
-	*ppColorBuffer = colorBuffer;
+	return ColorBufferHandle::Create(colorBuffer);
 }
 
 

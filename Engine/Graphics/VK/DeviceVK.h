@@ -94,7 +94,7 @@ public:
 	void BeginFrame() final;
 	void Present() final;
 
-	void CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer) final;
+	ColorBufferHandle CreateColorBuffer(const ColorBufferCreationParams& creationParams) final;
 
 	CommandContextHandle BeginCommandContext(const std::string& ID) final;
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID) final;
@@ -103,7 +103,7 @@ public:
 private:
 	void DestroySwapChain();
 
-	void CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer);
+	ColorBufferHandle CreateColorBufferFromSwapChain(uint32_t imageIndex);
 
 	void CreateQueue(QueueType queueType);
 	VkResult CreateFence(bool bSignalled, CVkFence** ppFence) const;

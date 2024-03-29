@@ -12,6 +12,7 @@
 
 #include "DeviceVK.h"
 
+#include "ColorBufferVK.h"
 #include "CreationParamsVK.h"
 #include "FormatsVK.h"
 #include "QueueVK.h"
@@ -164,6 +165,10 @@ bool GraphicsDevice::CreateSwapChain()
 	{
 		m_vkSwapChainImages.push_back(VkImageHandle::Create(new CVkImage(m_vkDevice, image)));
 	}
+	for (uint32_t i = 0; i < imageCount; ++i)
+	{
+		m_swapChainBuffers[i] = CreateColorBufferFromSwapChain(i);
+	}
 
 	// Create the semaphores and fences for present
 	m_presentSemaphores.reserve(m_deviceCreationParams.maxFramesInFlight + 1);
@@ -241,8 +246,14 @@ void GraphicsDevice::Present()
 }
 
 
-void GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams, IColorBuffer** ppColorBuffer)
+ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams)
 {
+	auto creationParamsExt = ColorBufferCreationParamsExt{};
+	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+
+	colorBuffer->Initialize(this);
+
+	return ColorBufferHandle::Create(colorBuffer);
 }
 
 
@@ -300,9 +311,25 @@ void GraphicsDevice::DestroySwapChain()
 }
 
 
-void GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex, IColorBuffer** ppColorBuffer)
+ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex)
 {
+	const string name = format("Primary SwapChain Image {}", imageIndex);
 
+	auto creationParams = ColorBufferCreationParams{}
+		.SetName(name)
+		.SetResourceType(ResourceType::Texture2D)
+		.SetWidth(m_deviceCreationParams.backBufferWidth)
+		.SetHeight(m_deviceCreationParams.backBufferHeight)
+		.SetArraySize(1)
+		.SetNumSamples(1)
+		.SetFormat(m_deviceCreationParams.swapChainFormat);
+
+	auto image = new CVkImage(m_vkDevice, *m_vkSwapChainImages[imageIndex]);
+	auto creationParamsExt = ColorBufferCreationParamsExt{}.SetImage(image);
+
+	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+
+	return ColorBufferHandle::Create(colorBuffer);
 }
 
 
@@ -406,7 +433,7 @@ VkImageHandle GraphicsDevice::CreateImage(const ImageCreationParams& creationPar
 	imageCreateInfo.flags = GetImageCreateFlags(creationParams.resourceType);
 	imageCreateInfo.imageType = GetImageType(creationParams.resourceType);
 	imageCreateInfo.format = FormatToVulkan(creationParams.format);
-	imageCreateInfo.extent = { (uint32_t)creationParams.width, creationParams.height };
+	imageCreateInfo.extent = { (uint32_t)creationParams.width, creationParams.height, creationParams.arraySizeOrDepth };
 	imageCreateInfo.mipLevels = creationParams.numMips;
 	imageCreateInfo.arrayLayers = HasAnyFlag(creationParams.resourceType, ResourceType::TextureArray_Type) ? creationParams.arraySizeOrDepth : 1;
 	imageCreateInfo.samples = GetSampleCountFlags(creationParams.numSamples);
