@@ -108,7 +108,7 @@ private:
 	ColorBufferHandle CreateColorBufferFromSwapChain(uint32_t imageIndex);
 
 	void CreateQueue(QueueType queueType);
-	VkFenceHandle CreateFence(bool bSignalled) const;
+	VkFenceHandle CreateFence(bool bSignaled) const;
 	VkSemaphoreHandle CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue) const;
 	VkCommandPoolHandle CreateCommandPool(CommandListType commandListType) const;
 	VmaAllocatorHandle CreateVmaAllocator() const;
@@ -152,6 +152,7 @@ private:
 	// Present synchronization
 	std::vector<VkSemaphoreHandle> m_presentSemaphores;
 	std::vector<VkFenceHandle> m_presentFences;
+	std::vector<uint32_t> m_presentFenceState;
 	uint32_t m_presentSemaphoreIndex{ 0 };
 
 	// Submission queues

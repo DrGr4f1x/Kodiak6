@@ -89,9 +89,6 @@ void CVkDebugUtilsMessenger::Destroy()
 
 void CVkFence::Destroy()
 {
-	//vkWaitForFences(*m_device, 1, &m_fence, TRUE, std::numeric_limits<uint64_t>::max());
-	//vkResetFences(*m_device, 1, &m_fence);
-
 	vkDestroyFence(*m_device, m_fence, nullptr);
 	m_fence = VK_NULL_HANDLE;
 }

@@ -54,6 +54,18 @@ GraphicsDevice::~GraphicsDevice()
 {
 	LogInfo(LogVulkan) << "Destroying Vulkan device." << endl;
 	WaitForGpuIdle();
+	
+	// Wait on signaled fences
+	for (uint32_t i = 0; i < (uint32_t)m_presentFenceState.size(); ++i)
+	{
+		if (m_presentFenceState[i] == 1)
+		{
+			VkFence vkFence = *m_presentFences[i];
+			vkWaitForFences(*m_vkDevice, 1, &vkFence, TRUE, numeric_limits<uint64_t>::max());
+			vkResetFences(*m_vkDevice, 1, &vkFence);
+			m_presentFenceState[i] = 0;
+		}
+	}
 }
 
 
@@ -180,11 +192,16 @@ bool GraphicsDevice::CreateSwapChain()
 		auto semaphore = CreateSemaphore(VK_SEMAPHORE_TYPE_BINARY, 0);
 		assert(semaphore);
 		m_presentSemaphores.push_back(semaphore);
+		SetDebugName(*m_vkDevice, *semaphore, format("Present Semaphore {}", i));
 		
 		// Create fence
 		auto fence = CreateFence(false);
 		assert(fence);
 		m_presentFences.push_back(fence);
+		SetDebugName(*m_vkDevice, *fence, format("Present Fence {}", i));
+
+		// Present fence state
+		m_presentFenceState.push_back(0);
 	}
 
 	return true;
@@ -196,6 +213,7 @@ void GraphicsDevice::BeginFrame()
 	// TODO
 	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
 	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
+	m_presentFenceState[m_presentSemaphoreIndex] = 1;
 
 	if (VK_FAILED(vkAcquireNextImageKHR(*m_vkDevice, *m_vkSwapChain, numeric_limits<uint64_t>::max(), *semaphore, *fence, &m_swapChainIndex)))
 	{
@@ -238,6 +256,7 @@ void GraphicsDevice::Present()
 	VkFence vkFence = *nextFence;
 	vkWaitForFences(*m_vkDevice, 1, &vkFence, TRUE, numeric_limits<uint64_t>::max());
 	vkResetFences(*m_vkDevice, 1, &vkFence);
+	m_presentFenceState[m_presentSemaphoreIndex] = 0;
 }
 
 
@@ -336,10 +355,10 @@ void GraphicsDevice::CreateQueue(QueueType queueType)
 }
 
 
-VkFenceHandle GraphicsDevice::CreateFence(bool bSignalled) const
+VkFenceHandle GraphicsDevice::CreateFence(bool bSignaled) const
 {
 	VkFenceCreateInfo createInfo{ VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
-	createInfo.flags = bSignalled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
+	createInfo.flags = bSignaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
 
 	VkFence fence{ VK_NULL_HANDLE };
 	if (VK_SUCCEEDED(vkCreateFence(*m_vkDevice, &createInfo, nullptr, &fence)))
