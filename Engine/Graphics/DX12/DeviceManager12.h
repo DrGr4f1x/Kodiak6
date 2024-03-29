@@ -20,12 +20,20 @@ namespace Kodiak::DX12
 // Forward declarations
 struct DeviceCaps;
 
+struct DxgiRLOHelper
+{
+	const bool doReport{ false };
+
+	explicit DxgiRLOHelper(bool bDoReport) noexcept : doReport{ bDoReport } {}
+	~DxgiRLOHelper();
+};
+
 
 class DeviceManager12 : public DeviceManager
 {
 public:
-	DeviceManager12() = default;
-	~DeviceManager12() final;
+	DeviceManager12();
+	~DeviceManager12() noexcept final;
 
 	void BeginFrame() final;
 	void Present() final;
@@ -39,6 +47,8 @@ protected:
 	HRESULT EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
 	
 private:
+	DxgiRLOHelper m_dxgiRLOHelper;
+
 	D3D_FEATURE_LEVEL m_bestFeatureLevel{ D3D_FEATURE_LEVEL_12_2 };
 	D3D_SHADER_MODEL m_bestShaderModel{ D3D_SHADER_MODEL_6_7 };
 

@@ -66,9 +66,9 @@ AdapterType GetAdapterType(IDXGIAdapter* adapter)
 }
 
 
-DeviceManager12::~DeviceManager12()
+DxgiRLOHelper::~DxgiRLOHelper()
 {
-	if (m_desc.enableValidation)
+	if (doReport)
 	{
 		IDXGIDebug1* pDebug{ nullptr };
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
@@ -78,6 +78,14 @@ DeviceManager12::~DeviceManager12()
 		}
 	}
 }
+
+
+DeviceManager12::DeviceManager12()
+	: m_dxgiRLOHelper{ m_desc.enableValidation }
+{}
+
+
+DeviceManager12::~DeviceManager12() noexcept = default;
 
 
 void DeviceManager12::BeginFrame()

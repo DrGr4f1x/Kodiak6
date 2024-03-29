@@ -22,6 +22,19 @@ class Queue;
 struct DeviceCaps;
 
 
+struct DeviceRLDOHelper
+{
+	ID3D12Device* device{ nullptr };
+	const bool doReport{ false };
+
+	DeviceRLDOHelper(ID3D12Device* device, bool bDoReport) noexcept
+		: device{ device }
+		, doReport{ bDoReport }
+	{}
+
+	~DeviceRLDOHelper();
+};
+
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
 	friend class ColorBuffer;
@@ -112,6 +125,7 @@ private:
 	// DirectX 12 objects
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
 	IntrusivePtr<ID3D12Device> m_dxDevice;
+	DeviceRLDOHelper m_deviceRLDOHelper;
 	IntrusivePtr<IDXGISwapChain3> m_dxgiSwapChain;
 	IntrusivePtr<ID3D12InfoQueue1> m_dxInfoQueue;
 	DWORD m_callbackCookie{ 0 };

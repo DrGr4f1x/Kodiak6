@@ -113,8 +113,25 @@ void DebugMessageCallback(
 } // anonymous namespace
 
 
+namespace Kodiak::DX12
+{
+
+DeviceRLDOHelper::~DeviceRLDOHelper()
+{
+	if (device && doReport)
+	{
+		ID3D12DebugDevice* debugInterface{ nullptr };
+		if (SUCCEEDED(device->QueryInterface(&debugInterface)))
+		{
+			debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+			debugInterface->Release();
+		}
+	}
+}
+
 GraphicsDevice::GraphicsDevice(const CreationParams& creationParams) noexcept
 	: m_creationParams{ creationParams }
+	, m_deviceRLDOHelper{ creationParams.dx12Device, creationParams.enableValidation }
 {
 	LogInfo(LogDirectX) << "Creating DirectX 12 device." << endl;
 
@@ -144,16 +161,6 @@ GraphicsDevice::~GraphicsDevice()
 	for (auto& queue : m_queues)
 	{
 		queue.reset();
-	}
-
-	if (m_creationParams.enableValidation)
-	{
-		ID3D12DebugDevice* debugInterface{ nullptr };
-		if (SUCCEEDED(m_dxDevice->QueryInterface(&debugInterface)))
-		{
-			debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
-			debugInterface->Release();
-		}
 	}
 }
 
@@ -271,7 +278,7 @@ void GraphicsDevice::Present()
 ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams)
 {
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
-		.SetUsageState(ResourceState::Common);
+	.SetUsageState(ResourceState::Common);
 
 	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
 
@@ -377,7 +384,7 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 	SetDebugName(displayPlane, name);
 
 	D3D12_RESOURCE_DESC resourceDesc = displayPlane->GetDesc();
-	
+
 	auto creationParams = ColorBufferCreationParams{}
 		.SetName(name)
 		.SetResourceType(ResourceType::Texture2D)
@@ -388,11 +395,11 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 		.SetFormat(DxgiToFormat(resourceDesc.Format));
 
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
-		.SetResource(displayPlane.Detach())
+		.SetResource(displayPlane)
 		.SetUsageState(ResourceState::Present);
 
 	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
-	
+
 	colorBuffer->InitializeFromSwapChain(this);
 
 	return ColorBufferHandle::Create(colorBuffer);
@@ -431,3 +438,5 @@ void GraphicsDevice::CreateDescriptorAllocators()
 	m_descriptorAllocators[2] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	m_descriptorAllocators[3] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
+
+} // namespace Kodiak::DX12
