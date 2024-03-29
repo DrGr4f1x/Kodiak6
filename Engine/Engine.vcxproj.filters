@@ -117,6 +117,9 @@
     <ClCompile Include="Graphics\VK\ColorBufferVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\VK\DepthBufferVK.cpp">
+      <Filter>Graphics\VK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -416,6 +419,9 @@
       <Filter>Graphics\VK</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\VK\CreationParamsVK.h">
+      <Filter>Graphics\VK</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VK\DepthBufferVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>

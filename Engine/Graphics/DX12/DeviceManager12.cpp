@@ -220,10 +220,10 @@ bool DeviceManager12::CreateDevice()
 	}
 
 	// Create device, either WARP or hardware
-	IntrusivePtr<IDXGIAdapter> tempAdapter;
 	IntrusivePtr<ID3D12Device> device{ nullptr };
 	if (chosenAdapterIdx == warpAdapterIdx)
 	{
+		IntrusivePtr<IDXGIAdapter> tempAdapter;
 		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&tempAdapter)));
 		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
@@ -233,6 +233,7 @@ bool DeviceManager12::CreateDevice()
 	}
 	else
 	{
+		IntrusivePtr<IDXGIAdapter> tempAdapter;
 		assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapterIdx, &tempAdapter));
 		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
@@ -296,7 +297,7 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 	const D3D_FEATURE_LEVEL minRequiredLevel{ D3D_FEATURE_LEVEL_11_0 };
 	const DXGI_GPU_PREFERENCE gpuPreference{ DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE };
 
-	IntrusivePtr<IDXGIAdapter> tempAdapter;
+	IDXGIAdapter* tempAdapter{ nullptr };
 
 	LogInfo(LogDirectX) << "Enumerating DXGI adapters..." << endl;
 
@@ -307,7 +308,7 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 
 		DeviceBasicCaps basicCaps{};
 
-		if (TestCreateDevice(tempAdapter.Get(), minRequiredLevel, basicCaps))
+		if (TestCreateDevice(tempAdapter, minRequiredLevel, basicCaps))
 		{
 			AdapterInfo adapterInfo{};
 
@@ -318,7 +319,7 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 			adapterInfo.dedicatedSystemMemory = desc.DedicatedSystemMemory;
 			adapterInfo.sharedSystemMemory = desc.SharedSystemMemory;
 			adapterInfo.vendor = VendorIdToHardwareVendor(adapterInfo.vendorId);
-			adapterInfo.adapterType = GetAdapterType(tempAdapter.Get());
+			adapterInfo.adapterType = GetAdapterType(tempAdapter);
 
 			LogInfo(LogDirectX) << format("  Adapter {} is D3D12-capable: {} (Vendor: {}, VendorId: {:#x}, DeviceId: {:#x})",
 				idx,
@@ -346,6 +347,9 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 
 			adapters.push_back(adapterInfo);
 		}
+
+		tempAdapter->Release();
+		tempAdapter = nullptr;
 	}
 
 	return adapters;
