@@ -227,8 +227,6 @@ bool DeviceManager12::CreateDevice()
 		assert_succeeded(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&tempAdapter)));
 		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
 
-		m_adapter = tempAdapter;
-		SetDebugName(m_adapter, "WARP Adapter");
 		m_bIsWarpAdapter = true;
 
 		LogWarning(LogDirectX) << "Failed to find a hardware adapter, falling back to WARP." << endl;
@@ -237,9 +235,6 @@ bool DeviceManager12::CreateDevice()
 	{
 		assert_succeeded(m_dxgiFactory->EnumAdapters((UINT)chosenAdapterIdx, &tempAdapter));
 		assert_succeeded(D3D12CreateDevice(tempAdapter, m_bestFeatureLevel, IID_PPV_ARGS(&device)));
-
-		m_adapter = tempAdapter;
-		SetDebugName(m_adapter, "Hardware Adapter");
 
 		LogInfo(LogDirectX) << "Selected D3D12 adapter " << chosenAdapterIdx << endl;
 	}
@@ -302,7 +297,6 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 	const DXGI_GPU_PREFERENCE gpuPreference{ DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE };
 
 	IntrusivePtr<IDXGIAdapter> tempAdapter;
-	IntrusivePtr<ID3D12Device> tempDevice;
 
 	LogInfo(LogDirectX) << "Enumerating DXGI adapters..." << endl;
 

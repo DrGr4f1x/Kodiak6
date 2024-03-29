@@ -53,7 +53,6 @@ private:
 	D3D_SHADER_MODEL m_bestShaderModel{ D3D_SHADER_MODEL_6_7 };
 
 	IntrusivePtr<IDXGIFactory4> m_dxgiFactory;
-	IntrusivePtr<IDXGIAdapter> m_adapter;
 
 	bool m_bIsWarpAdapter{ false };
 	bool m_bIsTearingSupported{ false };
