@@ -101,7 +101,10 @@ void ColorBuffer::CreateDerivedViews(GraphicsDevice* device, uint32_t numMips)
 
 	m_imageViewRtv = device->CreateImageView(creationParams);
 
-	creationParams.SetImageUsage(GpuImageUsage::ShaderResource);
+	creationParams
+		.SetImageUsage(GpuImageUsage::ShaderResource)
+		.SetName(format("{} SRV Image View", m_name));
+
 	m_imageViewSrv = device->CreateImageView(creationParams);
 
 	m_imageInfoSrv = { VK_NULL_HANDLE, *m_imageViewSrv, GetImageLayout(ResourceState::ShaderResource) };

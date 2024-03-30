@@ -80,6 +80,7 @@ class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
 	friend class ColorBuffer;
 	friend class CommandContext;
+	friend class DepthBuffer;
 	friend class DeviceManagerVK;
 	friend class Queue;
 
@@ -97,6 +98,7 @@ public:
 	void Present() final;
 
 	ColorBufferHandle CreateColorBuffer(const ColorBufferCreationParams& creationParams) final;
+	DepthBufferHandle CreateDepthBuffer(const DepthBufferCreationParams& creationParams) final;
 
 	CommandContextHandle BeginCommandContext(const std::string& ID) final;
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID) final;

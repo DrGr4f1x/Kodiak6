@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include "Graphics\VK\VulkanCommon.h"
+#include "Graphics\DX12\DirectXCommon.h"
 
-namespace Kodiak::VK
+namespace Kodiak::DX12
 {
 
 // Forward declarations
@@ -39,18 +39,19 @@ public:
 	Format GetFormat() const noexcept final { return m_format; }
 
 	// IDepthBuffer implementation
-	float GetClearDepth() const noexcept final { return m_clearDepth;	}
+	float GetClearDepth() const noexcept final { return m_clearDepth; }
 	uint8_t GetClearStencil() const noexcept final { return m_clearStencil; }
 
 	// Get pre-created CPU-visible descriptor handles
-	VkImageView GetDepthStencilImageView() const noexcept { return *m_imageViewDepthStencil; }
-	VkImageView GetDepthOnlyImageView() const noexcept { return *m_imageViewDepthOnly; }
-	VkImageView GetStencilOnlyImageView() const noexcept { return *m_imageViewStencilOnly; }
-	VkDescriptorImageInfo GetDepthImageInfo() const noexcept { return m_imageInfoDepth; }
-	VkDescriptorImageInfo GetStencilImageInfo() const noexcept { return m_imageInfoStencil; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV() const noexcept { return m_dsvHandle[0]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_DepthReadOnly() const noexcept { return m_dsvHandle[1]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_StencilReadOnly() const noexcept { return m_dsvHandle[2]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_ReadOnly() const noexcept { return m_dsvHandle[3]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDepthSRV() const noexcept { return m_depthSrvHandle; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetStencilSRV() const noexcept { return m_stencilSrvHandle; }
 
 private:
-	explicit DepthBuffer(const DepthBufferCreationParams& creationParams) noexcept;
+	DepthBuffer(const DepthBufferCreationParams& creationParams) noexcept;
 
 	void Initialize(GraphicsDevice* device);
 
@@ -68,12 +69,13 @@ private:
 	float m_clearDepth{ 1.0f };
 	uint8_t m_clearStencil{ 0 };
 
-	VkImageHandle m_image;
-	VkImageViewHandle m_imageViewDepthStencil;
-	VkImageViewHandle m_imageViewDepthOnly;
-	VkImageViewHandle m_imageViewStencilOnly;
-	VkDescriptorImageInfo m_imageInfoDepth{};
-	VkDescriptorImageInfo m_imageInfoStencil{};
+	IntrusivePtr<ID3D12Resource> m_resource;
+	ResourceState m_usageState{ ResourceState::Undefined };
+	ResourceState m_transitioningState{ ResourceState::Undefined };
+
+	D3D12_CPU_DESCRIPTOR_HANDLE m_dsvHandle[4];
+	D3D12_CPU_DESCRIPTOR_HANDLE m_depthSrvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_stencilSrvHandle;
 };
 
-} // namespace Kodiak::VK
+} // namespace Kodiak::DX12

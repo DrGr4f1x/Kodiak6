@@ -13,6 +13,7 @@
 #include "Device12.h"
 
 #include "ColorBuffer12.h"
+#include "DepthBuffer12.h"
 #include "DescriptorHeap12.h"
 #include "DeviceCaps12.h"
 #include "Formats12.h"
@@ -287,6 +288,15 @@ ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationPar
 	return ColorBufferHandle::Create(colorBuffer);
 }
 
+
+DepthBufferHandle GraphicsDevice::CreateDepthBuffer(const DepthBufferCreationParams& creationParams)
+{
+	auto depthBuffer = new DepthBuffer(creationParams);
+
+	depthBuffer->Initialize(this);
+
+	return DepthBufferHandle::Create(depthBuffer);
+}
 
 CommandContextHandle GraphicsDevice::BeginCommandContext(const string& ID)
 {

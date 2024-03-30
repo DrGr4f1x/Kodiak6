@@ -56,6 +56,12 @@ public:
 		m_numSamples = numCoverageSamples;
 	}
 
+	// Get pre-created CPU-visible descriptor handles
+	VkImageView GetImageViewRTV() const noexcept { return *m_imageViewRtv; }
+	VkImageView GetImageViewSRV() const noexcept { return *m_imageViewSrv; }
+	VkDescriptorImageInfo GetSRVImageInfo() const noexcept { return m_imageInfoSrv; }
+	VkDescriptorImageInfo GetUAVImageInfo() const noexcept { return m_imageInfoUav; }
+
 private:
 	explicit ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
 

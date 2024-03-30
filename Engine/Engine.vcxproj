@@ -50,6 +50,7 @@
     <ClCompile Include="Graphics\DeviceManager.cpp" />
     <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\CommandContext12.cpp" />
+    <ClCompile Include="Graphics\DX12\DepthBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp" />
     <ClCompile Include="Graphics\DX12\DirectXCommon.cpp" />
     <ClCompile Include="Graphics\DX12\Formats12.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Graphics\DeviceManager.h" />
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h" />
     <ClInclude Include="Graphics\DX12\CommandContext12.h" />
+    <ClInclude Include="Graphics\DX12\DepthBuffer12.h" />
     <ClInclude Include="Graphics\DX12\DescriptorHeap12.h" />
     <ClInclude Include="Graphics\DX12\DeviceCaps12.h" />
     <ClInclude Include="Graphics\DX12\DeviceManager12.h" />

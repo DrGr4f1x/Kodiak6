@@ -38,6 +38,7 @@ struct DeviceRLDOHelper
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
 	friend class ColorBuffer;
+	friend class DepthBuffer;
 
 public:
 	struct CreationParams
@@ -99,6 +100,7 @@ public:
 	void Present() final;
 
 	ColorBufferHandle CreateColorBuffer(const ColorBufferCreationParams& creationParams) final;
+	DepthBufferHandle CreateDepthBuffer(const DepthBufferCreationParams& creationParams) final;
 
 	CommandContextHandle BeginCommandContext(const std::string& ID = "") final;
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID = "") final;

@@ -22,7 +22,7 @@ enum class Format : uint8_t;
 enum class ResourceType : uint32_t;
 
 
-struct ColorBufferCreationParams
+struct PixelBufferCreationParams
 {
 	std::string name;
 	ResourceType resourceType{ ResourceType::Texture2D };
@@ -32,6 +32,11 @@ struct ColorBufferCreationParams
 	uint32_t numMips{ 1 };
 	uint32_t numSamples{ 1 };
 	Format format{ Format::Unknown };
+};
+
+
+struct ColorBufferCreationParams : public PixelBufferCreationParams
+{
 	Color clearColor{ DirectX::Colors::Black };
 
 	ColorBufferCreationParams& SetName(const std::string& value) { name = value; return *this; }
@@ -47,16 +52,8 @@ struct ColorBufferCreationParams
 };
 
 
-struct DepthBufferCreationParams
+struct DepthBufferCreationParams : public PixelBufferCreationParams
 {
-	std::string name;
-	ResourceType resourceType{ ResourceType::Texture2D };
-	uint64_t width{ 0 };
-	uint32_t height{ 0 };
-	uint32_t arraySizeOrDepth{ 0 };
-	uint32_t numMips{ 1 };
-	uint32_t numSamples{ 1 };
-	Format format{ Format::Unknown };
 	float clearDepth{ 1.0f };
 	uint8_t clearStencil{ 0 };
 
@@ -157,6 +154,7 @@ public:
 	virtual void Present() = 0;
 
 	virtual ColorBufferHandle CreateColorBuffer(const ColorBufferCreationParams& creationParams) = 0;
+	virtual DepthBufferHandle CreateDepthBuffer(const DepthBufferCreationParams& creationParams) = 0;
 
 	virtual CommandContextHandle BeginCommandContext(const std::string& ID = "") = 0;
 	virtual GraphicsContextHandle BeginGraphicsContext(const std::string& ID = "") = 0;

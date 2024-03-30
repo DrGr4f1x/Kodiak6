@@ -14,6 +14,7 @@
 
 #include "ColorBufferVK.h"
 #include "CreationParamsVK.h"
+#include "DepthBufferVK.h"
 #include "FormatsVK.h"
 #include "QueueVK.h"
 #include "Generated\LoaderVk.h"
@@ -268,6 +269,16 @@ ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationPar
 	colorBuffer->Initialize(this);
 
 	return ColorBufferHandle::Create(colorBuffer);
+}
+
+
+DepthBufferHandle GraphicsDevice::CreateDepthBuffer(const DepthBufferCreationParams& creationParams)
+{
+	auto depthBuffer = new DepthBuffer(creationParams);
+
+	depthBuffer->Initialize(this);
+
+	return DepthBufferHandle::Create(depthBuffer);
 }
 
 
