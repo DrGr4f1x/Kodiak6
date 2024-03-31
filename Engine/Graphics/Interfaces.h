@@ -162,4 +162,15 @@ public:
 };
 using DeviceHandle = IntrusivePtr<IGraphicsDevice>;
 
+
+class IDeviceManager : public IObject
+{
+public:
+	virtual ~IDeviceManager() = default;
+
+	virtual void BeginFrame() = 0;
+	virtual void Present() = 0;
+};
+using DeviceManagerHandle = IntrusivePtr<IDeviceManager>;
+
 } // namespace Kodiak

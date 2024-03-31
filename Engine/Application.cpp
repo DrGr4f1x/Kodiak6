@@ -12,10 +12,10 @@
 
 #include "Application.h"
 
-
 #include "FileSystem.h"
 #include "InputSystem.h"
-#include "Graphics\DeviceManager.h"
+#include "Graphics\CreationParams.h"
+#include "Graphics\GraphicsCommon.h"
 #include "External\CLI11\CLI\CLI.hpp"
 
 
@@ -264,10 +264,9 @@ bool Application::Tick()
 
 void Application::CreateDeviceManager()
 {
-	m_deviceManager.reset(DeviceManager::Create(m_appDesc.api));
-
-	auto deviceDesc = DeviceDesc{}
+	auto creationParams = DeviceManagerCreationParams{}
 		.SetAppName(m_appDesc.name)
+		.SetGraphicsApi(m_appDesc.api)
 		.SetEnableValidation(m_appDesc.useValidation)
 		.SetEnableDebugMarkers(m_appDesc.useDebugMarkers)
 		.SetBackBufferWidth(m_appDesc.width)
@@ -275,7 +274,9 @@ void Application::CreateDeviceManager()
 		.SetHwnd(m_hwnd)
 		.SetHinstance(m_hinst);
 
-	if (!m_deviceManager->CreateDeviceAndSwapChain(deviceDesc))
+	m_deviceManager = Kodiak::CreateDeviceManager(creationParams);
+
+	if (!m_deviceManager)
 	{
 		LogFatal(LogApplication) << "Failed to create graphics device and swap chain." << endl;
 	}

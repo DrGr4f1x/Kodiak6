@@ -12,6 +12,8 @@
 
 #include "DeviceManagerVK.h"
 
+#include "Graphics\CreationParams.h"
+
 #include "DeviceVK.h"
 #include "DeviceCapsVK.h"
 #include "ExtensionManagerVK.h"
@@ -100,13 +102,53 @@ VkBool32 DebugMessageCallback(
 namespace Kodiak::VK
 {
 
-DeviceManagerVK::~DeviceManagerVK()
+DeviceManager::DeviceManager(const DeviceManagerCreationParams& creationParams)
+	: m_creationParams{ creationParams }
+{
+	Initialize();
+}
+
+
+DeviceManager::~DeviceManager()
 {
 	LogInfo(LogVulkan) << "Destroying Vulkan DeviceManager." << endl;
 }
 
 
-bool DeviceManagerVK::CreateInstanceInternal()
+void DeviceManager::BeginFrame()
+{
+	m_device->BeginFrame();
+}
+
+
+void DeviceManager::Present()
+{
+	m_device->Present();
+}
+
+
+void DeviceManager::Initialize()
+{
+	if (!CreateInstance())
+	{
+		LogFatal(LogVulkan) << "Failed to create Vulkan instance." << endl;
+		return;
+	}
+
+	if (!CreateDevice())
+	{
+		LogFatal(LogVulkan) << "Failed to create Vulkan device." << endl;
+		return;
+	}
+
+	if (!CreateSwapChain())
+	{
+		LogFatal(LogVulkan) << "Failed to create Vulkan swapchain." << endl;
+	}
+}
+
+
+bool DeviceManager::CreateInstance()
 {
 	if (VK_FAILED(InitializeLoader()))
 	{
@@ -132,7 +174,7 @@ bool DeviceManagerVK::CreateInstanceInternal()
 	SetRequiredInstanceLayersAndExtensions();
 
 	VkApplicationInfo appInfo{ VK_STRUCTURE_TYPE_APPLICATION_INFO };
-	appInfo.pApplicationName = m_desc.appName.c_str();
+	appInfo.pApplicationName = m_creationParams.appName.c_str();
 	appInfo.pEngineName = "Kodiak";
 	appInfo.apiVersion = VK_API_VERSION_1_3;
 
@@ -178,15 +220,15 @@ bool DeviceManagerVK::CreateInstanceInternal()
 }
 
 
-bool DeviceManagerVK::CreateDevice()
+bool DeviceManager::CreateDevice()
 {
 	// TODO - gather application/user device extensions here
 
 	// Adjust swap chain formats
-	switch (m_desc.swapChainFormat)
+	switch (m_creationParams.swapChainFormat)
 	{
-	case Format::SRGBA8_UNorm: m_desc.swapChainFormat = Format::SBGRA8_UNorm; break;
-	case Format::RGBA8_UNorm: m_desc.swapChainFormat = Format::BGRA8_UNorm; break;
+	case Format::SRGBA8_UNorm: m_creationParams.swapChainFormat = Format::SBGRA8_UNorm; break;
+	case Format::RGBA8_UNorm: m_creationParams.swapChainFormat = Format::BGRA8_UNorm; break;
 	}
 
 	if (!CreateWindowSurface())
@@ -295,15 +337,15 @@ bool DeviceManagerVK::CreateDevice()
 		.SetComputeQueueIndex(m_queueFamilyIndices.compute)
 		.SetTransferQueueIndex(m_queueFamilyIndices.transfer)
 		.SetPresentQueueIndex(m_queueFamilyIndices.present)
-		.SetBackBufferWidth(m_desc.backBufferWidth)
-		.SetBackBufferHeight(m_desc.backBufferHeight)
-		.SetNumSwapChainBuffers(m_desc.numSwapChainBuffers)
-		.SetSwapChainFormat(m_desc.swapChainFormat)
+		.SetBackBufferWidth(m_creationParams.backBufferWidth)
+		.SetBackBufferHeight(m_creationParams.backBufferHeight)
+		.SetNumSwapChainBuffers(m_creationParams.numSwapChainBuffers)
+		.SetSwapChainFormat(m_creationParams.swapChainFormat)
 		.SetSurface(*m_vkSurface)
-		.SetEnableVSync(m_desc.enableVSync)
-		.SetMaxFramesInFlight(m_desc.maxFramesInFlight)
-		.SetEnableValidation(m_desc.enableValidation)
-		.SetEnableDebugMarkers(m_desc.enableDebugMarkers);
+		.SetEnableVSync(m_creationParams.enableVSync)
+		.SetMaxFramesInFlight(m_creationParams.maxFramesInFlight)
+		.SetEnableValidation(m_creationParams.enableValidation)
+		.SetEnableDebugMarkers(m_creationParams.enableDebugMarkers);
 
 	m_device = DeviceHandle::Create(new GraphicsDevice(creationParams));
 
@@ -317,28 +359,16 @@ bool DeviceManagerVK::CreateDevice()
 }
 
 
-bool DeviceManagerVK::CreateSwapChain()
+bool DeviceManager::CreateSwapChain()
 {
 	return m_device->CreateSwapChain();
 }
 
 
-void DeviceManagerVK::BeginFrame()
-{
-	m_device->BeginFrame();
-}
-
-
-void DeviceManagerVK::Present()
-{
-	m_device->Present();
-}
-
-
-void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
+void DeviceManager::SetRequiredInstanceLayersAndExtensions()
 {
 	vector<string> requiredLayers{};
-	if (m_desc.enableValidation)
+	if (m_creationParams.enableValidation)
 	{
 		requiredLayers.push_back("VK_LAYER_KHRONOS_validation");
 	}
@@ -353,9 +383,9 @@ void DeviceManagerVK::SetRequiredInstanceLayersAndExtensions()
 }
 
 
-bool DeviceManagerVK::InstallDebugMessenger()
+bool DeviceManager::InstallDebugMessenger()
 {
-	if (!m_desc.enableValidation)
+	if (!m_creationParams.enableValidation)
 	{
 		return true;
 	}
@@ -384,7 +414,7 @@ bool DeviceManagerVK::InstallDebugMessenger()
 }
 
 
-vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDevices()
+vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManager::EnumeratePhysicalDevices()
 {
 	vector<pair<AdapterInfo, VkPhysicalDevice>> adapters;
 
@@ -441,11 +471,11 @@ vector<pair<AdapterInfo, VkPhysicalDevice>> DeviceManagerVK::EnumeratePhysicalDe
 }
 
 
-bool DeviceManagerVK::CreateWindowSurface()
+bool DeviceManager::CreateWindowSurface()
 {
 	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo{ VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR };
-	surfaceCreateInfo.hinstance = m_desc.hinstance;
-	surfaceCreateInfo.hwnd = m_desc.hwnd;
+	surfaceCreateInfo.hinstance = m_creationParams.hinstance;
+	surfaceCreateInfo.hwnd = m_creationParams.hwnd;
 
 	VkSurfaceKHR vkSurface{ VK_NULL_HANDLE };
 	if (VK_FAILED(vkCreateWin32SurfaceKHR(*m_vkInstance, &surfaceCreateInfo, nullptr, &vkSurface)))
@@ -459,7 +489,7 @@ bool DeviceManagerVK::CreateWindowSurface()
 }
 
 
-bool DeviceManagerVK::SelectPhysicalDevice()
+bool DeviceManager::SelectPhysicalDevice()
 {
 	using enum AdapterType;
 
@@ -493,7 +523,7 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 		}
 
 		// Skip software adapters if we disallow them
-		if (adapterPair.first.adapterType == Software && !m_desc.allowSoftwareDevice)
+		if (adapterPair.first.adapterType == Software && !m_creationParams.allowSoftwareDevice)
 		{
 			continue;
 		}
@@ -508,7 +538,7 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 			firstDiscreteAdapterIdx = adapterIdx;
 		}
 
-		if (adapterPair.first.adapterType == Software && softwareAdapterIdx == -1 && m_desc.allowSoftwareDevice)
+		if (adapterPair.first.adapterType == Software && softwareAdapterIdx == -1 && m_creationParams.allowSoftwareDevice)
 		{
 			softwareAdapterIdx = adapterIdx;
 		}
@@ -524,7 +554,7 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 
 
 	// Now choose our best adapter
-	if (m_desc.preferDiscreteDevice)
+	if (m_creationParams.preferDiscreteDevice)
 	{
 		if (bestMemoryAdapterIdx != -1)
 		{
@@ -577,7 +607,7 @@ bool DeviceManagerVK::SelectPhysicalDevice()
 }
 
 
-void DeviceManagerVK::GetQueueFamilyIndices()
+void DeviceManager::GetQueueFamilyIndices()
 {
 	m_queueFamilyIndices.graphics = GetQueueFamilyIndex(VK_QUEUE_GRAPHICS_BIT);
 	m_queueFamilyIndices.compute = GetQueueFamilyIndex(VK_QUEUE_COMPUTE_BIT);
@@ -585,7 +615,7 @@ void DeviceManagerVK::GetQueueFamilyIndices()
 }
 
 
-int32_t DeviceManagerVK::GetQueueFamilyIndex(VkQueueFlags queueFlags)
+int32_t DeviceManager::GetQueueFamilyIndex(VkQueueFlags queueFlags)
 {
 	int32_t index{ 0 };
 

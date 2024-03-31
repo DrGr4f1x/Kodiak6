@@ -47,7 +47,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="Graphics\DeviceManager.cpp" />
     <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\CommandContext12.cpp" />
     <ClCompile Include="Graphics\DX12\DepthBuffer12.cpp" />
@@ -151,7 +150,7 @@
     <ClInclude Include="External\DirectX-Headers\include\dxguids\dxguids.h" />
     <ClInclude Include="External\VulkanMemoryAllocator\vk_mem_alloc.h" />
     <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="Graphics\DeviceManager.h" />
+    <ClInclude Include="Graphics\CreationParams.h" />
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h" />
     <ClInclude Include="Graphics\DX12\CommandContext12.h" />
     <ClInclude Include="Graphics\DX12\DepthBuffer12.h" />

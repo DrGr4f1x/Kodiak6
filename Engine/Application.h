@@ -43,7 +43,6 @@ struct ApplicationDesc
 	bool useDebugMarkers{ false };
 #endif
 
-
 	ApplicationDesc& SetName(const std::string& value) { name = value; return *this; }
 	constexpr ApplicationDesc& SetWidth(uint32_t value) noexcept { width = value; return *this; }
 	constexpr ApplicationDesc& SetHeight(uint32_t value) noexcept { height = value; return *this; }
@@ -113,7 +112,7 @@ protected:
 	std::unique_ptr<FileSystem> m_filesystem;
 	std::unique_ptr<LogSystem> m_logSystem;
 	std::unique_ptr<InputSystem> m_inputSystem;
-	std::unique_ptr<DeviceManager> m_deviceManager;
+	DeviceManagerHandle m_deviceManager;
 	
 private:
 	void Initialize();

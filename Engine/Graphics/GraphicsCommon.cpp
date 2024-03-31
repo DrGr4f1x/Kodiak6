@@ -12,15 +12,37 @@
 
 #include "GraphicsCommon.h"
 
-#include "Application.h"
+#include "Graphics\CreationParams.h"
+#include "Graphics\DX12\DeviceManager12.h"
+#include "Graphics\VK\DeviceManagerVK.h"
 
 
 using namespace std;
 
 
+namespace
+{
+
+Kodiak::DeviceManagerHandle CreateD3D12DeviceManager(const Kodiak::DeviceManagerCreationParams& creationParams)
+{
+	auto deviceManager = new Kodiak::DX12::DeviceManager(creationParams);
+	return Kodiak::DeviceManagerHandle::Create(deviceManager);
+}
+
+
+Kodiak::DeviceManagerHandle CreateVulkanDeviceManager(const Kodiak::DeviceManagerCreationParams& creationParams)
+{
+	auto deviceManager = new Kodiak::VK::DeviceManager(creationParams);
+	return Kodiak::DeviceManagerHandle::Create(deviceManager);
+}
+
+} // anonymous namespace
+
+
 namespace Kodiak
 {
 
+extern LogCategory LogApplication;
 
 bool IsDeveloperModeEnabled()
 {
@@ -68,6 +90,22 @@ bool IsRenderDocAvailable()
 		initialized = true;
 	}
 	return isRenderDocAvailable;
+}
+
+
+DeviceManagerHandle CreateDeviceManager(const DeviceManagerCreationParams& creationParams)
+{
+	switch (creationParams.graphicsApi)
+	{
+	case GraphicsApi::Vulkan:
+		return CreateVulkanDeviceManager(creationParams);
+		break;
+
+		// Default to D3D12
+	default:
+		return CreateD3D12DeviceManager(creationParams);
+		break;
+	}
 }
 
 } // namespace Kodiak

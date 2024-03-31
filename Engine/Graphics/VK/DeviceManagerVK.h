@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\DeviceManager.h"
+#include "Graphics\CreationParams.h"
 #include "Graphics\VK\VulkanCommon.h"
 
 
@@ -23,19 +23,21 @@ class Device;
 class ExtensionManager;
 
 
-class DeviceManagerVK : public DeviceManager
+class DeviceManager : public IntrusiveCounter<IDeviceManager>, public NonCopyable
 {
 public:
-	DeviceManagerVK() = default;
-	~DeviceManagerVK() final;
+	explicit DeviceManager(const DeviceManagerCreationParams& creationParams);
+	~DeviceManager() final;
 
 	void BeginFrame() final;
 	void Present() final;
 
 protected:
-	bool CreateInstanceInternal() final;
-	bool CreateDevice() final;
-	bool CreateSwapChain() final;
+	void Initialize();
+
+	bool CreateInstance();
+	bool CreateDevice();
+	bool CreateSwapChain();
 
 	void SetRequiredInstanceLayersAndExtensions();
 	bool InstallDebugMessenger();
@@ -46,6 +48,9 @@ protected:
 	int32_t GetQueueFamilyIndex(VkQueueFlags queueFlags);
 
 private:
+	// Device manager properties
+	DeviceManagerCreationParams m_creationParams{};
+
 	std::unique_ptr<ExtensionManager> m_extensionManager;
 	VulkanVersionInfo m_versionInfo{};
 

@@ -69,9 +69,6 @@
     <ClCompile Include="Graphics\VK\VulkanCommon.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\DeviceManager.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\VK\DeviceManagerVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
@@ -265,9 +262,6 @@
     <ClInclude Include="Graphics\VK\VulkanCommon.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DeviceManager.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\VK\DeviceManagerVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
@@ -429,6 +423,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\DX12\DepthBuffer12.h">
       <Filter>Graphics\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CreationParams.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

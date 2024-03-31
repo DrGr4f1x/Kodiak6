@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\DeviceManager.h"
+#include "Graphics\CreationParams.h"
 #include "Graphics\DX12\DirectXCommon.h"
 
 
@@ -29,24 +29,29 @@ struct DxgiRLOHelper
 };
 
 
-class DeviceManager12 : public DeviceManager
+class DeviceManager : public IntrusiveCounter<IDeviceManager>, public NonCopyable
 {
 public:
-	DeviceManager12();
-	~DeviceManager12() noexcept final;
+	explicit DeviceManager(const DeviceManagerCreationParams& creationParams);
+	~DeviceManager() noexcept final = default;
 
 	void BeginFrame() final;
 	void Present() final;
 
 protected:
-	bool CreateInstanceInternal() final;
-	bool CreateDevice() final;
-	bool CreateSwapChain() final;
+	void Initialize();
+	bool CreateInstance();
+	bool CreateDevice();
+	bool CreateSwapChain();
 
 	std::vector<AdapterInfo> EnumerateAdapters();
 	HRESULT EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter);
 	
 private:
+	DeviceManagerCreationParams m_creationParams;
+	bool m_bIsDeveloperModeEnabled{ false };
+	bool m_bIsRenderDocAvailable{ false };
+
 	DxgiRLOHelper m_dxgiRLOHelper;
 
 	D3D_FEATURE_LEVEL m_bestFeatureLevel{ D3D_FEATURE_LEVEL_12_2 };

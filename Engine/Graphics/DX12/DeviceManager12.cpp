@@ -80,33 +80,56 @@ DxgiRLOHelper::~DxgiRLOHelper()
 }
 
 
-DeviceManager12::DeviceManager12()
+DeviceManager::DeviceManager(const DeviceManagerCreationParams& creationParams)
+	: m_creationParams{ creationParams }
 {
+	m_bIsDeveloperModeEnabled = IsDeveloperModeEnabled();
+	m_bIsRenderDocAvailable = IsRenderDocAvailable();
+
+	Initialize();
 }
 
 
-DeviceManager12::~DeviceManager12() noexcept = default;
-
-
-void DeviceManager12::BeginFrame()
+void DeviceManager::BeginFrame()
 {
 	m_device->BeginFrame();
 }
 
 
-void DeviceManager12::Present()
+void DeviceManager::Present()
 {
 	m_device->Present();
 }
 
 
-bool DeviceManager12::CreateInstanceInternal()
+void DeviceManager::Initialize()
 {
-	m_dxgiRLOHelper.doReport = m_desc.enableValidation;
+	if (!CreateInstance())
+	{
+		LogFatal(LogDirectX) << "Failed to create DXGI factory." << endl;
+		return;
+	}
+
+	if (!CreateDevice())
+	{
+		LogFatal(LogDirectX) << "Failed to create D3D12 device." << endl;
+		return;
+	}
+
+	if (!CreateSwapChain())
+	{
+		LogFatal(LogDirectX) << "Failed to create DXGI swapchain." << endl;
+	}
+}
+
+
+bool DeviceManager::CreateInstance()
+{
+	m_dxgiRLOHelper.doReport = m_creationParams.enableValidation;
 
 	if (!m_dxgiFactory)
 	{
-		if (!SUCCEEDED(CreateDXGIFactory2(m_desc.enableValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory))))
+		if (!SUCCEEDED(CreateDXGIFactory2(m_creationParams.enableValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&m_dxgiFactory))))
 		{
 			LogFatal(LogDirectX) << "Failed to create DXGIFactory." << endl;
 			return false;
@@ -124,7 +147,7 @@ bool DeviceManager12::CreateInstanceInternal()
 		}
 	}
 
-	if (m_desc.enableValidation)
+	if (m_creationParams.enableValidation)
 	{
 		IntrusivePtr<ID3D12Debug> debugInterface;
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface))))
@@ -154,7 +177,7 @@ bool DeviceManager12::CreateInstanceInternal()
 }
 
 
-bool DeviceManager12::CreateDevice()
+bool DeviceManager::CreateDevice()
 {
 	vector<AdapterInfo> adapterInfos = EnumerateAdapters();
 
@@ -178,7 +201,7 @@ bool DeviceManager12::CreateDevice()
 			firstDiscreteAdapterIdx = adapterIdx;
 		}
 
-		if (adapterInfo.adapterType == AdapterType::Software && warpAdapterIdx == -1 && m_desc.allowSoftwareDevice)
+		if (adapterInfo.adapterType == AdapterType::Software && warpAdapterIdx == -1 && m_creationParams.allowSoftwareDevice)
 		{
 			warpAdapterIdx = adapterIdx;
 		}
@@ -193,7 +216,7 @@ bool DeviceManager12::CreateDevice()
 	}
 
 	// Now choose our best adapter
-	if (m_desc.preferDiscreteDevice)
+	if (m_creationParams.preferDiscreteDevice)
 	{
 		if (bestMemoryAdapterIdx != -1)
 		{
@@ -255,19 +278,19 @@ bool DeviceManager12::CreateDevice()
 	auto creationParams = GraphicsDevice::CreationParams{}
 		.SetDxgiFactory(m_dxgiFactory.Get())
 		.SetDevice(device)
-		.SetBackBufferWidth(m_desc.backBufferWidth)
-		.SetBackBufferHeight(m_desc.backBufferHeight)
-		.SetNumSwapChainBuffers(m_desc.numSwapChainBuffers)
-		.SetSwapChainFormat(m_desc.swapChainFormat)
-		.SetSwapChainSampleCount(m_desc.swapChainSampleCount)
-		.SetSwapChainSampleQuality(m_desc.swapChainSampleQuality)
-		.SetAllowModeSwitch(m_desc.allowModeSwitch)
+		.SetBackBufferWidth(m_creationParams.backBufferWidth)
+		.SetBackBufferHeight(m_creationParams.backBufferHeight)
+		.SetNumSwapChainBuffers(m_creationParams.numSwapChainBuffers)
+		.SetSwapChainFormat(m_creationParams.swapChainFormat)
+		.SetSwapChainSampleCount(m_creationParams.swapChainSampleCount)
+		.SetSwapChainSampleQuality(m_creationParams.swapChainSampleQuality)
+		.SetAllowModeSwitch(m_creationParams.allowModeSwitch)
 		.SetIsTearingSupported(m_bIsTearingSupported)
-		.SetEnableVSync(m_desc.enableVSync)
-		.SetMaxFramesInFlight(m_desc.maxFramesInFlight)
-		.SetHwnd(m_desc.hwnd)
-		.SetEnableValidation(m_desc.enableValidation)
-		.SetEnableDebugMarkers(m_desc.enableDebugMarkers);
+		.SetEnableVSync(m_creationParams.enableVSync)
+		.SetMaxFramesInFlight(m_creationParams.maxFramesInFlight)
+		.SetHwnd(m_creationParams.hwnd)
+		.SetEnableValidation(m_creationParams.enableValidation)
+		.SetEnableDebugMarkers(m_creationParams.enableDebugMarkers);
 
 	m_device = DeviceHandle::Create(new GraphicsDevice(creationParams));
 
@@ -281,13 +304,13 @@ bool DeviceManager12::CreateDevice()
 }
 
 
-bool DeviceManager12::CreateSwapChain()
+bool DeviceManager::CreateSwapChain()
 {
 	return m_device->CreateSwapChain();
 }
 
 
-vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
+vector<AdapterInfo> DeviceManager::EnumerateAdapters()
 {
 	vector<AdapterInfo> adapters;
 
@@ -356,7 +379,7 @@ vector<AdapterInfo> DeviceManager12::EnumerateAdapters()
 }
 
 
-HRESULT DeviceManager12::EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter)
+HRESULT DeviceManager::EnumAdapter(int32_t adapterIdx, DXGI_GPU_PREFERENCE gpuPreference, IDXGIFactory6* dxgiFactory6, IDXGIAdapter** adapter)
 {
 	if (!dxgiFactory6 || gpuPreference == DXGI_GPU_PREFERENCE_UNSPECIFIED)
 	{

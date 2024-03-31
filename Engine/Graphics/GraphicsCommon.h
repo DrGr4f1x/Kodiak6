@@ -18,6 +18,10 @@
 namespace Kodiak
 {
 
+// Forward declarations
+struct DeviceManagerCreationParams;
+
+
 // Globals
 inline const uint32_t g_numSwapChainBuffers{ 3 };
 
@@ -63,6 +67,23 @@ inline uint32_t ComputeNumMips(uint64_t width, uint32_t height)
 	return highBit + 1;
 }
 
+
+struct AdapterInfo
+{
+	std::string name{};
+	uint32_t vendorId{ 0 };
+	uint32_t deviceId{ 0 };
+	size_t dedicatedVideoMemory{ 0 };
+	size_t dedicatedSystemMemory{ 0 };
+	size_t sharedSystemMemory{ 0 };
+	HardwareVendor vendor{ HardwareVendor::Unknown };
+	AdapterType adapterType{ AdapterType::Other };
+	uint32_t apiVersion{ 0 };
+};
+
+
+// Device Manager
+DeviceManagerHandle CreateDeviceManager(const DeviceManagerCreationParams& creationParams);
 
 // Graphics related log categories
 inline LogCategory LogGraphics{ "LogGraphics" };
