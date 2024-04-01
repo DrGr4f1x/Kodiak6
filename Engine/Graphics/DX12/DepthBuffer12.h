@@ -19,6 +19,33 @@ namespace Kodiak::DX12
 class GraphicsDevice;
 
 
+struct DepthBufferCreationParamsExt
+{
+	DepthBufferCreationParamsExt()
+	{
+		for (auto& handle : dsvHandles)
+		{
+			handle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		}
+		depthSrvHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		stencilSrvHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+	}
+
+	ID3D12Resource* resource{ nullptr };
+	ResourceState usageState{ ResourceState::Undefined };
+
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4> dsvHandles{};
+	D3D12_CPU_DESCRIPTOR_HANDLE depthSrvHandle{};
+	D3D12_CPU_DESCRIPTOR_HANDLE stencilSrvHandle{};
+
+	constexpr DepthBufferCreationParamsExt& SetResource(ID3D12Resource* value) noexcept { resource = value; return *this; }
+	constexpr DepthBufferCreationParamsExt& SetUsageState(ResourceState value) noexcept { usageState = value; return *this; }
+	DepthBufferCreationParamsExt& SetDsvHandles(const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4>& value) noexcept { dsvHandles = value; return *this; }
+	constexpr DepthBufferCreationParamsExt& SetDepthSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { depthSrvHandle = value; return *this; }
+	constexpr DepthBufferCreationParamsExt& SetStencilSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { stencilSrvHandle = value; return *this; }
+};
+
+
 class DepthBuffer : IntrusiveCounter<IDepthBuffer>
 {
 	friend class GraphicsDevice;
@@ -43,19 +70,15 @@ public:
 	uint8_t GetClearStencil() const noexcept final { return m_clearStencil; }
 
 	// Get pre-created CPU-visible descriptor handles
-	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV() const noexcept { return m_dsvHandle[0]; }
-	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_DepthReadOnly() const noexcept { return m_dsvHandle[1]; }
-	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_StencilReadOnly() const noexcept { return m_dsvHandle[2]; }
-	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_ReadOnly() const noexcept { return m_dsvHandle[3]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV() const noexcept { return m_dsvHandles[0]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_DepthReadOnly() const noexcept { return m_dsvHandles[1]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_StencilReadOnly() const noexcept { return m_dsvHandles[2]; }
+	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDSV_ReadOnly() const noexcept { return m_dsvHandles[3]; }
 	const D3D12_CPU_DESCRIPTOR_HANDLE& GetDepthSRV() const noexcept { return m_depthSrvHandle; }
 	const D3D12_CPU_DESCRIPTOR_HANDLE& GetStencilSRV() const noexcept { return m_stencilSrvHandle; }
 
 private:
-	DepthBuffer(const DepthBufferCreationParams& creationParams) noexcept;
-
-	void Initialize(GraphicsDevice* device);
-
-	void CreateDerivedViews(GraphicsDevice* device);
+	DepthBuffer(const DepthBufferCreationParams& creationParams, const DepthBufferCreationParamsExt& creationParamsExt) noexcept;
 
 private:
 	const std::string m_name;
@@ -73,9 +96,9 @@ private:
 	ResourceState m_usageState{ ResourceState::Undefined };
 	ResourceState m_transitioningState{ ResourceState::Undefined };
 
-	D3D12_CPU_DESCRIPTOR_HANDLE m_dsvHandle[4];
-	D3D12_CPU_DESCRIPTOR_HANDLE m_depthSrvHandle;
-	D3D12_CPU_DESCRIPTOR_HANDLE m_stencilSrvHandle;
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4> m_dsvHandles{};
+	D3D12_CPU_DESCRIPTOR_HANDLE m_depthSrvHandle{};
+	D3D12_CPU_DESCRIPTOR_HANDLE m_stencilSrvHandle{};
 };
 
 } // namespace Kodiak::DX12

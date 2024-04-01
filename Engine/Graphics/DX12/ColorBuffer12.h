@@ -22,9 +22,9 @@ struct ColorBufferCreationParamsExt
 	{
 		rtvHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
 		srvHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
-		for (uint32_t i = 0; i < (uint32_t)uavHandles.size(); ++i)
+		for (auto& handle : uavHandles)
 		{
-			uavHandles[i].ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+			handle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
 		}
 	}
 
@@ -42,7 +42,6 @@ struct ColorBufferCreationParamsExt
 	constexpr ColorBufferCreationParamsExt& SetSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { srvHandle = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetRtvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { rtvHandle = value; return *this; }
 	ColorBufferCreationParamsExt& SetUavHandles(const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 12>& value) noexcept { uavHandles = value; return *this; }
-
 };
 
 
@@ -74,6 +73,11 @@ public:
 		m_numFragments = numColorSamples;
 		m_numSamples = numCoverageSamples;
 	}
+
+	// Get pre-created CPU-visible descriptor handles
+	D3D12_CPU_DESCRIPTOR_HANDLE GetSRV() const noexcept { return m_srvHandle; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetRTV() const noexcept { return m_rtvHandle; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetUAV(uint32_t uavIndex) const noexcept { return m_uavHandles[uavIndex]; }
 
 private:
 	ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);

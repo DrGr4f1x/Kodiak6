@@ -29,5 +29,8 @@ const DxgiFormatMapping& FormatToDxgi(Format engineFormat);
 Format DxgiToFormat(DXGI_FORMAT dxgiFormat);
 
 DXGI_FORMAT GetUAVFormat(DXGI_FORMAT format);
+DXGI_FORMAT GetDSVFormat(DXGI_FORMAT format);
+DXGI_FORMAT GetDepthFormat(DXGI_FORMAT format);
+DXGI_FORMAT GetStencilFormat(DXGI_FORMAT format);
 
 } // namespace Kodiak::DX12

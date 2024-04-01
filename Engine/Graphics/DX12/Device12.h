@@ -37,8 +37,6 @@ struct DeviceRLDOHelper
 
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
-	friend class DepthBuffer;
-
 public:
 	struct CreationParams
 	{
