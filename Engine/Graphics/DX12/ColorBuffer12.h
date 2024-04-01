@@ -16,10 +16,6 @@
 namespace Kodiak::DX12
 {
 
-// Forward declarations
-class GraphicsDevice;
-
-
 struct ColorBufferCreationParamsExt
 {
 	ColorBufferCreationParamsExt() noexcept
