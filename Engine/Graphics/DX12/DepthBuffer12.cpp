@@ -12,6 +12,7 @@
 
 #include "DepthBuffer12.h"
 
+#include "Graphics\CreationParams.h"
 #include "Device12.h"
 #include "Formats12.h"
 

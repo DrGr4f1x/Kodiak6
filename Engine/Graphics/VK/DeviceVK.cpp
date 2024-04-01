@@ -12,6 +12,7 @@
 
 #include "DeviceVK.h"
 
+#include "Graphics\CreationParams.h"
 #include "ColorBufferVK.h"
 #include "CreationParamsVK.h"
 #include "DepthBufferVK.h"
@@ -211,7 +212,6 @@ bool GraphicsDevice::CreateSwapChain()
 
 void GraphicsDevice::BeginFrame()
 {
-	// TODO
 	const auto& semaphore = m_presentSemaphores[m_presentSemaphoreIndex];
 	const auto& fence = m_presentFences[m_presentSemaphoreIndex];
 	m_presentFenceState[m_presentSemaphoreIndex] = 1;
@@ -325,6 +325,12 @@ ComputeContextHandle GraphicsDevice::BeginComputeContext(const std::string& ID, 
 }
 
 
+ColorBufferHandle GraphicsDevice::GetCurrentSwapChainBuffer()
+{
+	return m_swapChainBuffers[m_swapChainIndex];
+}
+
+
 void GraphicsDevice::DestroySwapChain()
 {
 	if (m_vkSwapChain)
@@ -353,6 +359,8 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 	auto creationParamsExt = ColorBufferCreationParamsExt{}.SetImage(image);
 
 	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+
+	colorBuffer->InitializeFromSwapChain(this);
 
 	return ColorBufferHandle::Create(colorBuffer);
 }

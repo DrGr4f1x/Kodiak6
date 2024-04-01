@@ -12,6 +12,7 @@
 
 #include "Device12.h"
 
+#include "Graphics\CreationParams.h"
 #include "ColorBuffer12.h"
 #include "DepthBuffer12.h"
 #include "DescriptorHeap12.h"
@@ -109,6 +110,19 @@ void DebugMessageCallback(
 		LogInfo(LogDirectX) << debugMessage << endl;
 		break;
 	}
+}
+
+
+D3D12_RESOURCE_FLAGS CombineResourceFlags(uint32_t fragmentCount)
+{
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
+
+	if (flags == D3D12_RESOURCE_FLAG_NONE && fragmentCount == 1)
+	{
+		flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
+
+	return D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | flags;
 }
 
 } // anonymous namespace
@@ -278,14 +292,141 @@ void GraphicsDevice::Present()
 
 ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams)
 {
+	// Create resource
+	auto numMips = creationParams.numMips == 0 ? ComputeNumMips(creationParams.width, creationParams.height) : creationParams.numMips;
+	auto flags = CombineResourceFlags(creationParams.numSamples);
+
+	D3D12_RESOURCE_DESC desc{};
+	desc.Alignment = 0;
+	desc.DepthOrArraySize = (UINT16)creationParams.arraySizeOrDepth;
+	desc.Dimension = GetResourceDimension(creationParams.resourceType);
+	desc.Flags = (D3D12_RESOURCE_FLAGS)flags;
+	desc.Format = FormatToDxgi(creationParams.format).resourceFormat;
+	desc.Height = (UINT)creationParams.height;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	desc.MipLevels = (UINT16)numMips;
+	desc.SampleDesc.Count = creationParams.numSamples;
+	desc.SampleDesc.Quality = 0;
+	desc.Width = (UINT64)creationParams.width;
+
+	D3D12_CLEAR_VALUE clearValue{};
+	clearValue.Format = FormatToDxgi(creationParams.format).rtvFormat;
+	clearValue.Color[0] = creationParams.clearColor.R();
+	clearValue.Color[1] = creationParams.clearColor.G();
+	clearValue.Color[2] = creationParams.clearColor.B();
+	clearValue.Color[3] = creationParams.clearColor.A();
+
+	ID3D12Resource* resource{ nullptr };
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+	assert_succeeded(m_dxDevice->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&desc, D3D12_RESOURCE_STATE_COMMON, &clearValue, IID_PPV_ARGS(&resource)));
+
+	SetDebugName(resource, creationParams.name);
+
+	// Create descriptors and derived views
+	assert_msg(creationParams.arraySizeOrDepth == 1 || numMips == 1, "We don't support auto-mips on texture arrays");
+
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc{};
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+
+	DXGI_FORMAT dxgiFormat = FormatToDxgi(creationParams.format).resourceFormat;
+	rtvDesc.Format = dxgiFormat;
+	uavDesc.Format = GetUAVFormat(dxgiFormat);
+	srvDesc.Format = dxgiFormat;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	if (creationParams.arraySizeOrDepth > 1)
+	{
+		if (creationParams.resourceType == ResourceType::Texture3D)
+		{
+			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
+			rtvDesc.Texture3D.MipSlice = 0;
+			rtvDesc.Texture3D.FirstWSlice = 0;
+			rtvDesc.Texture3D.WSize = (UINT)creationParams.arraySizeOrDepth;
+
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
+			uavDesc.Texture3D.MipSlice = 0;
+			uavDesc.Texture3D.FirstWSlice = 0;
+			uavDesc.Texture3D.WSize = (UINT)creationParams.arraySizeOrDepth;
+
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+			srvDesc.Texture3D.MipLevels = numMips;
+			srvDesc.Texture3D.MostDetailedMip = 0;
+		}
+		else
+		{
+			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+			rtvDesc.Texture2DArray.MipSlice = 0;
+			rtvDesc.Texture2DArray.FirstArraySlice = 0;
+			rtvDesc.Texture2DArray.ArraySize = (UINT)creationParams.arraySizeOrDepth;
+
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+			uavDesc.Texture2DArray.MipSlice = 0;
+			uavDesc.Texture2DArray.FirstArraySlice = 0;
+			uavDesc.Texture2DArray.ArraySize = (UINT)creationParams.arraySizeOrDepth;
+
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+			srvDesc.Texture2DArray.MipLevels = numMips;
+			srvDesc.Texture2DArray.MostDetailedMip = 0;
+			srvDesc.Texture2DArray.FirstArraySlice = 0;
+			srvDesc.Texture2DArray.ArraySize = (UINT)creationParams.arraySizeOrDepth;
+		}
+	}
+	else if (creationParams.numFragments > 1)
+	{
+		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DMS;
+	}
+	else
+	{
+		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D.MipSlice = 0;
+
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D.MipSlice = 0;
+
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = numMips;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+	}
+
+	auto rtvHandle = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	auto srvHandle = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// Create the render target view
+	m_dxDevice->CreateRenderTargetView(resource, &rtvDesc, rtvHandle);
+
+	// Create the shader resource view
+	m_dxDevice->CreateShaderResourceView(resource, &srvDesc, srvHandle);
+
+	// Create the UAVs for each mip level (RWTexture2D)
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 12> uavHandles;
+	if (creationParams.numFragments == 1)
+	{
+		for (uint32_t i = 0; i < (uint32_t)uavHandles.size(); ++i)
+		{
+			uavHandles[i].ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		}
+
+		for (uint32_t i = 0; i < numMips; ++i)
+		{
+			uavHandles[i] = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			m_dxDevice->CreateUnorderedAccessView(resource, nullptr, &uavDesc, uavHandles[i]);
+
+			uavDesc.Texture2D.MipSlice++;
+		}
+	}
+
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
-	.SetUsageState(ResourceState::Common);
+		.SetResource(resource)
+		.SetUsageState(ResourceState::Common)
+		.SetRtvHandle(rtvHandle)
+		.SetSrvHandle(srvHandle)
+		.SetUavHandles(uavHandles);
 
-	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
-
-	colorBuffer->Initialize(this);
-
-	return ColorBufferHandle::Create(colorBuffer);
+	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));
 }
 
 
@@ -313,6 +454,12 @@ GraphicsContextHandle GraphicsDevice::BeginGraphicsContext(const string& ID)
 ComputeContextHandle GraphicsDevice::BeginComputeContext(const string& ID, bool bAsync)
 {
 	return nullptr;
+}
+
+
+ColorBufferHandle GraphicsDevice::GetCurrentSwapChainBuffer()
+{
+	return m_swapChainBuffers[m_currentBufferIndex];
 }
 
 
@@ -404,15 +551,19 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 		.SetNumSamples(resourceDesc.SampleDesc.Count)
 		.SetFormat(DxgiToFormat(resourceDesc.Format));
 
+	auto rtvHandle = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	m_dxDevice->CreateRenderTargetView(displayPlane, nullptr, rtvHandle);
+
+	auto srvHandle = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_dxDevice->CreateShaderResourceView(displayPlane, nullptr, srvHandle);
+
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
 		.SetResource(displayPlane)
-		.SetUsageState(ResourceState::Present);
+		.SetUsageState(ResourceState::Present)
+		.SetRtvHandle(rtvHandle)
+		.SetSrvHandle(srvHandle);
 
-	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
-
-	colorBuffer->InitializeFromSwapChain(this);
-
-	return ColorBufferHandle::Create(colorBuffer);
+	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));
 }
 
 

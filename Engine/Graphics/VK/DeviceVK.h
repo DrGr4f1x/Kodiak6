@@ -104,6 +104,8 @@ public:
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID) final;
 	ComputeContextHandle BeginComputeContext(const std::string& ID, bool bAsync) final;
 
+	ColorBufferHandle GetCurrentSwapChainBuffer() final;
+
 private:
 	void DestroySwapChain();
 

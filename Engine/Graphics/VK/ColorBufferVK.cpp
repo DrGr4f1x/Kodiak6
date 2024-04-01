@@ -12,6 +12,7 @@
 
 #include "ColorBufferVK.h"
 
+#include "Graphics\CreationParams.h"
 #include "CreationParamsVK.h"
 #include "DeviceVK.h"
 #include "QueueVK.h"

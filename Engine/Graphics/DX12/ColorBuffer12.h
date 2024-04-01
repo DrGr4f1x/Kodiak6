@@ -22,15 +22,31 @@ class GraphicsDevice;
 
 struct ColorBufferCreationParamsExt
 {
+	ColorBufferCreationParamsExt() noexcept
+	{
+		rtvHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		srvHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		for (uint32_t i = 0; i < (uint32_t)uavHandles.size(); ++i)
+		{
+			uavHandles[i].ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		}
+	}
+
 	ID3D12Resource* resource{ nullptr };
 	uint32_t numFragments{ 1 };
 	ResourceState usageState{ ResourceState::Undefined };
-	ResourceState transitioningState{ ResourceState::Undefined };
+
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle{};
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{};
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 12> uavHandles{};
 
 	constexpr ColorBufferCreationParamsExt& SetResource(ID3D12Resource* value) noexcept { resource = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetNumFragments(uint32_t value) noexcept { numFragments = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetUsageState(ResourceState value) noexcept { usageState = value; return *this; }
-	constexpr ColorBufferCreationParamsExt& SetTransitioningState(ResourceState value) noexcept { transitioningState = value; return *this; }
+	constexpr ColorBufferCreationParamsExt& SetSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { srvHandle = value; return *this; }
+	constexpr ColorBufferCreationParamsExt& SetRtvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { rtvHandle = value; return *this; }
+	ColorBufferCreationParamsExt& SetUavHandles(const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 12>& value) noexcept { uavHandles = value; return *this; }
+
 };
 
 
@@ -64,12 +80,7 @@ public:
 	}
 
 private:
-	explicit ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
-
-	void InitializeFromSwapChain(GraphicsDevice* device);
-	void Initialize(GraphicsDevice* device);
-
-	void CreateDerivedViews(GraphicsDevice* device, uint32_t numMips);
+	ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
 
 private:
 	const std::string m_name;
@@ -90,7 +101,7 @@ private:
 	// Pre-constructed descriptors
 	D3D12_CPU_DESCRIPTOR_HANDLE m_srvHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE m_rtvHandle;
-	D3D12_CPU_DESCRIPTOR_HANDLE m_uavHandle[12];
+	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 12> m_uavHandles;
 };
 
 } // namespace Kodiak::DX12

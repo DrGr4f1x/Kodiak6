@@ -75,4 +75,55 @@ struct DeviceManagerCreationParams
 	constexpr DeviceManagerCreationParams& SetHinstance(HINSTANCE value) noexcept { hinstance = value; return *this; }
 };
 
+
+struct PixelBufferCreationParams
+{
+	std::string name;
+	ResourceType resourceType{ ResourceType::Texture2D };
+	uint64_t width{ 0 };
+	uint32_t height{ 0 };
+	uint32_t arraySizeOrDepth{ 0 };
+	uint32_t numMips{ 1 };
+	uint32_t numSamples{ 1 };
+	Format format{ Format::Unknown };
+};
+
+
+struct ColorBufferCreationParams : public PixelBufferCreationParams
+{
+	uint32_t numFragments{ 1 };
+	Color clearColor{ DirectX::Colors::Black };
+
+	ColorBufferCreationParams& SetName(const std::string& value) { name = value; return *this; }
+	constexpr ColorBufferCreationParams& SetResourceType(ResourceType value) noexcept { resourceType = value; return *this; }
+	constexpr ColorBufferCreationParams& SetWidth(uint64_t value) noexcept { width = value; return *this; }
+	constexpr ColorBufferCreationParams& SetHeight(uint32_t value) noexcept { height = value; return *this; }
+	constexpr ColorBufferCreationParams& SetArraySize(uint32_t value) noexcept { arraySizeOrDepth = value; return *this; }
+	constexpr ColorBufferCreationParams& SetDepth(uint32_t value) noexcept { arraySizeOrDepth = value; return *this; }
+	constexpr ColorBufferCreationParams& SetNumMips(uint32_t value) noexcept { numMips = value; return *this; }
+	constexpr ColorBufferCreationParams& SetNumSamples(uint32_t value) noexcept { numSamples = value; return *this; }
+	constexpr ColorBufferCreationParams& SetFormat(Format value) noexcept { format = value; return *this; }
+	constexpr ColorBufferCreationParams& SetNumFragments(uint32_t value) noexcept { numFragments = value; return *this; }
+	ColorBufferCreationParams& SetClearColor(Color value) noexcept { clearColor = value; return *this; }
+};
+
+
+struct DepthBufferCreationParams : public PixelBufferCreationParams
+{
+	float clearDepth{ 1.0f };
+	uint8_t clearStencil{ 0 };
+
+	DepthBufferCreationParams& SetName(const std::string& value) { name = value; return *this; }
+	constexpr DepthBufferCreationParams& SetResourceType(ResourceType value) noexcept { resourceType = value; return *this; }
+	constexpr DepthBufferCreationParams& SetWidth(uint64_t value) noexcept { width = value; return *this; }
+	constexpr DepthBufferCreationParams& SetHeight(uint32_t value) noexcept { height = value; return *this; }
+	constexpr DepthBufferCreationParams& SetArraySize(uint32_t value) noexcept { arraySizeOrDepth = value; return *this; }
+	constexpr DepthBufferCreationParams& SetDepth(uint32_t value) noexcept { arraySizeOrDepth = value; return *this; }
+	constexpr DepthBufferCreationParams& SetNumMips(uint32_t value) noexcept { numMips = value; return *this; }
+	constexpr DepthBufferCreationParams& SetNumSamples(uint32_t value) noexcept { numSamples = value; return *this; }
+	constexpr DepthBufferCreationParams& SetFormat(Format value) noexcept { format = value; return *this; }
+	constexpr DepthBufferCreationParams& SetClearDepth(float value) noexcept { clearDepth = value; return *this; }
+	constexpr DepthBufferCreationParams& SetClearStencil(uint8_t value) noexcept { clearStencil = value; return *this; }
+};
+
 } // namespace Kodiak

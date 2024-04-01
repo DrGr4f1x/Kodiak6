@@ -37,7 +37,6 @@ struct DeviceRLDOHelper
 
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
-	friend class ColorBuffer;
 	friend class DepthBuffer;
 
 public:
@@ -105,6 +104,8 @@ public:
 	CommandContextHandle BeginCommandContext(const std::string& ID = "") final;
 	GraphicsContextHandle BeginGraphicsContext(const std::string& ID = "") final;
 	ComputeContextHandle BeginComputeContext(const std::string& ID = "", bool bAsync = false) final;
+
+	ColorBufferHandle GetCurrentSwapChainBuffer() final;
 
 private:
 	void ReadCaps();
