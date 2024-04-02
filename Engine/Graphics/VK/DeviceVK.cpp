@@ -263,12 +263,71 @@ void GraphicsDevice::Present()
 
 ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationParams& creationParams)
 {
-	auto creationParamsExt = ColorBufferCreationParamsExt{};
-	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+	// Create image
+	auto imageCreationParams = ImageCreationParams{}
+		.SetName(creationParams.name)
+		.SetWidth(creationParams.width)
+		.SetHeight(creationParams.height)
+		.SetNumMips(creationParams.numMips)
+		.SetNumSamples(creationParams.numSamples)
+		.SetFormat(creationParams.format)
+		.SetResourceType(creationParams.resourceType)
+		.SetImageUsage(GpuImageUsage::RenderTarget | GpuImageUsage::ShaderResource | GpuImageUsage::UnorderedAccess | GpuImageUsage::CopyDest | GpuImageUsage::CopySource)
+		.SetMemoryAccess(MemoryAccess::GpuRead | MemoryAccess::GpuWrite);
 
-	colorBuffer->Initialize(this);
+	if (HasFlag(creationParams.resourceType, ResourceType::Texture3D))
+	{
+		imageCreationParams.SetNumMips(1);
+		imageCreationParams.SetDepth(creationParams.arraySizeOrDepth);
+	}
+	else if (HasAnyFlag(creationParams.resourceType, ResourceType::Texture2D_Type))
+	{
+		if (HasAnyFlag(creationParams.resourceType, ResourceType::TextureArray_Type))
+		{
+			imageCreationParams.SetResourceType(creationParams.numSamples == 1 ? ResourceType::Texture2D_Array : ResourceType::Texture2DMS_Array);
+			imageCreationParams.SetArraySize(creationParams.arraySizeOrDepth);
+		}
+		else
+		{
+			imageCreationParams.SetResourceType(creationParams.numSamples == 1 ? ResourceType::Texture2D : ResourceType::Texture2DMS_Array);
+		}
+	}
 
-	return ColorBufferHandle::Create(colorBuffer);
+	auto image = CreateImage(imageCreationParams);
+
+	// RTV view
+	auto imageViewCreationParams = ImageViewCreationParams{}
+		.SetImage(image)
+		.SetName(creationParams.name)
+		.SetResourceType(ResourceType::Texture2D)
+		.SetImageUsage(GpuImageUsage::RenderTarget)
+		.SetFormat(m_deviceCreationParams.swapChainFormat)
+		.SetImageAspect(ImageAspect::Color)
+		.SetBaseMipLevel(0)
+		.SetMipCount(creationParams.numMips)
+		.SetBaseArraySlice(0)
+		.SetArraySize(creationParams.arraySizeOrDepth);
+
+	auto imageViewRtv = CreateImageView(imageViewCreationParams);
+
+	// SRV view
+	imageViewCreationParams
+		.SetImageUsage(GpuImageUsage::ShaderResource);
+
+	auto imageViewSrv = CreateImageView(imageViewCreationParams);
+
+	// Descriptors
+	VkDescriptorImageInfo imageInfoSrv{ VK_NULL_HANDLE, *imageViewSrv, GetImageLayout(ResourceState::ShaderResource) };
+	VkDescriptorImageInfo imageInfoUav{ VK_NULL_HANDLE, *imageViewSrv, GetImageLayout(ResourceState::UnorderedAccess) };
+
+	auto creationParamsExt = ColorBufferCreationParamsExt{}
+		.SetImage(image)
+		.SetImageViewRtv(imageViewRtv)
+		.SetImageViewSrv(imageViewSrv)
+		.SetImageInfoSrv(imageInfoSrv)
+		.SetImageInfoUav(imageInfoUav);
+
+	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));
 }
 
 

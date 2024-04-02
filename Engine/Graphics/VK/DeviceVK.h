@@ -78,7 +78,6 @@ struct DeviceCreationParams
 
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
-	friend class ColorBuffer;
 	friend class CommandContext;
 	friend class DepthBuffer;
 	friend class DeviceManagerVK;

@@ -73,10 +73,6 @@ public:
 private:
 	ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
 
-	void Initialize(GraphicsDevice* device);
-
-	void CreateDerivedViews(GraphicsDevice* device, uint32_t numMips);
-
 private:
 	const std::string m_name;
 	ResourceType m_resourceType{ ResourceType::Texture2D };
