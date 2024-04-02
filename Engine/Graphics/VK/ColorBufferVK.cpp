@@ -32,16 +32,12 @@ ColorBuffer::ColorBuffer(const ColorBufferCreationParams& creationParams, const 
 	, m_format{ creationParams.format }
 	, m_clearColor{ creationParams.clearColor }
 	, m_image{ creationParamsExt.image }
+	, m_imageViewRtv{ creationParamsExt.imageViewRtv }
+	, m_imageViewSrv{ creationParamsExt.imageViewSrv }
+	, m_imageInfoSrv{ creationParamsExt.imageInfoSrv }
+	, m_imageInfoUav{ creationParamsExt.imageInfoUav }
 {
 	m_numMips = m_numMips == 0 ? ComputeNumMips(m_width, m_height) : m_numMips;
-}
-
-
-void ColorBuffer::InitializeFromSwapChain(GraphicsDevice* device)
-{
-	SetDebugName(device->GetVkDevice(), m_image->Get(), m_name);
-
-	CreateDerivedViews(device, m_numMips);
 }
 
 

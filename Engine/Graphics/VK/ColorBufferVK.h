@@ -21,9 +21,17 @@ class GraphicsDevice;
 
 struct ColorBufferCreationParamsExt
 {
-	CVkImage* image{ nullptr };
+	VkImageHandle image;
+	VkImageViewHandle imageViewRtv;
+	VkImageViewHandle imageViewSrv;
+	VkDescriptorImageInfo imageInfoSrv{};
+	VkDescriptorImageInfo imageInfoUav{};
 
-	constexpr ColorBufferCreationParamsExt& SetImage(CVkImage* value) noexcept { image = value; return *this; }
+	ColorBufferCreationParamsExt& SetImage(CVkImage* value) noexcept { image = value; return *this; }
+	ColorBufferCreationParamsExt& SetImageViewRtv(CVkImageView* value) noexcept { imageViewRtv = value; return *this; }
+	ColorBufferCreationParamsExt& SetImageViewSrv(CVkImageView* value) noexcept { imageViewSrv = value; return *this; }
+	ColorBufferCreationParamsExt& SetImageInfoSrv(const VkDescriptorImageInfo& value) noexcept { imageInfoSrv = value; return *this; }
+	ColorBufferCreationParamsExt& SetImageInfoUav(const VkDescriptorImageInfo& value) noexcept { imageInfoUav = value; return *this; }
 };
 
 
@@ -63,9 +71,8 @@ public:
 	VkDescriptorImageInfo GetUAVImageInfo() const noexcept { return m_imageInfoUav; }
 
 private:
-	explicit ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
+	ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
 
-	void InitializeFromSwapChain(GraphicsDevice* device);
 	void Initialize(GraphicsDevice* device);
 
 	void CreateDerivedViews(GraphicsDevice* device, uint32_t numMips);

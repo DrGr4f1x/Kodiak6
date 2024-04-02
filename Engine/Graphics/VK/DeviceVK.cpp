@@ -344,8 +344,9 @@ void GraphicsDevice::DestroySwapChain()
 
 ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageIndex)
 {
-	const string name = format("Primary SwapChain Image {}", imageIndex);
+	const string name = format("Primary Swapchain Image {}", imageIndex);
 
+	// Swapchain image
 	auto creationParams = ColorBufferCreationParams{}
 		.SetName(name)
 		.SetResourceType(ResourceType::Texture2D)
@@ -356,13 +357,42 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 		.SetFormat(m_deviceCreationParams.swapChainFormat);
 
 	auto image = new CVkImage(m_vkDevice, *m_vkSwapChainImages[imageIndex]);
-	auto creationParamsExt = ColorBufferCreationParamsExt{}.SetImage(image);
+	SetDebugName(*m_vkDevice, *image, name);
 
-	auto colorBuffer = new ColorBuffer(creationParams, creationParamsExt);
+	// RTV view
+	auto imageViewCreationParams = ImageViewCreationParams{}
+		.SetImage(image)
+		.SetName(format("Primary Swapchain {} RTV Image View", imageIndex))
+		.SetResourceType(ResourceType::Texture2D)
+		.SetImageUsage(GpuImageUsage::RenderTarget)
+		.SetFormat(m_deviceCreationParams.swapChainFormat)
+		.SetImageAspect(ImageAspect::Color)
+		.SetBaseMipLevel(0)
+		.SetMipCount(1)
+		.SetBaseArraySlice(0)
+		.SetArraySize(1);
 
-	colorBuffer->InitializeFromSwapChain(this);
+	auto imageViewRtv = CreateImageView(imageViewCreationParams);
 
-	return ColorBufferHandle::Create(colorBuffer);
+	// SRV view
+	imageViewCreationParams
+		.SetImageUsage(GpuImageUsage::ShaderResource)
+		.SetName(format("Primary SwapChain {} SRV Image View", imageIndex));
+
+	auto imageViewSrv = CreateImageView(imageViewCreationParams);
+
+	// Descriptors
+	VkDescriptorImageInfo imageInfoSrv{ VK_NULL_HANDLE, *imageViewSrv, GetImageLayout(ResourceState::ShaderResource) };
+	VkDescriptorImageInfo imageInfoUav{ VK_NULL_HANDLE, *imageViewSrv, GetImageLayout(ResourceState::UnorderedAccess) };
+
+	auto creationParamsExt = ColorBufferCreationParamsExt{}
+		.SetImage(image)
+		.SetImageViewRtv(imageViewRtv)
+		.SetImageViewSrv(imageViewSrv)
+		.SetImageInfoSrv(imageInfoSrv)
+		.SetImageInfoUav(imageInfoUav);
+
+	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));
 }
 
 
