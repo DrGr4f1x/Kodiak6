@@ -19,6 +19,24 @@ namespace Kodiak::VK
 class GraphicsDevice;
 
 
+struct DepthBufferCreationParamsExt
+{
+	VkImageHandle image;
+	VkImageViewHandle imageViewDepthStencil;
+	VkImageViewHandle imageViewDepthOnly;
+	VkImageViewHandle imageViewStencilOnly;
+	VkDescriptorImageInfo imageInfoDepth{};
+	VkDescriptorImageInfo imageInfoStencil{};
+
+	DepthBufferCreationParamsExt& SetImage(CVkImage* value) noexcept { image = value; return *this; }
+	DepthBufferCreationParamsExt& SetImageViewDepthStencil(CVkImageView* value) noexcept { imageViewDepthStencil = value; return *this; }
+	DepthBufferCreationParamsExt& SetImageViewDepthOnly(CVkImageView* value) noexcept { imageViewDepthOnly = value; return *this; }
+	DepthBufferCreationParamsExt& SetImageViewStencilOnly(CVkImageView* value) noexcept { imageViewStencilOnly = value; return *this; }
+	DepthBufferCreationParamsExt& SetImageInfoDepth(const VkDescriptorImageInfo& value) noexcept { imageInfoDepth = value; return *this; }
+	DepthBufferCreationParamsExt& SetImageInfoStencil(const VkDescriptorImageInfo& value) noexcept { imageInfoStencil = value; return *this; }
+};
+
+
 class DepthBuffer : IntrusiveCounter<IDepthBuffer>
 {
 	friend class GraphicsDevice;
@@ -50,11 +68,7 @@ public:
 	VkDescriptorImageInfo GetStencilImageInfo() const noexcept { return m_imageInfoStencil; }
 
 private:
-	explicit DepthBuffer(const DepthBufferCreationParams& creationParams) noexcept;
-
-	void Initialize(GraphicsDevice* device);
-
-	void CreateDerivedViews(GraphicsDevice* device);
+	DepthBuffer(const DepthBufferCreationParams& creationParams, const DepthBufferCreationParamsExt& creationParamsExt) noexcept;
 
 private:
 	const std::string m_name;

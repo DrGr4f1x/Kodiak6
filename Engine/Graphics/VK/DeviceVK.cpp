@@ -333,11 +333,77 @@ ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationPar
 
 DepthBufferHandle GraphicsDevice::CreateDepthBuffer(const DepthBufferCreationParams& creationParams)
 {
-	auto depthBuffer = new DepthBuffer(creationParams);
+	// Create depth image
+	auto imageCreationParams = ImageCreationParams{}
+		.SetName(creationParams.name)
+		.SetWidth(creationParams.width)
+		.SetHeight(creationParams.height)
+		.SetNumMips(creationParams.numMips)
+		.SetNumSamples(creationParams.numSamples)
+		.SetFormat(creationParams.format)
+		.SetResourceType(creationParams.resourceType)
+		.SetImageUsage(GpuImageUsage::DepthStencilTarget | GpuImageUsage::ShaderResource | GpuImageUsage::CopyDest | GpuImageUsage::CopySource)
+		.SetMemoryAccess(MemoryAccess::GpuRead | MemoryAccess::GpuWrite);
 
-	depthBuffer->Initialize(this);
+	auto image = CreateImage(imageCreationParams);
 
-	return DepthBufferHandle::Create(depthBuffer);
+	// Create image views and descriptors
+	const bool bHasStencil = IsStencilFormat(creationParams.format);
+
+	auto imageAspect = ImageAspect::Depth;
+	if (bHasStencil)
+	{
+		imageAspect |= ImageAspect::Stencil;
+	}
+
+	auto imageViewCreationParams = ImageViewCreationParams{}
+		.SetImage(image)
+		.SetName(format("{} DepthStencil Image View", creationParams.name))
+		.SetResourceType(creationParams.resourceType)
+		.SetImageUsage(GpuImageUsage::DepthStencilTarget)
+		.SetFormat(creationParams.format)
+		.SetImageAspect(imageAspect)
+		.SetBaseMipLevel(0)
+		.SetMipCount(creationParams.numMips)
+		.SetBaseArraySlice(0)
+		.SetArraySize(creationParams.arraySizeOrDepth);
+
+	auto imageViewDepthStencil = CreateImageView(imageViewCreationParams);
+	VkImageViewHandle imageViewDepthOnly;
+	VkImageViewHandle imageViewStencilOnly;
+
+	if (bHasStencil)
+	{
+		imageViewCreationParams
+			.SetName(format("{} Depth Image View", creationParams.name))
+			.SetImageAspect(ImageAspect::Depth);
+
+		imageViewDepthOnly = CreateImageView(imageViewCreationParams);
+
+		imageViewCreationParams
+			.SetName(format("{} Stencil Image View", creationParams.name))
+			.SetImageAspect(ImageAspect::Stencil);
+
+		imageViewStencilOnly = CreateImageView(imageViewCreationParams);
+	}
+	else
+	{
+		imageViewDepthOnly = imageViewDepthStencil;
+		imageViewStencilOnly = imageViewDepthStencil;
+	}
+
+	VkDescriptorImageInfo imageInfoDepth = { VK_NULL_HANDLE, *imageViewDepthOnly, GetImageLayout(ResourceState::ShaderResource) };
+	VkDescriptorImageInfo imageInfoStencil = { VK_NULL_HANDLE, *imageViewStencilOnly, GetImageLayout(ResourceState::ShaderResource) };
+
+	auto creationParamsExt = DepthBufferCreationParamsExt{}
+		.SetImage(image)
+		.SetImageViewDepthStencil(imageViewDepthStencil)
+		.SetImageViewDepthOnly(imageViewDepthOnly)
+		.SetImageViewStencilOnly(imageViewDepthStencil)
+		.SetImageInfoDepth(imageInfoDepth)
+		.SetImageInfoStencil(imageInfoStencil);
+
+	return DepthBufferHandle::Create(new DepthBuffer(creationParams, creationParamsExt));
 }
 
 
