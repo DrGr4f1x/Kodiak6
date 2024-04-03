@@ -275,7 +275,7 @@ bool DeviceManager::CreateDevice()
 #endif
 
 	// Create the Kodiak GraphicsDevice
-	auto creationParams = GraphicsDevice::CreationParams{}
+	auto creationParams = DeviceCreationParams{}
 		.SetDxgiFactory(m_dxgiFactory.Get())
 		.SetDevice(device)
 		.SetBackBufferWidth(m_creationParams.backBufferWidth)

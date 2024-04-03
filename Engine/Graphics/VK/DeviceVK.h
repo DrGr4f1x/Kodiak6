@@ -79,7 +79,6 @@ struct DeviceCreationParams
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
 	friend class CommandContext;
-	friend class DeviceManagerVK;
 	friend class Queue;
 
 public:

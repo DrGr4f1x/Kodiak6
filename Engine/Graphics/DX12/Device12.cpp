@@ -144,7 +144,7 @@ DeviceRLDOHelper::~DeviceRLDOHelper()
 	}
 }
 
-GraphicsDevice::GraphicsDevice(const CreationParams& creationParams) noexcept
+GraphicsDevice::GraphicsDevice(const DeviceCreationParams& creationParams) noexcept
 	: m_creationParams{ creationParams }
 	, m_deviceRLDOHelper{ creationParams.dx12Device, creationParams.enableValidation }
 {
