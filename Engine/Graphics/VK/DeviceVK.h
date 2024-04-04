@@ -126,7 +126,6 @@ private:
 	// CommandContext management
 	CommandContext* AllocateContext(CommandListType commandListType);
 	void FreeContext(CommandContext* usedContext);
-	void WaitForFence(uint64_t fenceValue);
 
 	void WaitForGpuIdle();
 

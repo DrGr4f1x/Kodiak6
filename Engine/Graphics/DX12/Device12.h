@@ -17,6 +17,7 @@ namespace Kodiak::DX12
 {
 
 // Forward declarations
+class CommandContext;
 class DescriptorAllocator;
 class Queue;
 struct DeviceCaps;
@@ -87,8 +88,7 @@ struct DeviceCreationParams
 
 class GraphicsDevice : public IntrusiveCounter<IGraphicsDevice>
 {
-public:
-
+	friend class CommandContext;
 
 public:
 	explicit GraphicsDevice(const DeviceCreationParams& creationParams) noexcept;
@@ -122,6 +122,11 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t count = 1);
 	void CreateDescriptorAllocators();
 
+	// CommandContext management
+	CommandContext* AllocateContext(CommandListType commandListType);
+	void FreeContext(CommandContext* usedContext);
+	void CreateCommandList(CommandListType commandListType, ID3D12GraphicsCommandList** commandList, ID3D12CommandAllocator** allocator);
+
 	ID3D12Device* GetD3D12Device() noexcept { return m_dxDevice; }
 
 private:
@@ -150,6 +155,11 @@ private:
 
 	// Descriptor allocators
 	std::array<std::unique_ptr<DescriptorAllocator>, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptorAllocators;
+
+	// Command contexts
+	std::array<std::vector<CommandContextHandle>, (uint32_t)CommandListType::Count> m_contextPool;
+	std::array<std::queue<CommandContext*>, (uint32_t)CommandListType::Count> m_availableContexts;
+	std::mutex m_contextAllocationMutex;
 
 	// DirectX caps
 	std::unique_ptr<DeviceCaps> m_caps;

@@ -317,6 +317,20 @@ enum class CommandListType : uint8_t
 };
 
 
+inline std::string EngineTypeToString(CommandListType commandListType)
+{
+	using enum CommandListType;
+
+	switch (commandListType)
+	{
+	case Bundle:	return "Bundle"; break;
+	case Compute:	return "Compute"; break;
+	case Copy:		return "Copy"; break;
+	default:		return "Direct"; break;
+	}
+}
+
+
 enum class ResourceState : uint32_t
 {
 	Undefined =							0x0000,
@@ -403,6 +417,16 @@ enum class QueueType : uint8_t
 	Count
 };
 
+
+inline std::string EngineTypeToString(QueueType queueType)
+{
+	switch (queueType)
+	{
+	case QueueType::Compute:	return "Compute"; break;
+	case QueueType::Copy:		return "Copy"; break;
+	default:					return "Graphics"; break;
+	}
+}
 
 enum class HardwareVendor
 {
@@ -546,3 +570,23 @@ enum class MemoryAccess
 template <> struct EnableBitmaskOperators<MemoryAccess> { static const bool enable = true; };
 
 } // namespace Kodiak
+
+
+#define DECLARE_STRING_FORMATTERS(ENGINE_TYPE) \
+template <> \
+struct std::formatter<ENGINE_TYPE> : public std::formatter<std::string> \
+{ \
+	auto format(ENGINE_TYPE value, std::format_context& ctx) const \
+	{ \
+		auto str = Kodiak::EngineTypeToString(value); \
+		return std::formatter<std::string>::format(str, ctx); \
+	} \
+}; \
+inline std::ostream& operator<<(ENGINE_TYPE type, std::ostream& os) { os << Kodiak::EngineTypeToString(type); return os; }
+
+
+DECLARE_STRING_FORMATTERS(Kodiak::CommandListType)
+DECLARE_STRING_FORMATTERS(Kodiak::QueueType)
+
+
+#undef DECLARE_STRING_FORMATTERS

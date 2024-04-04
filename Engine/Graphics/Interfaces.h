@@ -70,7 +70,7 @@ class ICommandContext : public IObject
 public:
 	virtual ~ICommandContext() = default;
 
-	virtual void Finish(bool bWaitForCompletion = false) = 0;
+	virtual uint64_t Finish(bool bWaitForCompletion = false) = 0;
 
 	virtual void BeginEvent(const std::string& label) = 0;
 	virtual void EndEvent() = 0;

@@ -14,6 +14,7 @@
 
 #include "Graphics\CreationParams.h"
 #include "ColorBuffer12.h"
+#include "CommandContext12.h"
 #include "DepthBuffer12.h"
 #include "DescriptorHeap12.h"
 #include "DeviceCaps12.h"
@@ -546,7 +547,11 @@ DepthBufferHandle GraphicsDevice::CreateDepthBuffer(const DepthBufferCreationPar
 
 CommandContextHandle GraphicsDevice::BeginCommandContext(const string& ID)
 {
-	return nullptr;
+	auto* newContext = AllocateContext(CommandListType::Direct);
+
+	newContext->SetID(ID);
+
+	return newContext;
 }
 
 
@@ -703,6 +708,57 @@ void GraphicsDevice::CreateDescriptorAllocators()
 	m_descriptorAllocators[1] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 	m_descriptorAllocators[2] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	m_descriptorAllocators[3] = make_unique<DescriptorAllocator>(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+}
+
+
+CommandContext* GraphicsDevice::AllocateContext(CommandListType commandListType)
+{
+	lock_guard<mutex> guard{ m_contextAllocationMutex };
+
+	auto& availableContexts = m_availableContexts[(uint32_t)commandListType];
+
+	CommandContext* context{ nullptr };
+	if (availableContexts.empty())
+	{
+		context = new CommandContext(this, commandListType);
+		CommandContextHandle handle;
+		handle.Attach(context);
+		m_contextPool[(uint32_t)commandListType].emplace_back(handle);
+
+		CreateCommandList(commandListType, &context->m_commandList, &context->m_currentAllocator);
+	}
+	else
+	{
+		context = availableContexts.front();
+		availableContexts.pop();
+		context->Reset();
+	}
+
+	assert(context != nullptr);
+	assert(context->m_type == commandListType);
+
+	return context;
+}
+
+void GraphicsDevice::FreeContext(CommandContext* usedContext)
+{
+	assert(usedContext != nullptr);
+
+	lock_guard<mutex> guard(m_contextAllocationMutex);
+
+	m_availableContexts[(uint32_t)usedContext->m_type].push(usedContext);
+}
+
+
+void GraphicsDevice::CreateCommandList(CommandListType commandListType, ID3D12GraphicsCommandList** commandList, ID3D12CommandAllocator** allocator)
+{
+	assert_msg(commandListType != CommandListType::Bundle, "Bundles are not yet supported");
+
+	*allocator = GetQueue(commandListType).RequestAllocator();
+
+	assert_succeeded(m_dxDevice->CreateCommandList(1, CommandListTypeToDX12(commandListType), *allocator, nullptr, IID_PPV_ARGS(commandList)));
+
+	SetDebugName(*commandList, format("{} Command List", commandListType));
 }
 
 } // namespace Kodiak::DX12

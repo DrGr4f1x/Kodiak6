@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Profile|x64">
@@ -48,6 +48,7 @@
     </ClCompile>
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Graphics\DX12\ColorBuffer12.cpp" />
+    <ClCompile Include="Graphics\DX12\CommandAllocatorPool12.cpp" />
     <ClCompile Include="Graphics\DX12\CommandContext12.cpp" />
     <ClCompile Include="Graphics\DX12\DepthBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\DeviceCaps12.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Graphics\CreationParams.h" />
     <ClInclude Include="Graphics\DX12\ColorBuffer12.h" />
+    <ClInclude Include="Graphics\DX12\CommandAllocatorPool12.h" />
     <ClInclude Include="Graphics\DX12\CommandContext12.h" />
     <ClInclude Include="Graphics\DX12\DepthBuffer12.h" />
     <ClInclude Include="Graphics\DX12\DescriptorHeap12.h" />

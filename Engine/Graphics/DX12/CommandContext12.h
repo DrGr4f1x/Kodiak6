@@ -11,37 +11,61 @@
 #pragma once
 
 #include "Graphics\Interfaces.h"
+#include "Graphics\Enums.h"
+#include "Graphics\DX12\DirectXCommon.h"
+
 
 namespace Kodiak::DX12
 {
 
-struct CommandContextState
+// Forward declarations
+class GraphicsDevice;
+
+
+class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable
 {
+	friend class GraphicsDevice;
 
-};
-
-
-class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable, private CommandContextState
-{
 public:
 	~CommandContext() override;
 
-	void Finish(bool bWaitForCompletion = false) final;
+	uint64_t Finish(bool bWaitForCompletion = false) final;
 
 	void BeginEvent(const std::string& label);
 	void EndEvent();
 	void SetMarker(const std::string& label);
+
+	void FlushResourceBarriers();
+
+protected:
+	void SetID(const std::string& id) { m_id = id; }
+
+protected:
+	GraphicsDevice* m_device{ nullptr };
+	CommandListType m_type{ CommandListType::Direct };
+
+	ID3D12GraphicsCommandList* m_commandList{ nullptr };
+	ID3D12CommandAllocator* m_currentAllocator{ nullptr };
+
+	std::string m_id;
+
+	bool m_hasPendingDebugEvent{ false };
+
+private:
+	CommandContext(GraphicsDevice* device, CommandListType type);
+
+	void Reset();
 };
 
 
-class GraphicsContext : public IntrusiveCounter<IGraphicsContext>, public NonCopyable, private CommandContextState
+class GraphicsContext : public IntrusiveCounter<IGraphicsContext>, public CommandContext
 {
 public:
 	~GraphicsContext() override;
 };
 
 
-class ComputeContext : public IntrusiveCounter<IComputeContext>, public NonCopyable, private CommandContextState
+class ComputeContext : public IntrusiveCounter<IComputeContext>, public CommandContext
 {
 public:
 	~ComputeContext() override;

@@ -31,7 +31,7 @@ CommandContext::CommandContext(CommandListType type)
 CommandContext::~CommandContext() = default;
 
 
-void CommandContext::Finish(bool bWaitForCompletion)
+uint64_t CommandContext::Finish(bool bWaitForCompletion)
 {
 	assert(m_type == CommandListType::Direct || m_type == CommandListType::Compute);
 
@@ -71,6 +71,8 @@ void CommandContext::Finish(bool bWaitForCompletion)
 	}
 
 	m_device->FreeContext(this);
+
+	return fenceValue;
 }
 
 

@@ -25,14 +25,13 @@ class GraphicsDevice;
 
 class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable
 {
-	friend class ContextManager;
 	friend class GraphicsDevice;
 
 public:
 	~CommandContext() override;
 
 	// Flush existing commands and release the current context
-	void Finish(bool bWaitForCompletion = false) final;
+	uint64_t Finish(bool bWaitForCompletion = false) final;
 
 	// Debug events and markers
 	void BeginEvent(const std::string& label) final;
@@ -51,7 +50,7 @@ protected:
 	bool m_hasPendingDebugEvent{ false };
 
 private:
-	CommandContext(CommandListType type);
+	explicit CommandContext(CommandListType type);
 
 	void Reset();
 };

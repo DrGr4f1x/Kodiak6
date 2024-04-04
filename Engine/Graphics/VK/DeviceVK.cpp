@@ -738,6 +738,7 @@ CommandContext* GraphicsDevice::AllocateContext(CommandListType commandListType)
 		handle.Attach(context);
 		m_contextPool[(uint32_t)commandListType].emplace_back(handle);
 		
+		context->m_device = this;
 		context->m_commandBuffer = GetQueue(commandListType).RequestCommandBuffer();
 	}
 	else
@@ -759,13 +760,6 @@ void GraphicsDevice::FreeContext(CommandContext* usedContext)
 	lock_guard<mutex> guard{ m_contextAllocationMutex };
 
 	m_availableContexts[(uint32_t)usedContext->m_type].push(usedContext);
-}
-
-
-void GraphicsDevice::WaitForFence(uint64_t fenceValue)
-{
-	auto& queue = GetQueue((CommandListType)(fenceValue >> 56));
-	queue.WaitForFence(fenceValue);
 }
 
 
