@@ -18,6 +18,6 @@ using namespace Kodiak;
 int main(int argc, char* argv[])
 {
 	TestApp app{ s_appName };
-	
+
 	return app.Run(argc, argv);
 }

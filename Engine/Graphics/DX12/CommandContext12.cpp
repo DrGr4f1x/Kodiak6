@@ -12,6 +12,7 @@
 
 #include "CommandContext12.h"
 
+#include "ColorBuffer12.h"
 #include "Device12.h"
 #include "Queue12.h"
 
@@ -21,6 +22,30 @@
 
 
 using namespace std;
+
+
+namespace
+{
+
+bool IsValidComputeResourceState(Kodiak::ResourceState state)
+{
+	using enum Kodiak::ResourceState;
+
+	// TODO: Also ResourceState::ShaderResource?
+	switch (state)
+	{
+	case NonPixelShaderResource:
+	case UnorderedAccess:
+	case CopyDest:
+	case CopySource:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
+} // anonymous namespace
 
 
 namespace Kodiak::DX12
@@ -107,8 +132,52 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-void CommandContext::FlushResourceBarriers()
-{}
+//void CommandContext::TransitionResource(IColorBuffer* colorBuffer, ResourceState newState, bool bFlushImmediate)
+//{
+//	auto* dxColorBuffer = (ColorBuffer*)colorBuffer;
+//
+//	auto oldState = dxColorBuffer->m_usageState;
+//
+//	if (m_type == CommandListType::Compute)
+//	{
+//		assert(IsValidComputeResourceState(oldState));
+//		assert(IsValidComputeResourceState(newState));
+//	}
+//
+//	if (oldState != newState)
+//	{
+//		assert_msg(m_numPendingBarriers < 16, "Exceeded arbitrary limit on buffered barriers");
+//		D3D12_RESOURCE_BARRIER& barrierDesc = m_resourceBarriers[m_numPendingBarriers++];
+//
+//		barrierDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+//		barrierDesc.Transition.pResource = resource.m_resource.Get();
+//		barrierDesc.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+//		barrierDesc.Transition.StateBefore = GetResourceState(oldState);
+//		barrierDesc.Transition.StateAfter = GetResourceState(newState);
+//
+//		// Check to see if we already started the transition
+//		if (newState == resource.m_transitioningState)
+//		{
+//			barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
+//			resource.m_transitioningState = ResourceState::Undefined;
+//		}
+//		else
+//		{
+//			barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+//		}
+//
+//		resource.m_usageState = newState;
+//	}
+//	else if (newState == ResourceState::UnorderedAccess)
+//	{
+//		InsertUAVBarrier(resource, flushImmediate);
+//	}
+//
+//	if (flushImmediate || m_numBarriersToFlush == 16)
+//	{
+//		FlushResourceBarriers();
+//	}
+//}
 
 
 void CommandContext::Reset()

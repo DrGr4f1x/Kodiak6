@@ -107,4 +107,15 @@ void CVkImageView::Destroy()
 	m_imageView = VK_NULL_HANDLE;
 }
 
+
+void CVkBuffer::Destroy()
+{
+	if (m_bOwnsBuffer)
+	{
+		vmaDestroyBuffer(*m_allocator, m_buffer, m_allocation);
+		m_allocation = VK_NULL_HANDLE;
+	}
+	m_buffer = VK_NULL_HANDLE;
+}
+
 } // namespace Kodiak::VK

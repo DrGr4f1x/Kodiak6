@@ -32,7 +32,7 @@ public:
 using GpuResourceHandle = IntrusivePtr<IGpuResource>;
 
 
-class IPixelBuffer : public IGpuResource
+class IPixelBuffer : public virtual IGpuResource
 {
 public:
 	virtual uint64_t GetWidth() const noexcept = 0;
@@ -46,7 +46,7 @@ public:
 using PixelBufferHandle = IntrusivePtr<IPixelBuffer>;
 
 
-class IColorBuffer : public IPixelBuffer
+class IColorBuffer : public virtual IPixelBuffer
 {
 public:
 	virtual void SetClearColor(Color clearColor) noexcept = 0;
@@ -56,7 +56,7 @@ public:
 using ColorBufferHandle = IntrusivePtr<IColorBuffer>;
 
 
-class IDepthBuffer : public IPixelBuffer
+class IDepthBuffer : public virtual IPixelBuffer
 {
 public:
 	virtual float GetClearDepth() const noexcept = 0;
@@ -75,6 +75,8 @@ public:
 	virtual void BeginEvent(const std::string& label) = 0;
 	virtual void EndEvent() = 0;
 	virtual void SetMarker(const std::string& label) = 0;
+
+	//virtual void TransitionResource(IColorBuffer* colorBuffer, ResourceState newState, bool bFlushImmediate) = 0;
 };
 using CommandContextHandle = IntrusivePtr<ICommandContext>;
 

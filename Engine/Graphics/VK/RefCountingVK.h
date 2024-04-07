@@ -372,7 +372,7 @@ class CVkImageView : public IntrusiveCounter<IObject>, public NonCopyable
 {
 public:
 	CVkImageView() noexcept = default;
-	CVkImageView(CVkDevice* device, CVkImage* image, VkImageView imageView)
+	CVkImageView(CVkDevice* device, CVkImage* image, VkImageView imageView) noexcept
 		: m_device{ device }
 		, m_image{ image }
 		, m_imageView{ imageView }
@@ -397,5 +397,43 @@ private:
 	VkImageView m_imageView{ VK_NULL_HANDLE };
 };
 using VkImageViewHandle = IntrusivePtr<CVkImageView>;
+
+
+//
+// VkBuffer
+//
+class CVkBuffer : public IntrusiveCounter<IObject>, public NonCopyable
+{
+public:
+	CVkBuffer() noexcept = default;
+	CVkBuffer(CVkDevice* device, CVmaAllocator* allocator, VkBuffer buffer, VmaAllocation allocation) noexcept
+		: m_device{ device }
+		, m_allocator{ allocator }
+		, m_buffer{ buffer }
+		, m_allocation{ allocation }
+		, m_bOwnsBuffer{ true }
+	{}
+
+	~CVkBuffer()
+	{
+		Destroy();
+	}
+
+	VkBuffer Get() const noexcept { return m_buffer; }
+	operator VkBuffer() const noexcept { return Get(); }
+
+	VkDevice GetDevice() const noexcept { return *m_device; }
+	VmaAllocator GetAllocator() const noexcept { return *m_allocator; }
+
+	void Destroy();
+
+private:
+	VkDeviceHandle m_device;
+	VmaAllocatorHandle m_allocator;
+	VkBuffer m_buffer{ VK_NULL_HANDLE };
+	VmaAllocation m_allocation{ VK_NULL_HANDLE };
+	bool m_bOwnsBuffer{ false };
+};
+using VkBufferHandle = IntrusivePtr<CVkBuffer>;
 
 } // namespace Kodiak::VK

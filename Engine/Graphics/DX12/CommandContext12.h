@@ -10,8 +10,8 @@
 
 #pragma once
 
+
 #include "Graphics\Interfaces.h"
-#include "Graphics\Enums.h"
 #include "Graphics\DX12\DirectXCommon.h"
 
 
@@ -31,11 +31,12 @@ public:
 
 	uint64_t Finish(bool bWaitForCompletion = false) final;
 
-	void BeginEvent(const std::string& label);
-	void EndEvent();
-	void SetMarker(const std::string& label);
+	void BeginEvent(const std::string& label) final;
+	void EndEvent() final;
+	void SetMarker(const std::string& label) final;
 
-	void FlushResourceBarriers();
+	//void TransitionResource(IColorBuffer* colorBuffer, ResourceState newState, bool bFlushImmediate) final;
+	inline void FlushResourceBarriers();
 
 protected:
 	void SetID(const std::string& id) { m_id = id; }
@@ -46,6 +47,9 @@ protected:
 
 	ID3D12GraphicsCommandList* m_commandList{ nullptr };
 	ID3D12CommandAllocator* m_currentAllocator{ nullptr };
+
+	std::array<D3D12_RESOURCE_BARRIER, 16> m_resourceBarriers{};
+	uint32_t m_numPendingBarriers{ 0 };
 
 	std::string m_id;
 
@@ -70,5 +74,15 @@ class ComputeContext : public IntrusiveCounter<IComputeContext>, public CommandC
 public:
 	~ComputeContext() override;
 };
+
+
+inline void CommandContext::FlushResourceBarriers()
+{
+	if (m_numPendingBarriers > 0)
+	{
+		m_commandList->ResourceBarrier(m_numPendingBarriers, m_resourceBarriers.data());
+		m_numPendingBarriers = 0;
+	}
+}
 
 } // namespace Kodiak::DX12

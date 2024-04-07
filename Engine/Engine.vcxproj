@@ -72,6 +72,7 @@
     <ClCompile Include="Graphics\VK\DeviceVK.cpp" />
     <ClCompile Include="Graphics\VK\EnumsVK.cpp" />
     <ClCompile Include="Graphics\VK\Generated\LoaderVK.cpp" />
+    <ClCompile Include="Graphics\VK\PixelBufferVK.cpp" />
     <ClCompile Include="Graphics\VK\QueueVK.cpp" />
     <ClCompile Include="Graphics\VK\RefCountingVK.cpp" />
     <ClCompile Include="Graphics\VK\VersionVK.cpp" />
@@ -164,6 +165,8 @@
     <ClInclude Include="Graphics\DX12\Formats12.h" />
     <ClInclude Include="Graphics\DX12\Device12.h" />
     <ClInclude Include="Graphics\DX12\Enums12.h" />
+    <ClInclude Include="Graphics\DX12\GpuResource12.h" />
+    <ClInclude Include="Graphics\DX12\PixelBuffer12.h" />
     <ClInclude Include="Graphics\DX12\Queue12.h" />
     <ClInclude Include="Graphics\DX12\Strings12.h" />
     <ClInclude Include="Graphics\Formats.h" />
@@ -181,6 +184,8 @@
     <ClInclude Include="Graphics\VK\FlagsVK.h" />
     <ClInclude Include="Graphics\VK\FormatsVK.h" />
     <ClInclude Include="Graphics\VK\Generated\LoaderVK.h" />
+    <ClInclude Include="Graphics\VK\GpuResourceVK.h" />
+    <ClInclude Include="Graphics\VK\PixelBufferVK.h" />
     <ClInclude Include="Graphics\VK\QueueVK.h" />
     <ClInclude Include="Graphics\VK\StringsVK.h" />
     <ClInclude Include="Graphics\VK\VersionVK.h" />

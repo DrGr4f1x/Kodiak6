@@ -11,6 +11,8 @@
 #pragma once
 
 #include "Graphics\DX12\DirectXCommon.h"
+#include "Graphics\DX12\PixelBuffer12.h"
+
 
 namespace Kodiak::DX12
 {
@@ -46,24 +48,13 @@ struct DepthBufferCreationParamsExt
 };
 
 
-class DepthBuffer : IntrusiveCounter<IDepthBuffer>
+#pragma warning(disable:4250)
+class DepthBuffer : public IntrusiveCounter<IDepthBuffer>, public PixelBuffer
 {
 	friend class GraphicsDevice;
 
 public:
 	~DepthBuffer() final = default;
-
-	// IGpuResource implementation
-	ResourceType GetType() const noexcept final { return m_resourceType; }
-
-	// IPixelBuffer implementation
-	uint64_t GetWidth() const noexcept final { return m_width; };
-	uint32_t GetHeight() const noexcept final { return m_height; }
-	uint32_t GetDepth() const noexcept final { return m_resourceType == ResourceType::Texture3D ? m_arraySizeOrDepth : 1; }
-	uint32_t GetArraySize() const noexcept final { return m_resourceType == ResourceType::Texture3D ? 1 : m_arraySizeOrDepth; }
-	uint32_t GetNumMips() const noexcept final { return m_numMips; }
-	uint32_t GetNumSamples() const noexcept final { return m_numSamples; }
-	Format GetFormat() const noexcept final { return m_format; }
 
 	// IDepthBuffer implementation
 	float GetClearDepth() const noexcept final { return m_clearDepth; }
@@ -82,23 +73,13 @@ private:
 
 private:
 	const std::string m_name;
-	ResourceType m_resourceType{ ResourceType::Texture2D };
-	uint64_t m_width{ 0 };
-	uint32_t m_height{ 0 };
-	uint32_t m_arraySizeOrDepth{ 0 };
-	uint32_t m_numMips{ 1 };
-	uint32_t m_numSamples{ 1 };
-	Format m_format{ Format::Unknown };
 	float m_clearDepth{ 1.0f };
 	uint8_t m_clearStencil{ 0 };
-
-	IntrusivePtr<ID3D12Resource> m_resource;
-	ResourceState m_usageState{ ResourceState::Undefined };
-	ResourceState m_transitioningState{ ResourceState::Undefined };
 
 	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4> m_dsvHandles{};
 	D3D12_CPU_DESCRIPTOR_HANDLE m_depthSrvHandle{};
 	D3D12_CPU_DESCRIPTOR_HANDLE m_stencilSrvHandle{};
 };
+#pragma warning(default:4250)
 
 } // namespace Kodiak::DX12
