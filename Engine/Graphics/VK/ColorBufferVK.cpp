@@ -20,8 +20,7 @@ namespace Kodiak::VK
 {
 
 ColorBuffer::ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt)
-	: GpuResource{ creationParams.resourceType, creationParamsExt.image }
-	, PixelBuffer{ creationParams.resourceType, creationParamsExt.image, creationParams.width, creationParams.height, creationParams.arraySizeOrDepth, creationParams.numMips, creationParams.numSamples, creationParams.format }
+	: PixelBuffer{ creationParams.resourceType, creationParamsExt.image, creationParams.width, creationParams.height, creationParams.arraySizeOrDepth, creationParams.numMips, creationParams.numSamples, creationParams.format }
 	, m_name{ creationParams.name }
 	, m_clearColor{ creationParams.clearColor }
 	, m_imageViewRtv{ creationParamsExt.imageViewRtv }

@@ -23,8 +23,7 @@ namespace Kodiak::VK
 {
 
 DepthBuffer::DepthBuffer(const DepthBufferCreationParams& creationParams, const DepthBufferCreationParamsExt& creationParamsExt) noexcept
-	: GpuResource{ creationParams.resourceType, creationParamsExt.image }
-	, PixelBuffer{ creationParams.resourceType, creationParamsExt.image, creationParams.width, creationParams.height, creationParams.arraySizeOrDepth, creationParams.numMips, creationParams.numSamples, creationParams.format }
+	: PixelBuffer{ creationParams.resourceType, creationParamsExt.image, creationParams.width, creationParams.height, creationParams.arraySizeOrDepth, creationParams.numMips, creationParams.numSamples, creationParams.format }
 	, m_name{ creationParams.name }
 	, m_clearDepth{ creationParams.clearDepth }
 	, m_clearStencil{ creationParams.clearStencil }

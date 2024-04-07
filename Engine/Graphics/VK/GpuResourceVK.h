@@ -24,6 +24,8 @@ public:
 	ResourceType GetType() const noexcept override { return m_resourceType; }
 
 protected:
+	GpuResource() = default;
+
 	GpuResource(ResourceType resourceType, CVkImage* image)
 		: m_resourceType{ resourceType }
 		, m_resource{ VkImageHandle::Create(image) }
