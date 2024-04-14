@@ -32,6 +32,7 @@ struct ColorBufferCreationParamsExt
 	ID3D12Resource* resource{ nullptr };
 	uint32_t numFragments{ 1 };
 	ResourceState usageState{ ResourceState::Undefined };
+	uint8_t planeCount{ 1 };
 
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle{};
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle{};
@@ -40,6 +41,7 @@ struct ColorBufferCreationParamsExt
 	constexpr ColorBufferCreationParamsExt& SetResource(ID3D12Resource* value) noexcept { resource = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetNumFragments(uint32_t value) noexcept { numFragments = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetUsageState(ResourceState value) noexcept { usageState = value; return *this; }
+	constexpr ColorBufferCreationParamsExt& SetPlaneCount(uint8_t value) noexcept { planeCount = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { srvHandle = value; return *this; }
 	constexpr ColorBufferCreationParamsExt& SetRtvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { rtvHandle = value; return *this; }
 	ColorBufferCreationParamsExt& SetUavHandles(const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 12>& value) noexcept { uavHandles = value; return *this; }

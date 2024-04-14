@@ -22,6 +22,28 @@ namespace Kodiak::DX12
 class GraphicsDevice;
 
 
+struct TextureBarrier
+{
+	ID3D12Resource* resource{ nullptr };
+	ResourceState beforeState{ ResourceState::Undefined };
+	ResourceState afterState{ ResourceState::Undefined };
+	uint32_t numMips{ 1 };
+	uint32_t mipLevel{ 0 };
+	uint32_t arraySizeOrDepth{ 1 };
+	uint32_t arraySlice{ 0 };
+	uint32_t planeCount{ 1 };
+	bool bWholeTexture{ false };
+};
+
+
+struct BufferBarrier
+{
+	ID3D12Resource* resource{ nullptr };
+	ResourceState beforeState{ ResourceState::Undefined };
+	ResourceState afterState{ ResourceState::Undefined };
+};
+
+
 class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable
 {
 	friend class GraphicsDevice;
@@ -35,8 +57,9 @@ public:
 	void EndEvent() final;
 	void SetMarker(const std::string& label) final;
 
-	//void TransitionResource(IColorBuffer* colorBuffer, ResourceState newState, bool bFlushImmediate) final;
-	inline void FlushResourceBarriers();
+	void TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate) final;
+	void InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate) final;
+	void FlushResourceBarriers();
 
 protected:
 	void SetID(const std::string& id) { m_id = id; }
@@ -48,8 +71,9 @@ protected:
 	ID3D12GraphicsCommandList* m_commandList{ nullptr };
 	ID3D12CommandAllocator* m_currentAllocator{ nullptr };
 
-	std::array<D3D12_RESOURCE_BARRIER, 16> m_resourceBarriers{};
-	uint32_t m_numPendingBarriers{ 0 };
+	std::vector<TextureBarrier> m_textureBarriers;
+	std::vector<BufferBarrier> m_bufferBarriers;
+	std::vector<D3D12_RESOURCE_BARRIER> m_dxBarriers;
 
 	std::string m_id;
 
@@ -59,6 +83,8 @@ private:
 	CommandContext(GraphicsDevice* device, CommandListType type);
 
 	void Reset();
+
+	size_t GetPendingBarrierCount() const noexcept { return m_textureBarriers.size() + m_bufferBarriers.size(); }
 };
 
 
@@ -74,15 +100,5 @@ class ComputeContext : public IntrusiveCounter<IComputeContext>, public CommandC
 public:
 	~ComputeContext() override;
 };
-
-
-inline void CommandContext::FlushResourceBarriers()
-{
-	if (m_numPendingBarriers > 0)
-	{
-		m_commandList->ResourceBarrier(m_numPendingBarriers, m_resourceBarriers.data());
-		m_numPendingBarriers = 0;
-	}
-}
 
 } // namespace Kodiak::DX12

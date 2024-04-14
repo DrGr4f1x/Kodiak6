@@ -35,6 +35,7 @@ struct DepthBufferCreationParamsExt
 
 	ID3D12Resource* resource{ nullptr };
 	ResourceState usageState{ ResourceState::Undefined };
+	uint8_t planeCount{ 1 };
 
 	std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4> dsvHandles{};
 	D3D12_CPU_DESCRIPTOR_HANDLE depthSrvHandle{};
@@ -42,6 +43,7 @@ struct DepthBufferCreationParamsExt
 
 	constexpr DepthBufferCreationParamsExt& SetResource(ID3D12Resource* value) noexcept { resource = value; return *this; }
 	constexpr DepthBufferCreationParamsExt& SetUsageState(ResourceState value) noexcept { usageState = value; return *this; }
+	constexpr DepthBufferCreationParamsExt& SetPlaneCount(uint8_t value) noexcept { planeCount = value; return *this; }
 	DepthBufferCreationParamsExt& SetDsvHandles(const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 4>& value) noexcept { dsvHandles = value; return *this; }
 	constexpr DepthBufferCreationParamsExt& SetDepthSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { depthSrvHandle = value; return *this; }
 	constexpr DepthBufferCreationParamsExt& SetStencilSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE value) noexcept { stencilSrvHandle = value; return *this; }

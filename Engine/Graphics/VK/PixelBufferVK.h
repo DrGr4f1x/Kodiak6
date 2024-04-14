@@ -19,6 +19,8 @@ namespace Kodiak::VK
 #pragma warning(disable:4250)
 class PixelBuffer : public virtual IPixelBuffer, public virtual GpuResource
 {
+	friend class CommandContext;
+
 public:
 	// IPixelBuffer
 	uint64_t GetWidth() const noexcept override { return m_width; }
@@ -29,10 +31,11 @@ public:
 	uint32_t GetNumSamples() const noexcept override { return m_numSamples; }
 	Format GetFormat() const noexcept override { return m_format; }
 
-protected:
-	PixelBuffer(ResourceType resourceType, CVkImage* image, uint64_t width, uint32_t height, uint32_t arraySizeOrDepth, uint32_t numMips, uint32_t numSamples, Format format);
-	PixelBuffer(ResourceType resourceType, CVkBuffer* buffer, uint64_t width, uint32_t height, uint32_t arraySizeOrDepth, uint32_t numMips, uint32_t numSamples, Format format);
+	ImageAspect GetImageAspect() const noexcept { return m_imageAspect; }
 
+protected:
+	PixelBuffer(ResourceType resourceType, CVkImage* image, ResourceState usageState, uint64_t width, uint32_t height, uint32_t arraySizeOrDepth, uint32_t numMips, uint32_t numSamples, Format format, ImageAspect imageAspect);
+	
 protected:
 	uint64_t m_width{ 0 };
 	uint32_t m_height{ 0 };
@@ -40,6 +43,8 @@ protected:
 	uint32_t m_numMips{ 1 };
 	uint32_t m_numSamples{ 1 };
 	Format m_format{ Format::Unknown };
+
+	ImageAspect m_imageAspect{ 0 };
 };
 #pragma warning(default:4250)
 

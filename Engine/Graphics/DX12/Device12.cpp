@@ -420,9 +420,12 @@ ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationPar
 		}
 	}
 
+	const uint8_t planeCount = GetFormatPlaneCount(FormatToDxgi(creationParams.format).resourceFormat);
+
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
 		.SetResource(resource)
 		.SetUsageState(ResourceState::Common)
+		.SetPlaneCount(planeCount)
 		.SetRtvHandle(rtvHandle)
 		.SetSrvHandle(srvHandle)
 		.SetUavHandles(uavHandles);
@@ -535,9 +538,12 @@ DepthBufferHandle GraphicsDevice::CreateDepthBuffer(const DepthBufferCreationPar
 		m_dxDevice->CreateShaderResourceView(resource, &srvDesc, stencilSrvHandle);
 	}
 
+	const uint8_t planeCount = GetFormatPlaneCount(FormatToDxgi(creationParams.format).resourceFormat);
+
 	auto creationParamsExt = DepthBufferCreationParamsExt{}
 		.SetResource(resource)
 		.SetUsageState(ResourceState::DepthRead | ResourceState::DepthWrite)
+		.SetPlaneCount(planeCount)
 		.SetDsvHandles(dsvHandles)
 		.SetDepthSrvHandle(depthSrvHandle)
 		.SetStencilSrvHandle(stencilSrvHandle);
@@ -667,9 +673,12 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 	auto srvHandle = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	m_dxDevice->CreateShaderResourceView(displayPlane, nullptr, srvHandle);
 
+	const uint8_t planeCount = GetFormatPlaneCount(resourceDesc.Format);
+
 	auto creationParamsExt = ColorBufferCreationParamsExt{}
 		.SetResource(displayPlane)
 		.SetUsageState(ResourceState::Present)
+		.SetPlaneCount(planeCount)
 		.SetRtvHandle(rtvHandle)
 		.SetSrvHandle(srvHandle);
 
@@ -759,6 +768,33 @@ void GraphicsDevice::CreateCommandList(CommandListType commandListType, ID3D12Gr
 	assert_succeeded(m_dxDevice->CreateCommandList(1, CommandListTypeToDX12(commandListType), *allocator, nullptr, IID_PPV_ARGS(commandList)));
 
 	SetDebugName(*commandList, format("{} Command List", commandListType));
+}
+
+
+uint8_t GraphicsDevice::GetFormatPlaneCount(DXGI_FORMAT format)
+{
+	uint8_t& planeCount = m_dxgiFormatPlaneCounts[format];
+	if (planeCount == 0)
+	{
+		D3D12_FEATURE_DATA_FORMAT_INFO formatInfo{ format, 1 };
+		if (FAILED(m_dxDevice->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(formatInfo))))
+		{
+			// Format not supported, store a special value in the cache to avoid querying later
+			planeCount = 255;
+		}
+		else
+		{
+			// Format supported - store the plane count in the cache
+			planeCount = formatInfo.PlaneCount;
+		}
+	}
+
+	if (planeCount == 255)
+	{
+		return 0;
+	}
+
+	return planeCount;
 }
 
 } // namespace Kodiak::DX12

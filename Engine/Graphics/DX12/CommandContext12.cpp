@@ -14,6 +14,7 @@
 
 #include "ColorBuffer12.h"
 #include "Device12.h"
+#include "GpuResource12.h"
 #include "Queue12.h"
 
 #if ENABLE_D3D12_DEBUG_MARKERS
@@ -34,7 +35,7 @@ bool IsValidComputeResourceState(Kodiak::ResourceState state)
 	// TODO: Also ResourceState::ShaderResource?
 	switch (state)
 	{
-	case NonPixelShaderResource:
+	case ShaderResource:
 	case UnorderedAccess:
 	case CopyDest:
 	case CopySource:
@@ -43,6 +44,12 @@ bool IsValidComputeResourceState(Kodiak::ResourceState state)
 	default:
 		return false;
 	}
+}
+
+
+uint32_t CalcSubresource(uint32_t mipSlice, uint32_t arraySlice, uint32_t planeSlice, uint32_t numMips, uint32_t arraySize)
+{
+	return mipSlice + (arraySlice * numMips) + (planeSlice * numMips * arraySize);
 }
 
 } // anonymous namespace
@@ -132,52 +139,159 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-//void CommandContext::TransitionResource(IColorBuffer* colorBuffer, ResourceState newState, bool bFlushImmediate)
-//{
-//	auto* dxColorBuffer = (ColorBuffer*)colorBuffer;
-//
-//	auto oldState = dxColorBuffer->m_usageState;
-//
-//	if (m_type == CommandListType::Compute)
-//	{
-//		assert(IsValidComputeResourceState(oldState));
-//		assert(IsValidComputeResourceState(newState));
-//	}
-//
-//	if (oldState != newState)
-//	{
-//		assert_msg(m_numPendingBarriers < 16, "Exceeded arbitrary limit on buffered barriers");
-//		D3D12_RESOURCE_BARRIER& barrierDesc = m_resourceBarriers[m_numPendingBarriers++];
-//
-//		barrierDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-//		barrierDesc.Transition.pResource = resource.m_resource.Get();
-//		barrierDesc.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-//		barrierDesc.Transition.StateBefore = GetResourceState(oldState);
-//		barrierDesc.Transition.StateAfter = GetResourceState(newState);
-//
-//		// Check to see if we already started the transition
-//		if (newState == resource.m_transitioningState)
-//		{
-//			barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
-//			resource.m_transitioningState = ResourceState::Undefined;
-//		}
-//		else
-//		{
-//			barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-//		}
-//
-//		resource.m_usageState = newState;
-//	}
-//	else if (newState == ResourceState::UnorderedAccess)
-//	{
-//		InsertUAVBarrier(resource, flushImmediate);
-//	}
-//
-//	if (flushImmediate || m_numBarriersToFlush == 16)
-//	{
-//		FlushResourceBarriers();
-//	}
-//}
+void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate)
+{
+	auto* dxGpuResource = dynamic_cast<GpuResource*>(gpuResource);
+
+	auto oldState = dxGpuResource->m_usageState;
+
+	if (m_type == CommandListType::Compute)
+	{
+		assert(IsValidComputeResourceState(oldState));
+		assert(IsValidComputeResourceState(newState));
+	}
+
+	if (IsTextureResource(gpuResource->GetType()))
+	{
+		TextureBarrier barrier{};
+		auto* dxPixelBuffer = dynamic_cast<PixelBuffer*>(gpuResource);
+		barrier.resource = dxPixelBuffer->GetResource();
+		barrier.beforeState = oldState;
+		barrier.afterState = newState;
+		barrier.numMips = dxPixelBuffer->GetNumMips();
+		barrier.mipLevel = 0;
+		barrier.arraySizeOrDepth = dxPixelBuffer->GetArraySize();
+		barrier.arraySlice = 0;
+		barrier.planeCount = dxPixelBuffer->GetPlaneCount();
+		barrier.bWholeTexture = true;
+
+		m_textureBarriers.push_back(barrier);
+
+		dxPixelBuffer->m_usageState = newState;
+	}
+	else if (IsBufferResource(gpuResource->GetType()))
+	{
+		BufferBarrier barrier{};
+		barrier.resource = dxGpuResource->GetResource();
+		barrier.beforeState = dxGpuResource->GetUsageState();
+		barrier.afterState = newState;
+
+		m_bufferBarriers.push_back(barrier);
+
+		dxGpuResource->m_usageState = newState;
+	}
+
+	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
+	{
+		FlushResourceBarriers();
+	}
+}
+
+
+void CommandContext::InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate)
+{
+	auto* dxGpuResource = dynamic_cast<GpuResource*>(gpuResource);
+
+	assert_msg(HasFlag(dxGpuResource->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
+
+	BufferBarrier barrier{};
+	barrier.resource = dxGpuResource->GetResource();
+	barrier.beforeState = dxGpuResource->GetUsageState();
+	barrier.afterState = barrier.beforeState;
+
+	m_bufferBarriers.push_back(barrier);
+
+	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
+	{
+		FlushResourceBarriers();
+	}
+}
+
+
+void CommandContext::FlushResourceBarriers()
+{
+	using enum ResourceState;
+
+	const size_t numBarriers = m_textureBarriers.size() + m_bufferBarriers.size();
+	if (numBarriers == 0)
+	{
+		return;
+	}
+
+	m_dxBarriers.clear();
+	m_dxBarriers.reserve(numBarriers);
+
+	for (const auto& barrier : m_textureBarriers)
+	{
+		D3D12_RESOURCE_BARRIER dxBarrier{};
+		const D3D12_RESOURCE_STATES beforeState = ResourceStateToDX12(barrier.beforeState);
+		const D3D12_RESOURCE_STATES afterState = ResourceStateToDX12(barrier.afterState);
+
+		if (beforeState != afterState)
+		{
+			dxBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			dxBarrier.Transition.StateBefore = beforeState;
+			dxBarrier.Transition.StateAfter = afterState;
+			dxBarrier.Transition.pResource = barrier.resource;
+			if (barrier.bWholeTexture)
+			{
+				dxBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				m_dxBarriers.push_back(dxBarrier);
+			}
+			else
+			{
+				for (uint8_t plane = 0; plane < barrier.planeCount; ++plane)
+				{
+					dxBarrier.Transition.Subresource = CalcSubresource(barrier.mipLevel, barrier.arraySlice, plane, barrier.numMips, barrier.arraySizeOrDepth);
+					m_dxBarriers.push_back(dxBarrier);
+				}
+			}
+		}
+		else if (afterState & D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+		{
+			dxBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+			dxBarrier.UAV.pResource = barrier.resource;
+			m_dxBarriers.push_back(dxBarrier);
+		}
+	}
+
+	for (const auto& barrier : m_bufferBarriers)
+	{
+		D3D12_RESOURCE_BARRIER dxBarrier{};
+		const D3D12_RESOURCE_STATES beforeState = ResourceStateToDX12(barrier.beforeState);
+		const D3D12_RESOURCE_STATES afterState = ResourceStateToDX12(barrier.afterState);
+
+		if (beforeState != afterState &&
+			(beforeState & D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE) == 0 &&
+			(afterState & D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE) == 0)
+		{
+			dxBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			dxBarrier.Transition.StateBefore = beforeState;
+			dxBarrier.Transition.StateAfter = afterState;
+			dxBarrier.Transition.pResource = barrier.resource;
+			dxBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+			m_dxBarriers.push_back(dxBarrier);
+		}
+		else if ((HasFlag(barrier.beforeState, AccelStructWrite) && HasAnyFlag(barrier.afterState, (AccelStructRead | AccelStructBuildBlas))) ||
+			(HasFlag(barrier.afterState, AccelStructWrite) && HasAnyFlag(barrier.beforeState, (AccelStructRead | AccelStructBuildBlas))) ||
+			(HasFlag(barrier.beforeState, OpacityMicromapWrite) && HasFlag(barrier.afterState, AccelStructBuildInput)) ||
+			(afterState & D3D12_RESOURCE_STATE_UNORDERED_ACCESS) != 0)
+		{
+			dxBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+			dxBarrier.UAV.pResource = barrier.resource;
+			m_dxBarriers.push_back(dxBarrier);
+		}
+	}
+
+	if (!m_dxBarriers.empty())
+	{
+		m_commandList->ResourceBarrier((uint32_t)m_dxBarriers.size(), m_dxBarriers.data());
+		m_dxBarriers.clear();
+	}
+
+	m_textureBarriers.clear();
+	m_bufferBarriers.clear();
+}
 
 
 void CommandContext::Reset()

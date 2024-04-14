@@ -23,6 +23,26 @@ namespace Kodiak::VK
 class GraphicsDevice;
 
 
+struct TextureBarrier
+{
+	VkImage image{ VK_NULL_HANDLE };
+	VkFormat format{ VK_FORMAT_UNDEFINED };
+	ResourceState beforeState{ ResourceState::Undefined };
+	ResourceState afterState{ ResourceState::Undefined };
+	uint32_t numMips{ 1 };
+	uint32_t mipLevel{ 0 };
+	uint32_t arraySizeOrDepth{ 1 };
+	uint32_t arraySlice{ 0 };
+	bool bWholeTexture{ false };
+};
+
+
+struct BufferBarrier
+{
+	// TODO - Vulkan GPU buffer support
+};
+
+
 class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable
 {
 	friend class GraphicsDevice;
@@ -39,7 +59,10 @@ public:
 	void SetMarker(const std::string& label) final;
 
 	void HACK_TransitionImageToPresent(VkImage image);
-	inline void FlushResourceBarriers() { /* TODO - see if we can cache and flush multiple barriers at once */ }
+
+	void TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate) final;
+	void InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate) final;
+	void FlushResourceBarriers();
 
 protected:
 	GraphicsDevice* m_device{ nullptr };
@@ -49,10 +72,19 @@ protected:
 	bool m_bInvertedViewport{ true };
 	bool m_hasPendingDebugEvent{ false };
 
+	// Resource barriers
+	std::vector<TextureBarrier> m_textureBarriers;
+	std::vector<BufferBarrier> m_bufferBarriers;
+	std::vector<VkMemoryBarrier2> m_memoryBarriers;
+	std::vector<VkBufferMemoryBarrier2> m_bufferMemoryBarriers;
+	std::vector<VkImageMemoryBarrier2> m_imageMemoryBarriers;
+
 private:
 	explicit CommandContext(CommandListType type);
 
 	void Reset();
+
+	size_t GetPendingBarrierCount() const noexcept { return m_textureBarriers.size() + m_bufferBarriers.size(); }
 };
 
 

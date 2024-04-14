@@ -27,6 +27,10 @@ public:
 	uint32_t GetNumMips() const noexcept override { return m_numMips; }
 	uint32_t GetNumSamples() const noexcept override { return m_numSamples; }
 	Format GetFormat() const noexcept override { return m_format; }
+	uint8_t GetPlaneCount() const noexcept { return m_planeCount; }
+
+protected:
+	PixelBuffer(ResourceType resourceType, ID3D12Resource* resource, ResourceState usageState, uint64_t width, uint32_t height, uint32_t arraySizeOrDepth, uint32_t numMips, uint32_t numSamples, Format format, uint8_t planeCount);
 
 protected:
 	uint64_t m_width{ 0 };
@@ -35,6 +39,7 @@ protected:
 	uint32_t m_numMips{ 1 };
 	uint32_t m_numSamples{ 1 };
 	Format m_format{ Format::Unknown };
+	uint8_t m_planeCount{ 1 };
 };
 #pragma warning(default:4250)
 

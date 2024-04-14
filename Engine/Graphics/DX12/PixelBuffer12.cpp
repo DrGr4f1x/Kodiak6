@@ -10,23 +10,21 @@
 
 #include "Stdafx.h"
 
-#include "PixelBufferVK.h"
+#include "PixelBuffer12.h"
 
 
-namespace Kodiak::VK
+namespace Kodiak::DX12
 {
 
-PixelBuffer::PixelBuffer(ResourceType resourceType, CVkImage* image, ResourceState usageState, uint64_t width, uint32_t height, uint32_t arraySizeOrDepth, uint32_t numMips, uint32_t numSamples, Format format, ImageAspect imageAspect)
-	: GpuResource{ resourceType, image, usageState }
+PixelBuffer::PixelBuffer(ResourceType resourceType, ID3D12Resource* resource, ResourceState usageState, uint64_t width, uint32_t height, uint32_t arraySizeOrDepth, uint32_t numMips, uint32_t numSamples, Format format, uint8_t planeCount)
+	: GpuResource{ resourceType, resource, usageState }
 	, m_width{ width }
 	, m_height{ height }
 	, m_arraySizeOrDepth{ arraySizeOrDepth }
 	, m_numMips{ numMips }
 	, m_numSamples{ numSamples }
 	, m_format{ format }
-	, m_imageAspect{ imageAspect }
-{
-	m_numMips = m_numMips == 0 ? ComputeNumMips(m_width, m_height) : m_numMips;
-}
+	, m_planeCount{ planeCount }
+{}
 
-} // namespace Kodiak::VK
+} // namespace Kodiak::DX12

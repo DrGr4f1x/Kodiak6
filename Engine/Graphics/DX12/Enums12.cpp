@@ -517,8 +517,6 @@ D3D12_RESOURCE_STATES ResourceStateToDX12(ResourceState resourceState)
 	result |= HasFlag(resourceState, UnorderedAccess) ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS : 0;
 	result |= HasFlag(resourceState, ResourceState::DepthWrite) ? D3D12_RESOURCE_STATE_DEPTH_WRITE : 0;
 	result |= HasFlag(resourceState, DepthRead) ? D3D12_RESOURCE_STATE_DEPTH_READ : 0;
-	result |= HasFlag(resourceState, NonPixelShaderResource) ? D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE : 0;
-	result |= HasFlag(resourceState, PixelShaderResource) ? D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE : 0;
 	result |= HasFlag(resourceState, ShaderResource) ? result |= (D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE) : 0;
 	result |= HasFlag(resourceState, StreamOut) ? D3D12_RESOURCE_STATE_STREAM_OUT : 0;
 	result |= HasFlag(resourceState, IndirectArgument) ? D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT : 0;
@@ -526,11 +524,15 @@ D3D12_RESOURCE_STATES ResourceStateToDX12(ResourceState resourceState)
 	result |= HasFlag(resourceState, CopySource) ? D3D12_RESOURCE_STATE_COPY_SOURCE : 0;
 	result |= HasFlag(resourceState, ResolveDest) ? D3D12_RESOURCE_STATE_RESOLVE_DEST : 0;
 	result |= HasFlag(resourceState, ResolveSource) ? D3D12_RESOURCE_STATE_RESOLVE_SOURCE : 0;
-	result |= HasFlag(resourceState, GenericRead) ? D3D12_RESOURCE_STATE_GENERIC_READ : 0;
 	result |= HasFlag(resourceState, Present) ? D3D12_RESOURCE_STATE_PRESENT : 0;
 	result |= HasFlag(resourceState, Predication) ? D3D12_RESOURCE_STATE_PREDICATION : 0;
-	result |= HasFlag(resourceState, RayTracingAccelerationStructure) ? D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE : 0;
-	result |= HasFlag(resourceState, ShadingRateSource) ? D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE : 0;
+	result |= HasFlag(resourceState, AccelStructRead) ? D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE : 0;
+	result |= HasFlag(resourceState, AccelStructWrite) ? D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE : 0;
+	result |= HasFlag(resourceState, AccelStructBuildInput) ? D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE : 0;
+	result |= HasFlag(resourceState, AccelStructBuildBlas) ? D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE : 0;
+	result |= HasFlag(resourceState, ShadingRateSurface) ? D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE : 0;
+	result |= HasFlag(resourceState, OpacityMicromapBuildInput) ? D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE : 0;
+	result |= HasFlag(resourceState, OpacityMicromapWrite) ? D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE : 0;
 
 	return (D3D12_RESOURCE_STATES)result;
 }

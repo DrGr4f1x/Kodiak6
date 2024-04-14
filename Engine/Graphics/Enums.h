@@ -290,6 +290,7 @@ enum class TextureFilter
 	Count
 };
 
+
 enum class TextureAddress : uint8_t
 {
 	Wrap,
@@ -298,6 +299,7 @@ enum class TextureAddress : uint8_t
 	Border,
 	MirrorOnce
 };
+
 
 enum class InputClassification : uint8_t
 {
@@ -333,29 +335,31 @@ inline std::string EngineTypeToString(CommandListType commandListType)
 
 enum class ResourceState : uint32_t
 {
-	Undefined =							0x0000,
-	Common =							0x0001,
-	VertexBuffer =						0x0002,
-	IndexBuffer =						0x0004,
-	ConstantBuffer =					0x0008,
-	RenderTarget =						0x0010,
-	UnorderedAccess =					0x0020,
-	DepthWrite =						0x0040,
-	DepthRead =							0x0080,
-	NonPixelShaderResource =			0x0100,
-	PixelShaderResource =				0x0200,
-	ShaderResource =					0x0400,
-	StreamOut =							0x0800,
-	IndirectArgument =					0x1000,
-	CopyDest =							0x2000,
-	CopySource =						0x4000,
-	ResolveDest =						0x8000,
-	ResolveSource =						0x010000,
-	GenericRead =						0x020000,
-	Present =							0x040000,
-	Predication =						0x080000,
-	RayTracingAccelerationStructure =	0x100000,
-	ShadingRateSource =					0x200000
+	Undefined =						0,
+	Common =						0x00000001,
+	ConstantBuffer =				0x00000002,
+	VertexBuffer =					0x00000004,
+	IndexBuffer =					0x00000008,
+	IndirectArgument =				0x00000010,
+	ShaderResource =				0x00000020,
+	UnorderedAccess =				0x00000040,
+	RenderTarget =					0x00000080,
+	DepthWrite =					0x00000100,
+	DepthRead =						0x00000200,
+	StreamOut =						0x00000400,
+	CopyDest =						0x00000800,
+	CopySource =					0x00001000,
+	ResolveDest =					0x00002000,
+	ResolveSource =					0x00004000,
+	Present =						0x00008000,
+	AccelStructRead =				0x00010000,
+	AccelStructWrite =				0x00020000,
+	AccelStructBuildInput =			0x00040000,
+	AccelStructBuildBlas =			0x00080000,
+	ShadingRateSurface =			0x00100000,
+	OpacityMicromapWrite =			0x00200000,
+	OpacityMicromapBuildInput =		0x00400000,
+	Predication =					0x00800000,
 };
 
 template <> struct EnableBitmaskOperators<ResourceState> { static const bool enable = true; };

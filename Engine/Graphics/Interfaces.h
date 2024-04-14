@@ -76,7 +76,8 @@ public:
 	virtual void EndEvent() = 0;
 	virtual void SetMarker(const std::string& label) = 0;
 
-	//virtual void TransitionResource(IColorBuffer* colorBuffer, ResourceState newState, bool bFlushImmediate) = 0;
+	virtual void TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate = false) = 0;
+	virtual void InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate = false) = 0;
 };
 using CommandContextHandle = IntrusivePtr<ICommandContext>;
 

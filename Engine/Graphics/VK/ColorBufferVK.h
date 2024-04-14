@@ -28,12 +28,16 @@ struct ColorBufferCreationParamsExt
 	VkImageViewHandle imageViewSrv;
 	VkDescriptorImageInfo imageInfoSrv{};
 	VkDescriptorImageInfo imageInfoUav{};
+	ImageAspect imageAspect{ 0 };
+	ResourceState usageState{ ResourceState::Undefined };
 
 	ColorBufferCreationParamsExt& SetImage(CVkImage* value) noexcept { image = value; return *this; }
 	ColorBufferCreationParamsExt& SetImageViewRtv(CVkImageView* value) noexcept { imageViewRtv = value; return *this; }
 	ColorBufferCreationParamsExt& SetImageViewSrv(CVkImageView* value) noexcept { imageViewSrv = value; return *this; }
 	ColorBufferCreationParamsExt& SetImageInfoSrv(const VkDescriptorImageInfo& value) noexcept { imageInfoSrv = value; return *this; }
 	ColorBufferCreationParamsExt& SetImageInfoUav(const VkDescriptorImageInfo& value) noexcept { imageInfoUav = value; return *this; }
+	ColorBufferCreationParamsExt& SetImageAspects(const ImageAspect value) noexcept { imageAspect = value; return *this; }
+	ColorBufferCreationParamsExt& SetUsageState(const ResourceState value) noexcept { usageState = value; return *this; }
 };
 
 

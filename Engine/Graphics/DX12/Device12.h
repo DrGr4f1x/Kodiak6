@@ -127,6 +127,9 @@ private:
 	void FreeContext(CommandContext* usedContext);
 	void CreateCommandList(CommandListType commandListType, ID3D12GraphicsCommandList** commandList, ID3D12CommandAllocator** allocator);
 
+	// Texture formats
+	uint8_t GetFormatPlaneCount(DXGI_FORMAT format);
+
 	ID3D12Device* GetD3D12Device() noexcept { return m_dxDevice; }
 
 private:
@@ -163,6 +166,9 @@ private:
 
 	// DirectX caps
 	std::unique_ptr<DeviceCaps> m_caps;
+
+	// Format properties
+	std::unordered_map<DXGI_FORMAT, uint8_t> m_dxgiFormatPlaneCounts;
 };
 
 } // namespace Kodiak::DX12

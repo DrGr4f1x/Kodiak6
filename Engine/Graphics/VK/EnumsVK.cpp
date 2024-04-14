@@ -436,33 +436,6 @@ VkSamplerAddressMode TextureAddressToVulkan(TextureAddress textureAddress)
 }
 
 
-VkAccessFlags ResourceStateToVulkan(ResourceState resourceState)
-{
-	using enum ResourceState;
-
-	constexpr ResourceState AnyShaderRead = (NonPixelShaderResource | PixelShaderResource | ShaderResource);
-	constexpr ResourceState AnyWriteDest = (CopyDest | ResolveDest);
-	constexpr ResourceState AnyReadSource = (CopySource | ResolveSource | GenericRead);
-
-	uint32_t result = 0;
-	result |= HasFlag(resourceState, VertexBuffer) ? VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT : 0;
-	result |= HasFlag(resourceState, IndexBuffer) ? VK_ACCESS_INDEX_READ_BIT : 0;
-	result |= HasFlag(resourceState, ConstantBuffer) ? VK_ACCESS_UNIFORM_READ_BIT : 0;
-	result |= HasFlag(resourceState, RenderTarget) ? (VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT) : 0;
-	result |= HasFlag(resourceState, UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : 0;
-	result |= HasFlag(resourceState, DepthRead) ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT : 0;
-	result |= HasFlag(resourceState, ResourceState::DepthWrite) ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : 0;
-	result |= HasAnyFlag(resourceState, AnyShaderRead) ? VK_ACCESS_INPUT_ATTACHMENT_READ_BIT : 0;
-	result |= HasFlag(resourceState, IndirectArgument) ? VK_ACCESS_INDIRECT_COMMAND_READ_BIT : 0;
-	result |= HasAnyFlag(resourceState, AnyWriteDest) ? VK_ACCESS_TRANSFER_WRITE_BIT : 0;
-	result |= HasAnyFlag(resourceState, AnyReadSource) ? VK_ACCESS_TRANSFER_READ_BIT : 0;
-	result |= HasFlag(resourceState, RayTracingAccelerationStructure) ? (VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR | VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR) : 0;
-	result |= HasFlag(resourceState, ShadingRateSource) ? VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR : 0;
-
-	return (VkAccessFlags)result;
-}
-
-
 VkQueryType QueryTypeToVulkan(QueryType queryHeapType)
 {
 	using enum QueryType;
@@ -545,53 +518,6 @@ VkImageAspectFlags GetImageAspect(ImageAspect aspect)
 	flags |= HasFlag(aspect, ImageAspect::Stencil) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
 
 	return flags;
-}
-
-
-VkImageLayout GetImageLayout(ResourceState state)
-{
-	static const auto s_invalidLayout = VkImageLayout(-1);
-
-	switch (state)
-	{
-	case ResourceState::Undefined:
-		return VK_IMAGE_LAYOUT_UNDEFINED;
-	case ResourceState::Common:
-		return VK_IMAGE_LAYOUT_GENERAL;
-	case ResourceState::VertexBuffer:
-	case ResourceState::IndexBuffer:
-	case ResourceState::ConstantBuffer:
-		return s_invalidLayout;
-	case ResourceState::RenderTarget:
-		return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	case ResourceState::UnorderedAccess:
-		return VK_IMAGE_LAYOUT_GENERAL;
-	case ResourceState::DepthRead:
-	case ResourceState::DepthWrite:
-		return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	case ResourceState::NonPixelShaderResource:
-	case ResourceState::PixelShaderResource:
-	case ResourceState::ShaderResource:
-		return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	case ResourceState::StreamOut:
-	case ResourceState::IndirectArgument:
-		return s_invalidLayout;
-	case ResourceState::CopyDest:
-	case ResourceState::ResolveDest:
-		return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	case ResourceState::CopySource:
-	case ResourceState::ResolveSource:
-	case ResourceState::GenericRead:
-		return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-	case ResourceState::Present:
-		return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	case ResourceState::Predication:
-		return s_invalidLayout;
-
-	default:
-		assert(false);
-		return s_invalidLayout;
-	}
 }
 
 
@@ -698,6 +624,151 @@ VmaMemoryUsage GetMemoryUsage(MemoryAccess access)
 
 	assert(false);
 	return VMA_MEMORY_USAGE_GPU_ONLY;
+}
+
+
+static ResourceStateMapping s_resourceStateMap[] =
+{
+	{ ResourceState::Common,
+		VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT,
+		VK_ACCESS_2_NONE,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::ConstantBuffer,
+		VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+		VK_ACCESS_2_UNIFORM_READ_BIT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::VertexBuffer,
+		VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT,
+		VK_ACCESS_2_VERTEX_ATTRIBUTE_READ_BIT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::IndexBuffer,
+		VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT,
+		VK_ACCESS_2_INDEX_READ_BIT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::IndirectArgument,
+		VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT,
+		VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::ShaderResource,
+		VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+		VK_ACCESS_2_SHADER_READ_BIT,
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL },
+	{ ResourceState::UnorderedAccess,
+		VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+		VK_ACCESS_2_SHADER_READ_BIT | VK_ACCESS_2_SHADER_WRITE_BIT,
+		VK_IMAGE_LAYOUT_GENERAL },
+	{ ResourceState::RenderTarget,
+		VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+		VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+	{ ResourceState::DepthWrite,
+		VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+		VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
+	{ ResourceState::DepthRead,
+		VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
+		VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL	},
+	{ ResourceState::StreamOut,
+		VK_PIPELINE_STAGE_2_TRANSFORM_FEEDBACK_BIT_EXT,
+		VK_ACCESS_2_TRANSFORM_FEEDBACK_WRITE_BIT_EXT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::CopyDest,
+		VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+		VK_ACCESS_2_TRANSFER_WRITE_BIT,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL },
+	{ ResourceState::CopySource,
+		VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+		VK_ACCESS_2_TRANSFER_READ_BIT,
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL },
+	{ ResourceState::ResolveDest,
+		VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+		VK_ACCESS_2_TRANSFER_WRITE_BIT,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL },
+	{ ResourceState::ResolveSource,
+		VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+		VK_ACCESS_2_TRANSFER_READ_BIT,
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL },
+	{ ResourceState::Present,
+		VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+		VK_ACCESS_2_MEMORY_READ_BIT,
+		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR },
+	{ ResourceState::AccelStructRead,
+		VK_PIPELINE_STAGE_2_RAY_TRACING_SHADER_BIT_KHR | VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT,
+		VK_ACCESS_2_ACCELERATION_STRUCTURE_READ_BIT_KHR,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::AccelStructRead,
+		VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+		VK_ACCESS_2_ACCELERATION_STRUCTURE_WRITE_BIT_KHR,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::AccelStructBuildInput,
+		VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+		VK_ACCESS_2_ACCELERATION_STRUCTURE_READ_BIT_KHR,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::AccelStructBuildInput,
+		VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+		VK_ACCESS_2_ACCELERATION_STRUCTURE_READ_BIT_KHR,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::ShadingRateSurface,
+		VK_PIPELINE_STAGE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR,
+		VK_ACCESS_2_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR,
+		VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR },
+	{ ResourceState::OpacityMicromapWrite,
+		VK_PIPELINE_STAGE_2_MICROMAP_BUILD_BIT_EXT,
+		VK_ACCESS_2_MICROMAP_WRITE_BIT_EXT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::OpacityMicromapBuildInput,
+		VK_PIPELINE_STAGE_2_MICROMAP_BUILD_BIT_EXT,
+		VK_ACCESS_2_SHADER_READ_BIT,
+		VK_IMAGE_LAYOUT_UNDEFINED },
+	{ ResourceState::Predication,
+		VK_PIPELINE_STAGE_2_CONDITIONAL_RENDERING_BIT_EXT,
+		VK_ACCESS_2_CONDITIONAL_RENDERING_READ_BIT_EXT,
+		VK_IMAGE_LAYOUT_UNDEFINED }
+};
+
+
+ResourceStateMapping GetResourceStateMapping(ResourceState resourceState)
+{
+	ResourceStateMapping result{};
+
+	constexpr uint32_t numStateBits = sizeof(s_resourceStateMap) / sizeof(s_resourceStateMap[0]);
+
+	uint32_t stateTemp = (uint32_t)resourceState;
+	uint32_t bitIndex = 0;
+
+	while (stateTemp != 0 && bitIndex < numStateBits)
+	{
+		uint32_t bit = (1 << bitIndex);
+
+		if (stateTemp & bit)
+		{
+			const ResourceStateMapping& mapping = s_resourceStateMap[bitIndex];
+
+			assert((uint32_t)mapping.state == bit);
+			assert(result.imageLayout == VK_IMAGE_LAYOUT_UNDEFINED || mapping.imageLayout == VK_IMAGE_LAYOUT_UNDEFINED || result.imageLayout == mapping.imageLayout);
+
+			result.state |= mapping.state;
+			result.accessFlags |= mapping.accessFlags;
+			result.stageFlags |= mapping.stageFlags;
+			if (mapping.imageLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+			{
+				result.imageLayout = mapping.imageLayout;
+			}
+			stateTemp &= ~bit;
+		}
+		++bitIndex;
+	}
+
+	assert(result.state == resourceState);
+
+	return result;
+}
+
+
+VkImageLayout GetImageLayout(ResourceState resourceState)
+{
+	return GetResourceStateMapping(resourceState).imageLayout;
 }
 
 } // Minimumnamespace Kodiak::VK

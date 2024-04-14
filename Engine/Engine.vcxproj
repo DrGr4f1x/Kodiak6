@@ -57,6 +57,8 @@
     <ClCompile Include="Graphics\DX12\Device12.cpp" />
     <ClCompile Include="Graphics\DX12\Enums12.cpp" />
     <ClCompile Include="Graphics\DX12\DeviceManager12.cpp" />
+    <ClCompile Include="Graphics\DX12\GpuResource12.cpp" />
+    <ClCompile Include="Graphics\DX12\PixelBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\Queue12.cpp" />
     <ClCompile Include="Graphics\DX12\DescriptorHeap12.cpp" />
     <ClCompile Include="Graphics\Formats.cpp" />

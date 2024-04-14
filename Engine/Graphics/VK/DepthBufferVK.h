@@ -29,6 +29,8 @@ struct DepthBufferCreationParamsExt
 	VkImageViewHandle imageViewStencilOnly;
 	VkDescriptorImageInfo imageInfoDepth{};
 	VkDescriptorImageInfo imageInfoStencil{};
+	ImageAspect imageAspect{ 0 };
+	ResourceState usageState{ ResourceState::Undefined };
 
 	DepthBufferCreationParamsExt& SetImage(CVkImage* value) noexcept { image = value; return *this; }
 	DepthBufferCreationParamsExt& SetImageViewDepthStencil(CVkImageView* value) noexcept { imageViewDepthStencil = value; return *this; }
@@ -36,6 +38,8 @@ struct DepthBufferCreationParamsExt
 	DepthBufferCreationParamsExt& SetImageViewStencilOnly(CVkImageView* value) noexcept { imageViewStencilOnly = value; return *this; }
 	DepthBufferCreationParamsExt& SetImageInfoDepth(const VkDescriptorImageInfo& value) noexcept { imageInfoDepth = value; return *this; }
 	DepthBufferCreationParamsExt& SetImageInfoStencil(const VkDescriptorImageInfo& value) noexcept { imageInfoStencil = value; return *this; }
+	DepthBufferCreationParamsExt& SetImageAspect(const ImageAspect value) noexcept { imageAspect = value; return *this; }
+	DepthBufferCreationParamsExt& SetUsageState(const ResourceState value) noexcept { usageState = value; return *this; }
 };
 
 

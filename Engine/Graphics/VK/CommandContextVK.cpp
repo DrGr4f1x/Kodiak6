@@ -13,6 +13,9 @@
 #include "CommandContextVK.h"
 
 #include "DeviceVK.h"
+#include "FormatsVK.h"
+#include "GpuResourceVK.h"
+#include "PixelBufferVK.h"
 #include "QueueVK.h"
 
 
@@ -140,6 +143,66 @@ void CommandContext::HACK_TransitionImageToPresent(VkImage image)
 		nullptr,
 		1,
 		&barrierDesc);
+}
+
+
+void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate)
+{
+	auto* vkGpuResource = dynamic_cast<GpuResource*>(gpuResource);
+
+	if (vkGpuResource->IsImageResource())
+	{
+		auto* vkPixelBuffer = dynamic_cast<PixelBuffer*>(gpuResource);
+
+		TextureBarrier barrier{};
+		barrier.image = vkPixelBuffer->GetImage();
+		barrier.format = FormatToVulkan(vkPixelBuffer->GetFormat());
+		barrier.beforeState = vkPixelBuffer->GetUsageState();
+		barrier.afterState = newState;
+		barrier.numMips = vkPixelBuffer->GetNumMips();
+		barrier.mipLevel = 0;
+		barrier.arraySizeOrDepth = vkPixelBuffer->GetArraySize();
+		barrier.arraySlice = 0;
+		barrier.bWholeTexture = true;
+
+		m_textureBarriers.push_back(barrier);
+
+		vkPixelBuffer->m_usageState = newState;
+	}
+	else if (vkGpuResource->IsBufferResource())
+	{
+		// TODO - Vulkan GPU buffer support
+		BufferBarrier barrier{};
+	}
+
+	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
+	{
+		FlushResourceBarriers();
+	}
+}
+
+
+void CommandContext::InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate)
+{
+	auto* vkGpuResource = dynamic_cast<GpuResource*>(gpuResource);
+
+	assert_msg(HasFlag(vkGpuResource->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
+
+	TransitionResource(gpuResource, vkGpuResource->GetUsageState(), bFlushImmediate);
+}
+
+
+void CommandContext::FlushResourceBarriers()
+{
+	for (const auto& barrier : m_textureBarriers)
+	{
+		ResourceStateMapping before = GetResourceStateMapping(barrier.beforeState);
+		ResourceStateMapping after = GetResourceStateMapping(barrier.afterState);
+
+		assert(after.imageLayout != VK_IMAGE_LAYOUT_UNDEFINED);
+
+
+	}
 }
 
 

@@ -21,23 +21,23 @@ namespace Kodiak::DX12
 {
 
 DepthBuffer::DepthBuffer(const DepthBufferCreationParams& creationParams, const DepthBufferCreationParamsExt& creationParamsExt) noexcept
-	: m_name{ creationParams.name }
+	: PixelBuffer{
+		creationParams.resourceType,
+		creationParamsExt.resource,
+		creationParamsExt.usageState,
+		creationParams.width,
+		creationParams.height,
+		creationParams.arraySizeOrDepth,
+		creationParams.numMips,
+		creationParams.numSamples,
+		creationParams.format,
+		creationParamsExt.planeCount }
+	, m_name{ creationParams.name }
 	, m_clearDepth{ creationParams.clearDepth }
 	, m_clearStencil{ creationParams.clearStencil }
 	, m_dsvHandles{ creationParamsExt.dsvHandles }
 	, m_depthSrvHandle{ creationParamsExt.depthSrvHandle }
 	, m_stencilSrvHandle{ creationParamsExt.stencilSrvHandle }
-{
-	m_resourceType = creationParams.resourceType;
-	m_resource = creationParamsExt.resource;
-	m_usageState = creationParamsExt.usageState;
-
-	m_width = creationParams.width;
-	m_height = creationParams.height;
-	m_arraySizeOrDepth = 1;
-	m_numMips = 1;
-	m_numSamples = 1;
-	m_format = creationParams.format;
-}
+{}
 
 } // namespace Kodiak::DX12

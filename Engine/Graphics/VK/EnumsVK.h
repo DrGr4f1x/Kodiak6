@@ -61,11 +61,28 @@ struct VkTextureFilterMapping
 	VkBool32 isComparisonEnabled;
 };
 
+
+struct ResourceStateMapping
+{
+	ResourceStateMapping() noexcept = default;
+
+	ResourceStateMapping(ResourceState state, VkPipelineStageFlags2 stageFlags, VkAccessFlags2 accessFlags, VkImageLayout imageLayout) noexcept
+		: state{ state }
+		, stageFlags{ stageFlags }
+		, accessFlags{ accessFlags }
+		, imageLayout{ imageLayout }
+	{}
+
+	ResourceState state;
+	VkPipelineStageFlags2 stageFlags;
+	VkAccessFlags2 accessFlags;
+	VkImageLayout imageLayout;
+};
+
+
 VkTextureFilterMapping TextureFilterToVulkan(TextureFilter textureFilter);
 
 VkSamplerAddressMode TextureAddressToVulkan(TextureAddress textureAddress);
-
-VkAccessFlags ResourceStateToVulkan(ResourceState resourceState);
 
 VkQueryType QueryTypeToVulkan(QueryType queryHeapType);
 
@@ -74,8 +91,6 @@ AdapterType VkPhysicalDeviceTypeToEngine(VkPhysicalDeviceType physicalDeviceType
 VkImageViewType GetImageViewType(ResourceType type, GpuImageUsage imageUsage);
 
 VkImageAspectFlags GetImageAspect(ImageAspect imageAspect);
-
-VkImageLayout GetImageLayout(ResourceState state);
 
 VkImageCreateFlagBits GetImageCreateFlags(ResourceType type);
 
@@ -88,5 +103,9 @@ VkImageUsageFlags GetImageUsageFlags(GpuImageUsage usage);
 VmaAllocationCreateFlags GetMemoryFlags(MemoryAccess access);
 
 VmaMemoryUsage GetMemoryUsage(MemoryAccess access);
+
+ResourceStateMapping GetResourceStateMapping(ResourceState resourceState);
+
+VkImageLayout GetImageLayout(ResourceState state);
 
 } // namespace Kodiak::VK
