@@ -29,7 +29,7 @@ public:
 	ResourceState GetUsageState() const noexcept { return m_usageState; }
 
 protected:
-	GpuResource() = default;
+	//GpuResource() = default;
 	GpuResource(ResourceType resourceType, ID3D12Resource* resource, ResourceState usageState);
 
 protected:

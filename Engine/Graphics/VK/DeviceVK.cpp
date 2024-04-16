@@ -236,7 +236,7 @@ void GraphicsDevice::Present()
 	// Need to submit a command list to kick Present...
 	auto context = BeginCommandContext("Present");
 	auto vkContext = dynamic_cast<CommandContext*>(context.Get());
-	vkContext->HACK_TransitionImageToPresent(*m_vkSwapChainImages[m_swapChainIndex]);
+	context->TransitionResource(GetCurrentSwapChainBuffer(), ResourceState::Present, true);
 	context->Finish();
 
 	VkSwapchainKHR swapchain = *m_vkSwapChain;
@@ -521,7 +521,7 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 		.SetImageInfoSrv(imageInfoSrv)
 		.SetImageInfoUav(imageInfoUav)
 		.SetImageAspects(ImageAspect::Color)
-		.SetUsageState(ResourceState::Present);
+		.SetUsageState(ResourceState::Undefined);
 
 	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));
 }

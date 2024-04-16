@@ -59,8 +59,6 @@ public:
 	void EndEvent() final;
 	void SetMarker(const std::string& label) final;
 
-	void HACK_TransitionImageToPresent(VkImage image);
-
 	void TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate) final;
 	void InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate) final;
 	void FlushResourceBarriers();

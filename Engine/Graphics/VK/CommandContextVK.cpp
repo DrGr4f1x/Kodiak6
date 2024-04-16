@@ -115,37 +115,6 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-void CommandContext::HACK_TransitionImageToPresent(VkImage image)
-{
-	VkImageMemoryBarrier barrierDesc{ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
-	barrierDesc.image = image;
-	barrierDesc.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	barrierDesc.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	barrierDesc.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrierDesc.subresourceRange.baseArrayLayer = 0;
-	barrierDesc.subresourceRange.baseMipLevel = 0;
-	barrierDesc.subresourceRange.layerCount = 1;
-	barrierDesc.subresourceRange.levelCount = 1;
-	barrierDesc.srcAccessMask = 0;
-	barrierDesc.dstAccessMask = 0;
-
-	auto srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-	auto dstStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-
-	vkCmdPipelineBarrier(
-		m_commandBuffer,
-		srcStageMask,
-		dstStageMask,
-		0,
-		0,
-		nullptr,
-		0,
-		nullptr,
-		1,
-		&barrierDesc);
-}
-
-
 void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate)
 {
 	auto* vkGpuResource = dynamic_cast<GpuResource*>(gpuResource);
@@ -234,6 +203,8 @@ void CommandContext::FlushResourceBarriers()
 
 		m_imageMemoryBarriers.clear();
 	}
+
+	m_textureBarriers.clear();
 
 	// TODO - Vulkan GPU buffer support
 }

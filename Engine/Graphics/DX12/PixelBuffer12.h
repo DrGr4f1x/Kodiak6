@@ -16,7 +16,7 @@ namespace Kodiak::DX12
 {
 
 #pragma warning(disable:4250)
-class PixelBuffer : public virtual IPixelBuffer, public virtual GpuResource
+class PixelBuffer : public virtual IPixelBuffer, public GpuResource
 {
 public:
 	// IPixelBuffer

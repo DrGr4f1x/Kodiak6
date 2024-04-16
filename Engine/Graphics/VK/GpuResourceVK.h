@@ -31,8 +31,6 @@ public:
 	ResourceState GetUsageState() const noexcept { return m_usageState; }
 
 protected:
-	GpuResource() = default;
-
 	GpuResource(ResourceType resourceType, CVkImage* image, ResourceState usageState)
 		: m_resourceType{ resourceType }
 		, m_resource{ VkImageHandle::Create(image) }
