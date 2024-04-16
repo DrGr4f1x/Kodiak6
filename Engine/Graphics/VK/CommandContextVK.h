@@ -27,6 +27,7 @@ struct TextureBarrier
 {
 	VkImage image{ VK_NULL_HANDLE };
 	VkFormat format{ VK_FORMAT_UNDEFINED };
+	VkImageAspectFlags imageAspect{ 0 };
 	ResourceState beforeState{ ResourceState::Undefined };
 	ResourceState afterState{ ResourceState::Undefined };
 	uint32_t numMips{ 1 };

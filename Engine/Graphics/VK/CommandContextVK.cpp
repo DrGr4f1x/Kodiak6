@@ -157,6 +157,7 @@ void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState
 		TextureBarrier barrier{};
 		barrier.image = vkPixelBuffer->GetImage();
 		barrier.format = FormatToVulkan(vkPixelBuffer->GetFormat());
+		barrier.imageAspect = GetImageAspect(vkPixelBuffer->GetImageAspect());
 		barrier.beforeState = vkPixelBuffer->GetUsageState();
 		barrier.afterState = newState;
 		barrier.numMips = vkPixelBuffer->GetNumMips();
@@ -201,8 +202,40 @@ void CommandContext::FlushResourceBarriers()
 
 		assert(after.imageLayout != VK_IMAGE_LAYOUT_UNDEFINED);
 
+		VkImageSubresourceRange subresourceRange{};
+		subresourceRange.aspectMask = barrier.imageAspect;
+		subresourceRange.baseArrayLayer = barrier.arraySlice;
+		subresourceRange.baseMipLevel = barrier.mipLevel;
+		subresourceRange.layerCount = barrier.arraySizeOrDepth;
+		subresourceRange.levelCount = barrier.numMips;
 
+		VkImageMemoryBarrier2 vkBarrier{ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2 };
+		vkBarrier.srcAccessMask = before.accessFlags;
+		vkBarrier.dstAccessMask = after.accessFlags;
+		vkBarrier.srcStageMask = before.stageFlags;
+		vkBarrier.dstStageMask = after.stageFlags;
+		vkBarrier.oldLayout = before.imageLayout;
+		vkBarrier.newLayout = after.imageLayout;
+		vkBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		vkBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		vkBarrier.image = barrier.image;
+		vkBarrier.subresourceRange = subresourceRange;
+
+		m_imageMemoryBarriers.push_back(vkBarrier);
 	}
+
+	if (!m_imageMemoryBarriers.empty())
+	{
+		VkDependencyInfo dependencyInfo{ VK_STRUCTURE_TYPE_DEPENDENCY_INFO };
+		dependencyInfo.imageMemoryBarrierCount = (uint32_t)m_imageMemoryBarriers.size();
+		dependencyInfo.pImageMemoryBarriers = m_imageMemoryBarriers.data();
+
+		vkCmdPipelineBarrier2(m_commandBuffer, &dependencyInfo);
+
+		m_imageMemoryBarriers.clear();
+	}
+
+	// TODO - Vulkan GPU buffer support
 }
 
 
