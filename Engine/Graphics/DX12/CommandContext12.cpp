@@ -14,7 +14,6 @@
 
 #include "ColorBuffer12.h"
 #include "Device12.h"
-#include "GpuResource12.h"
 #include "Queue12.h"
 
 #if ENABLE_D3D12_DEBUG_MARKERS
@@ -115,8 +114,6 @@ void CommandContext::BeginEvent(const string& label)
 {
 #if ENABLE_D3D12_DEBUG_MARKERS
 	::PIXBeginEvent(m_commandList, 0, label.c_str());
-#else
-	(label)
 #endif
 }
 
@@ -133,17 +130,13 @@ void CommandContext::SetMarker(const string& label)
 {
 #if ENABLE_D3D12_DEBUG_MARKERS
 	::PIXSetMarker(m_commandList, 0, label.c_str());
-#else
-	(label)
 #endif
 }
 
 
-void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate)
+void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate)
 {
-	auto* dxGpuResource = dynamic_cast<GpuResource*>(gpuResource);
-
-	auto oldState = dxGpuResource->m_usageState;
+	auto oldState = gpuImage->GetUsageState();
 
 	if (m_type == CommandListType::Compute)
 	{
@@ -151,35 +144,21 @@ void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState
 		assert(IsValidComputeResourceState(newState));
 	}
 
-	if (IsTextureResource(gpuResource->GetType()))
-	{
-		TextureBarrier barrier{};
-		auto* dxPixelBuffer = dynamic_cast<PixelBuffer*>(gpuResource);
-		barrier.resource = dxPixelBuffer->GetResource();
-		barrier.beforeState = oldState;
-		barrier.afterState = newState;
-		barrier.numMips = dxPixelBuffer->GetNumMips();
-		barrier.mipLevel = 0;
-		barrier.arraySizeOrDepth = dxPixelBuffer->GetArraySize();
-		barrier.arraySlice = 0;
-		barrier.planeCount = dxPixelBuffer->GetPlaneCount();
-		barrier.bWholeTexture = true;
+	TextureBarrier barrier{};
+	barrier.resource = gpuImage->GetNativeObject(NativeObjectType::DX12_Resource);
+	barrier.beforeState = oldState;
+	barrier.afterState = newState;
+	barrier.numMips = gpuImage->GetNumMips();
+	barrier.mipLevel = 0;
+	barrier.arraySizeOrDepth = gpuImage->GetArraySize();
+	barrier.arraySlice = 0;
+	barrier.planeCount = gpuImage->GetPlaneCount();
+	barrier.bWholeTexture = true;
 
-		m_textureBarriers.push_back(barrier);
+	m_textureBarriers.push_back(barrier);
 
-		dxPixelBuffer->m_usageState = newState;
-	}
-	else if (IsBufferResource(gpuResource->GetType()))
-	{
-		BufferBarrier barrier{};
-		barrier.resource = dxGpuResource->GetResource();
-		barrier.beforeState = dxGpuResource->GetUsageState();
-		barrier.afterState = newState;
+	gpuImage->SetUsageState(newState);
 
-		m_bufferBarriers.push_back(barrier);
-
-		dxGpuResource->m_usageState = newState;
-	}
 
 	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
 	{
@@ -188,15 +167,13 @@ void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState
 }
 
 
-void CommandContext::InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate)
+void CommandContext::InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate)
 {
-	auto* dxGpuResource = dynamic_cast<GpuResource*>(gpuResource);
-
-	assert_msg(HasFlag(dxGpuResource->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
+	assert_msg(HasFlag(gpuImage->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
 
 	BufferBarrier barrier{};
-	barrier.resource = dxGpuResource->GetResource();
-	barrier.beforeState = dxGpuResource->GetUsageState();
+	barrier.resource = gpuImage->GetNativeObject(NativeObjectType::DX12_Resource);
+	barrier.beforeState = gpuImage->GetUsageState();
 	barrier.afterState = barrier.beforeState;
 
 	m_bufferBarriers.push_back(barrier);

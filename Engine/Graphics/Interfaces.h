@@ -24,17 +24,14 @@ struct ColorBufferCreationParams;
 struct DepthBufferCreationParams;
 
 
-class IGpuResource : public IObject
+//
+// GpuImage
+//
+class IGpuImage : public IObject
 {
 public:
 	virtual ResourceType GetType() const noexcept = 0;
-};
-using GpuResourceHandle = IntrusivePtr<IGpuResource>;
 
-
-class IPixelBuffer : public virtual IGpuResource
-{
-public:
 	virtual uint64_t GetWidth() const noexcept = 0;
 	virtual uint32_t GetHeight() const noexcept = 0;
 	virtual uint32_t GetDepth() const noexcept = 0;
@@ -42,11 +39,17 @@ public:
 	virtual uint32_t GetNumMips() const noexcept = 0;
 	virtual uint32_t GetNumSamples() const noexcept = 0;
 	virtual Format GetFormat() const noexcept = 0;
+	virtual uint32_t GetPlaneCount() const noexcept = 0;
+
+	virtual ResourceState GetUsageState() const noexcept = 0;
+	virtual void SetUsageState(ResourceState usageState) noexcept = 0;
 };
-using PixelBufferHandle = IntrusivePtr<IPixelBuffer>;
 
 
-class IColorBuffer : public virtual IPixelBuffer
+//
+// ColorBuffer
+//
+class IColorBuffer : public IGpuImage
 {
 public:
 	virtual void SetClearColor(Color clearColor) noexcept = 0;
@@ -56,7 +59,10 @@ public:
 using ColorBufferHandle = IntrusivePtr<IColorBuffer>;
 
 
-class IDepthBuffer : public virtual IPixelBuffer
+//
+// DepthBuffer
+//
+class IDepthBuffer : public IGpuImage
 {
 public:
 	virtual float GetClearDepth() const noexcept = 0;
@@ -65,6 +71,20 @@ public:
 using DepthBufferHandle = IntrusivePtr<IDepthBuffer>;
 
 
+//
+// FrameBuffer
+//
+class IFrameBuffer : public IObject
+{
+public:
+
+};
+using FrameBufferHandle = IntrusivePtr<IFrameBuffer>;
+
+
+//
+// CommandContext
+//
 class ICommandContext : public IObject
 {
 public:
@@ -76,12 +96,15 @@ public:
 	virtual void EndEvent() = 0;
 	virtual void SetMarker(const std::string& label) = 0;
 
-	virtual void TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate = false) = 0;
-	virtual void InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate = false) = 0;
+	virtual void TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate = false) = 0;
+	virtual void InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate = false) = 0;
 };
 using CommandContextHandle = IntrusivePtr<ICommandContext>;
 
 
+//
+// GraphicsContext
+//
 class IGraphicsContext : public ICommandContext
 {
 public:
@@ -90,6 +113,9 @@ public:
 using GraphicsContextHandle = IntrusivePtr<IGraphicsContext>;
 
 
+//
+// ComputeContext
+//
 class IComputeContext : public ICommandContext
 {
 public:
@@ -98,6 +124,9 @@ public:
 using ComputeContextHandle = IntrusivePtr<IComputeContext>;
 
 
+//
+// GraphicsDevice
+//
 class IGraphicsDevice : public IObject
 {
 public:
@@ -121,6 +150,9 @@ public:
 using DeviceHandle = IntrusivePtr<IGraphicsDevice>;
 
 
+//
+// DeviceManager
+//
 class IDeviceManager : public IObject
 {
 public:

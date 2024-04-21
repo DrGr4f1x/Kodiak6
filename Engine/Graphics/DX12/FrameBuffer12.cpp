@@ -10,16 +10,18 @@
 
 #include "Stdafx.h"
 
-#include "GpuResource12.h"
-
+#include "FrameBuffer12.h"
 
 namespace Kodiak::DX12
 {
 
-GpuResource::GpuResource(ResourceType resourceType, ID3D12Resource* resource, ResourceState usageState)
-	: m_resourceType{ resourceType }
-	, m_resource{ resource }
-	, m_usageState{ usageState }
-{}
+FrameBuffer::FrameBuffer(const FrameBufferCreationParams& creationParams)
+{
+	for (size_t i = 0; i < m_colorBuffers.size(); ++i)
+	{
+		m_colorBuffers[i] = creationParams.colorBuffers[i];
+	}
+	m_depthBuffer = creationParams.depthBuffer;
+}
 
 } // namespace Kodiak::DX12

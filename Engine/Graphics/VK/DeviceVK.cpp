@@ -326,7 +326,6 @@ ColorBufferHandle GraphicsDevice::CreateColorBuffer(const ColorBufferCreationPar
 		.SetImageViewSrv(imageViewSrv)
 		.SetImageInfoSrv(imageInfoSrv)
 		.SetImageInfoUav(imageInfoUav)
-		.SetImageAspects(ImageAspect::Color)
 		.SetUsageState(ResourceState::Common);
 
 	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));
@@ -404,7 +403,6 @@ DepthBufferHandle GraphicsDevice::CreateDepthBuffer(const DepthBufferCreationPar
 		.SetImageViewStencilOnly(imageViewDepthStencil)
 		.SetImageInfoDepth(imageInfoDepth)
 		.SetImageInfoStencil(imageInfoStencil)
-		.SetImageAspect(imageAspect)
 		.SetUsageState(ResourceState::DepthRead | ResourceState::DepthWrite);
 
 	return DepthBufferHandle::Create(new DepthBuffer(creationParams, creationParamsExt));
@@ -520,7 +518,6 @@ ColorBufferHandle GraphicsDevice::CreateColorBufferFromSwapChain(uint32_t imageI
 		.SetImageViewSrv(imageViewSrv)
 		.SetImageInfoSrv(imageInfoSrv)
 		.SetImageInfoUav(imageInfoUav)
-		.SetImageAspects(ImageAspect::Color)
 		.SetUsageState(ResourceState::Undefined);
 
 	return ColorBufferHandle::Create(new ColorBuffer(creationParams, creationParamsExt));

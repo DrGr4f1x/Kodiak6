@@ -107,4 +107,27 @@ VkFormat FormatToVulkan(Format engineFormat)
 	return s_formatMap[(uint32_t)engineFormat].vkFormat;
 }
 
+
+VkImageAspectFlags GetImageAspect(Format format)
+{
+	VkImageAspectFlags imageAspect{ 0 };
+
+	if (IsColorFormat(format))
+	{
+		imageAspect |= VK_IMAGE_ASPECT_COLOR_BIT;
+	}
+
+	if (IsDepthFormat(format))
+	{
+		imageAspect |= VK_IMAGE_ASPECT_DEPTH_BIT;
+	}
+
+	if (IsStencilFormat(format))
+	{
+		imageAspect |= VK_IMAGE_ASPECT_STENCIL_BIT;
+	}
+
+	return imageAspect;
 }
+
+} // namespace Kodiak::VK

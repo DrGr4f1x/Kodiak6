@@ -69,7 +69,7 @@ void ExitFatal(const std::string& message, const std::string& caption);
 
 #define halt( ... ) ERROR( __VA_ARGS__ ) __debugbreak();
 
-#ifdef RELEASE
+#if defined(_RELEASE)
 
 #define assert_msg( isTrue, ... ) (void)(isTrue)
 #define warn_once_if( isTrue, ... ) (void)(isTrue)
@@ -128,7 +128,6 @@ Utility::Printf( msg "\n", ##__VA_ARGS__ );
 #endif
 
 #define BreakIfFailed( hr ) if (FAILED(hr)) __debugbreak()
-
 
 // Smart pointer helpers
 struct HandleCloser

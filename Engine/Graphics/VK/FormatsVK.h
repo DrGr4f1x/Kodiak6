@@ -18,4 +18,6 @@ namespace Kodiak::VK
 
 VkFormat FormatToVulkan(Format engineFormat);
 
+VkImageAspectFlags GetImageAspect(Format format);
+
 } // namespace Kodiak::VK

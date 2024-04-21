@@ -14,12 +14,32 @@
 namespace Kodiak
 {
 
+// Forward declarations
+enum class NativeObjectType : uint32_t;
+
+
+struct NativeObjectPtr
+{
+	union
+	{
+		uint64_t integer;
+		void* pointer;
+	};
+
+	NativeObjectPtr(uint64_t i) noexcept : integer{ i } {}
+	NativeObjectPtr(void* p) noexcept : pointer{ p } {}
+
+	template <typename T> operator T* () const noexcept { return static_cast<T*>(pointer); }
+};
+
 struct IObject
 {
 	virtual ~IObject() noexcept = default;
 
 	virtual unsigned long AddRef() noexcept = 0;
 	virtual unsigned long Release() noexcept = 0;
+
+	virtual NativeObjectPtr GetNativeObject(NativeObjectType nativeObjectType) const noexcept { (void)nativeObjectType; return nullptr; }
 };
 
 } // namespace Kodiak;

@@ -573,6 +573,17 @@ enum class MemoryAccess
 };
 template <> struct EnableBitmaskOperators<MemoryAccess> { static const bool enable = true; };
 
+
+enum class NativeObjectType : uint32_t
+{
+	// DX12
+	DX12_Resource	= 0x00010001,
+
+	// Vulkan
+	VK_Image		= 0x00020001,
+	VK_Buffer		= 0x00020002,
+};
+
 } // namespace Kodiak
 
 

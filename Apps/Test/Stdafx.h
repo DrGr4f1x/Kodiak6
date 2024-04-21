@@ -23,6 +23,7 @@
 #include <comdef.h>
 
 // Standard library headers
+#include <array>
 #include <chrono>
 #include <cstdarg>
 #include <format>

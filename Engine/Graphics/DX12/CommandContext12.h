@@ -57,8 +57,8 @@ public:
 	void EndEvent() final;
 	void SetMarker(const std::string& label) final;
 
-	void TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate) final;
-	void InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate) final;
+	void TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate) final;
+	void InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate) final;
 	void FlushResourceBarriers();
 
 protected:

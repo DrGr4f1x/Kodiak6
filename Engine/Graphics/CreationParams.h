@@ -12,6 +12,7 @@
 
 #include "Graphics\Enums.h"
 #include "Graphics\Formats.h"
+#include "Graphics\Interfaces.h"
 
 
 namespace Kodiak
@@ -124,6 +125,16 @@ struct DepthBufferCreationParams : public PixelBufferCreationParams
 	constexpr DepthBufferCreationParams& SetFormat(Format value) noexcept { format = value; return *this; }
 	constexpr DepthBufferCreationParams& SetClearDepth(float value) noexcept { clearDepth = value; return *this; }
 	constexpr DepthBufferCreationParams& SetClearStencil(uint8_t value) noexcept { clearStencil = value; return *this; }
+};
+
+
+struct FrameBufferCreationParams
+{
+	std::array<ColorBufferHandle, 8> colorBuffers;
+	DepthBufferHandle depthBuffer;
+
+	FrameBufferCreationParams& SetColorBuffer(uint32_t index, ColorBufferHandle value) noexcept { colorBuffers[index] = value; return *this; }
+	FrameBufferCreationParams& SetDepthBuffer(DepthBufferHandle value) noexcept { depthBuffer = value; return *this; }
 };
 
 } // namespace Kodiak

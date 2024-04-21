@@ -14,8 +14,6 @@
 
 #include "DeviceVK.h"
 #include "FormatsVK.h"
-#include "GpuResourceVK.h"
-#include "PixelBufferVK.h"
 #include "QueueVK.h"
 
 
@@ -115,35 +113,23 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState newState, bool bFlushImmediate)
+void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate)
 {
-	auto* vkGpuResource = dynamic_cast<GpuResource*>(gpuResource);
+	TextureBarrier barrier{};
+	barrier.image = gpuImage->GetNativeObject(NativeObjectType::VK_Image);
+	barrier.format = FormatToVulkan(gpuImage->GetFormat());
+	barrier.imageAspect = GetImageAspect(gpuImage->GetFormat());
+	barrier.beforeState = gpuImage->GetUsageState();
+	barrier.afterState = newState;
+	barrier.numMips = gpuImage->GetNumMips();
+	barrier.mipLevel = 0;
+	barrier.arraySizeOrDepth = gpuImage->GetArraySize();
+	barrier.arraySlice = 0;
+	barrier.bWholeTexture = true;
 
-	if (vkGpuResource->IsImageResource())
-	{
-		auto* vkPixelBuffer = dynamic_cast<PixelBuffer*>(gpuResource);
+	m_textureBarriers.push_back(barrier);
 
-		TextureBarrier barrier{};
-		barrier.image = vkPixelBuffer->GetImage();
-		barrier.format = FormatToVulkan(vkPixelBuffer->GetFormat());
-		barrier.imageAspect = GetImageAspect(vkPixelBuffer->GetImageAspect());
-		barrier.beforeState = vkPixelBuffer->GetUsageState();
-		barrier.afterState = newState;
-		barrier.numMips = vkPixelBuffer->GetNumMips();
-		barrier.mipLevel = 0;
-		barrier.arraySizeOrDepth = vkPixelBuffer->GetArraySize();
-		barrier.arraySlice = 0;
-		barrier.bWholeTexture = true;
-
-		m_textureBarriers.push_back(barrier);
-
-		vkPixelBuffer->m_usageState = newState;
-	}
-	else if (vkGpuResource->IsBufferResource())
-	{
-		// TODO - Vulkan GPU buffer support
-		BufferBarrier barrier{};
-	}
+	gpuImage->SetUsageState(newState);
 
 	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
 	{
@@ -152,13 +138,11 @@ void CommandContext::TransitionResource(IGpuResource* gpuResource, ResourceState
 }
 
 
-void CommandContext::InsertUAVBarrier(IGpuResource* gpuResource, bool bFlushImmediate)
+void CommandContext::InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate)
 {
-	auto* vkGpuResource = dynamic_cast<GpuResource*>(gpuResource);
+	assert_msg(HasFlag(gpuImage->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
 
-	assert_msg(HasFlag(vkGpuResource->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
-
-	TransitionResource(gpuResource, vkGpuResource->GetUsageState(), bFlushImmediate);
+	TransitionResource(gpuImage, gpuImage->GetUsageState(), bFlushImmediate);
 }
 
 
