@@ -49,8 +49,10 @@ struct DepthBufferCreationParamsExt
 };
 
 
-class DepthBuffer : public IntrusiveCounter<IDepthBuffer>
+class DepthBuffer : public IDepthBuffer
 {
+	IMPLEMENT_IOBJECT
+
 	friend class GraphicsDevice;
 
 public:

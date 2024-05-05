@@ -235,7 +235,6 @@ void GraphicsDevice::Present()
 
 	// Need to submit a command list to kick Present...
 	auto context = BeginCommandContext("Present");
-	auto vkContext = dynamic_cast<CommandContext*>(context.Get());
 	context->TransitionResource(GetCurrentSwapChainBuffer(), ResourceState::Present, true);
 	context->Finish();
 
@@ -442,7 +441,7 @@ CommandContextHandle GraphicsDevice::BeginCommandContext(const std::string& ID)
 
 GraphicsContextHandle GraphicsDevice::BeginGraphicsContext(const std::string& ID)
 {
-	return nullptr;
+	return BeginCommandContext(ID)->GetGraphicsContext();
 }
 
 

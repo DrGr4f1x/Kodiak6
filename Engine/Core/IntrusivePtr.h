@@ -251,29 +251,23 @@ public:
 };
 
 
-template <class T>
-class IntrusiveCounter : public T
-{
-private:
-	std::atomic_ulong m_refCount = 1;
-
-public:
-	unsigned long AddRef() noexcept final
-	{
-		++m_refCount;
-		return m_refCount;
+#define IMPLEMENT_IOBJECT \
+private: \
+	std::atomic_ulong m_refCount = 1; \
+public: \
+	unsigned long AddRef() noexcept final \
+	{ \
+		++m_refCount; \
+		return m_refCount; \
+	} \
+	unsigned long Release() noexcept final \
+	{ \
+		unsigned long ulRefCount = --m_refCount; \
+		if (0 == m_refCount) \
+		{ \
+			delete this; \
+		} \
+		return ulRefCount; \
 	}
-
-
-	unsigned long Release() noexcept final
-	{
-		unsigned long ulRefCount = --m_refCount;
-		if (0 == m_refCount)
-		{
-			delete this;
-		}
-		return ulRefCount;
-	}
-};
 
 } // namespace Kodiak

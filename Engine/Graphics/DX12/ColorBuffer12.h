@@ -47,8 +47,10 @@ struct ColorBufferCreationParamsExt
 };
 
 
-class ColorBuffer : public IntrusiveCounter<IColorBuffer>
+class ColorBuffer : public IColorBuffer
 {
+	IMPLEMENT_IOBJECT
+
 	friend class CommandContext;
 	friend class GraphicsDevice;
 

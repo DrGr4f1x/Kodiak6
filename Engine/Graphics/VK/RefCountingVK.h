@@ -19,8 +19,10 @@ namespace Kodiak::VK
 //
 // VkInstance
 //
-class CVkInstance : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkInstance : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkInstance() noexcept = default;
 	explicit CVkInstance(VkInstance instance) noexcept 
@@ -46,8 +48,10 @@ using VkInstanceHandle = IntrusivePtr<CVkInstance>;
 //
 // VkPhysicalDevice
 //
-class CVkPhysicalDevice : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkPhysicalDevice : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkPhysicalDevice() noexcept = default;
 	CVkPhysicalDevice(CVkInstance* cinstance, VkPhysicalDevice physicalDevice) noexcept
@@ -77,8 +81,10 @@ using VkPhysicalDeviceHandle = IntrusivePtr<CVkPhysicalDevice>;
 //
 // VkDevice
 //
-class CVkDevice : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkDevice : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkDevice() noexcept = default;
 	CVkDevice(CVkPhysicalDevice* physicalDevice, VkDevice device) noexcept
@@ -108,8 +114,10 @@ using VkDeviceHandle = IntrusivePtr<CVkDevice>;
 //
 // VkSurfaceKHR
 //
-class CVkSurface : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkSurface : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkSurface() noexcept = default;
 	CVkSurface(CVkInstance* instance, VkSurfaceKHR surface) noexcept
@@ -139,8 +147,10 @@ using VkSurfaceHandle = IntrusivePtr<CVkSurface>;
 //
 // VmaAllocator
 //
-class CVmaAllocator : public IntrusiveCounter<IObject>, public NonCopyable
+class CVmaAllocator : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVmaAllocator() noexcept = default;
 	CVmaAllocator(CVkDevice* device, VmaAllocator allocator) noexcept
@@ -170,8 +180,10 @@ using VmaAllocatorHandle = IntrusivePtr<CVmaAllocator>;
 //
 // VkImage
 //
-class CVkImage : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkImage : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkImage(CVkDevice* cdevice, VkImage image) noexcept
 		: m_device{ cdevice }
@@ -213,8 +225,10 @@ using VkImageHandle = IntrusivePtr<CVkImage>;
 //
 // VkSwapchainKHR
 //
-class CVkSwapchain : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkSwapchain : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkSwapchain() noexcept = default;
 	CVkSwapchain(CVkDevice* device, VkSwapchainKHR swapchain) noexcept
@@ -244,8 +258,10 @@ using VkSwapchainHandle = IntrusivePtr<CVkSwapchain>;
 //
 // VkSemaphore
 //
-class CVkSemaphore : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkSemaphore : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkSemaphore() noexcept = default;
 	CVkSemaphore(CVkDevice* device, VkSemaphore semaphore) noexcept
@@ -275,8 +291,10 @@ using VkSemaphoreHandle = IntrusivePtr<CVkSemaphore>;
 //
 // VkDebugUtilsMessengerEXT
 //
-class CVkDebugUtilsMessenger : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkDebugUtilsMessenger : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkDebugUtilsMessenger() noexcept = default;
 	CVkDebugUtilsMessenger(CVkInstance* instance, VkDebugUtilsMessengerEXT messenger) noexcept
@@ -306,8 +324,10 @@ using VkDebugUtilsMessengerHandle = IntrusivePtr<CVkDebugUtilsMessenger>;
 //
 // VkFence
 //
-class CVkFence : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkFence : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkFence() noexcept = default;
 	CVkFence(CVkDevice* device, VkFence fence) noexcept
@@ -337,8 +357,10 @@ using VkFenceHandle = IntrusivePtr<CVkFence>;
 //
 // VkCommandPool
 //
-class CVkCommandPool : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkCommandPool : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkCommandPool() noexcept = default;
 	CVkCommandPool(CVkDevice* device, VkCommandPool commandPool) noexcept
@@ -368,8 +390,10 @@ using VkCommandPoolHandle = IntrusivePtr<CVkCommandPool>;
 //
 // VkImageView
 //
-class CVkImageView : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkImageView : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkImageView() noexcept = default;
 	CVkImageView(CVkDevice* device, CVkImage* image, VkImageView imageView) noexcept
@@ -402,8 +426,10 @@ using VkImageViewHandle = IntrusivePtr<CVkImageView>;
 //
 // VkBuffer
 //
-class CVkBuffer : public IntrusiveCounter<IObject>, public NonCopyable
+class CVkBuffer : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CVkBuffer() noexcept = default;
 	CVkBuffer(CVkDevice* device, CVmaAllocator* allocator, VkBuffer buffer, VmaAllocation allocation) noexcept

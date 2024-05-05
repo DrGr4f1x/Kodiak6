@@ -44,8 +44,10 @@ struct BufferBarrier
 };
 
 
-class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable
+class CommandContext : public ICommandContext, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 	friend class GraphicsDevice;
 
 public:
@@ -60,6 +62,16 @@ public:
 	void TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate) final;
 	void InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate) final;
 	void FlushResourceBarriers();
+
+	IGraphicsContext* GetGraphicsContext() noexcept final
+	{
+		return reinterpret_cast<IGraphicsContext*>(this);
+	}
+
+	IComputeContext* GetComputeContext() noexcept final
+	{
+		return reinterpret_cast<IComputeContext*>(this);
+	}
 
 protected:
 	void SetID(const std::string& id) { m_id = id; }
@@ -88,14 +100,14 @@ private:
 };
 
 
-class GraphicsContext : public IntrusiveCounter<IGraphicsContext>, public CommandContext
+class GraphicsContext : public IGraphicsContext, public CommandContext
 {
 public:
 	~GraphicsContext() override;
 };
 
 
-class ComputeContext : public IntrusiveCounter<IComputeContext>, public CommandContext
+class ComputeContext : public IComputeContext, public CommandContext
 {
 public:
 	~ComputeContext() override;

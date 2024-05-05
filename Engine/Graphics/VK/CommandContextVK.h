@@ -44,8 +44,10 @@ struct BufferBarrier
 };
 
 
-class CommandContext : public IntrusiveCounter<ICommandContext>, public NonCopyable
+class CommandContext : public ICommandContext, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 	friend class GraphicsDevice;
 
 public:
@@ -62,6 +64,16 @@ public:
 	void TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate) final;
 	void InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate) final;
 	void FlushResourceBarriers();
+
+	IGraphicsContext* GetGraphicsContext() noexcept final
+	{
+		return reinterpret_cast<IGraphicsContext*>(this);
+	}
+
+	IComputeContext* GetComputeContext() noexcept final
+	{
+		return reinterpret_cast<IComputeContext*>(this);
+	}
 
 protected:
 	GraphicsDevice* m_device{ nullptr };

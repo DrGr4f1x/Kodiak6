@@ -41,8 +41,10 @@ struct DepthBufferCreationParamsExt
 
 
 #pragma warning(disable:4250)
-class DepthBuffer : public IntrusiveCounter<IDepthBuffer>
+class DepthBuffer : public IDepthBuffer
 {
+	IMPLEMENT_IOBJECT
+
 	friend class GraphicsDevice;
 
 public:

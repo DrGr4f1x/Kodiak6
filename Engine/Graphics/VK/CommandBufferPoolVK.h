@@ -16,8 +16,10 @@
 namespace Kodiak::VK
 {
 
-class CommandBufferPool : public IntrusiveCounter<IObject>, public NonCopyable
+class CommandBufferPool : public IObject, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	CommandBufferPool(CVkCommandPool* commandPool, CommandListType commandListType) noexcept
 		: m_vkCommandPool{ commandPool }

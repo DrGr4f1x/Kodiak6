@@ -29,8 +29,10 @@ struct DxgiRLOHelper
 };
 
 
-class DeviceManager : public IntrusiveCounter<IDeviceManager>, public NonCopyable
+class DeviceManager : public IDeviceManager, public NonCopyable
 {
+	IMPLEMENT_IOBJECT
+
 public:
 	explicit DeviceManager(const DeviceManagerCreationParams& creationParams);
 	~DeviceManager() noexcept final = default;

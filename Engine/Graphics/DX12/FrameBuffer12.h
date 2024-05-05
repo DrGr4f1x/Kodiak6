@@ -16,9 +16,12 @@
 namespace Kodiak::DX12
 {
 
-class FrameBuffer : public IntrusiveCounter<IFrameBuffer>
+class FrameBuffer : public IFrameBuffer
 {
+	IMPLEMENT_IOBJECT
+
 	friend class GraphicsDevice;
+
 public:
 
 private:

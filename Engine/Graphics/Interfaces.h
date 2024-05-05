@@ -98,6 +98,9 @@ public:
 
 	virtual void TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate = false) = 0;
 	virtual void InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate = false) = 0;
+
+	virtual class IGraphicsContext* GetGraphicsContext() = 0;
+	virtual class IComputeContext* GetComputeContext() = 0;
 };
 using CommandContextHandle = IntrusivePtr<ICommandContext>;
 
