@@ -44,7 +44,7 @@ struct BufferBarrier
 };
 
 
-class CommandContext : public ICommandContext, public NonCopyable
+class CommandContext : public virtual ICommandContext, public NonCopyable
 {
 	IMPLEMENT_IOBJECT
 

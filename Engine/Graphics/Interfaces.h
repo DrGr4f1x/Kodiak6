@@ -94,7 +94,7 @@ using FrameBufferHandle = IntrusivePtr<IFrameBuffer>;
 //
 // CommandContext
 //
-class ICommandContext : public IObject
+class __declspec(novtable) ICommandContext : public IObject
 {
 public:
 	virtual ~ICommandContext() = default;
@@ -117,7 +117,7 @@ using CommandContextHandle = IntrusivePtr<ICommandContext>;
 //
 // GraphicsContext
 //
-class IGraphicsContext : public ICommandContext
+class __declspec(novtable) IGraphicsContext : public virtual ICommandContext
 {
 public:
 	virtual ~IGraphicsContext() = default;
@@ -128,7 +128,7 @@ using GraphicsContextHandle = IntrusivePtr<IGraphicsContext>;
 //
 // ComputeContext
 //
-class IComputeContext : public ICommandContext
+class __declspec(novtable) IComputeContext : public virtual ICommandContext
 {
 public:
 	virtual ~IComputeContext() = default;
