@@ -144,7 +144,7 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 		assert(IsValidComputeResourceState(newState));
 	}
 
-	const auto* pixelBuffer = dynamic_cast<IPixelBuffer*>(gpuImage);
+	const auto* pixelBuffer = dynamic_cast<PixelBuffer*>(gpuImage);
 
 	TextureBarrier barrier{};
 	barrier.resource = gpuImage->GetNativeObject(NativeObjectType::DX12_Resource);

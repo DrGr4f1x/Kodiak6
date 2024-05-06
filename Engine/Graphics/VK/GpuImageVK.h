@@ -15,7 +15,7 @@
 namespace Kodiak::VK
 {
 
-class GpuImage : public virtual IGpuImage
+class __declspec(novtable) GpuImage : public virtual IGpuImage
 {
 public:
 	ResourceType GetType() const noexcept override

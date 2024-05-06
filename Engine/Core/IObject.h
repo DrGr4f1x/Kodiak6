@@ -32,7 +32,7 @@ struct NativeObjectPtr
 	template <typename T> operator T* () const noexcept { return static_cast<T*>(pointer); }
 };
 
-struct IObject
+struct __declspec(novtable) IObject
 {
 	virtual ~IObject() noexcept = default;
 

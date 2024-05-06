@@ -27,7 +27,7 @@ struct DepthBufferCreationParams;
 //
 // GpuImage
 //
-class IGpuImage : public IObject
+class __declspec(novtable) IGpuImage : public IObject
 {
 public:
 	virtual ResourceType GetType() const noexcept = 0;
@@ -40,7 +40,7 @@ public:
 //
 // PixelBuffer
 //
-class IPixelBuffer : public virtual IGpuImage
+class __declspec(novtable) IPixelBuffer : public virtual IGpuImage
 {
 public:
 	virtual uint64_t GetWidth() const noexcept = 0;
@@ -58,7 +58,7 @@ public:
 //
 // ColorBuffer
 //
-class IColorBuffer : public virtual IPixelBuffer
+class __declspec(novtable) IColorBuffer : public virtual IPixelBuffer
 {
 public:
 	virtual void SetClearColor(Color clearColor) noexcept = 0;
@@ -71,7 +71,7 @@ using ColorBufferHandle = IntrusivePtr<IColorBuffer>;
 //
 // DepthBuffer
 //
-class IDepthBuffer : public virtual IPixelBuffer
+class __declspec(novtable) IDepthBuffer : public virtual IPixelBuffer
 {
 public:
 	virtual float GetClearDepth() const noexcept = 0;

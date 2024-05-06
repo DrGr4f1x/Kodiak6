@@ -15,7 +15,7 @@
 namespace Kodiak::DX12
 {
 
-class PixelBuffer : public virtual IPixelBuffer, public GpuImage
+class __declspec(novtable) PixelBuffer : public virtual IPixelBuffer, public GpuImage
 {
 public:
 	uint64_t GetWidth() const noexcept override { return m_width; }
