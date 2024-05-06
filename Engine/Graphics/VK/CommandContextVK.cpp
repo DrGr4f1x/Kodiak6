@@ -115,15 +115,17 @@ void CommandContext::SetMarker(const string& label)
 
 void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate)
 {
+	const auto* pixelBuffer = dynamic_cast<IPixelBuffer*>(gpuImage);
+
 	TextureBarrier barrier{};
 	barrier.image = gpuImage->GetNativeObject(NativeObjectType::VK_Image);
-	barrier.format = FormatToVulkan(gpuImage->GetFormat());
-	barrier.imageAspect = GetImageAspect(gpuImage->GetFormat());
+	barrier.format = FormatToVulkan(pixelBuffer->GetFormat());
+	barrier.imageAspect = GetImageAspect(pixelBuffer->GetFormat());
 	barrier.beforeState = gpuImage->GetUsageState();
 	barrier.afterState = newState;
-	barrier.numMips = gpuImage->GetNumMips();
+	barrier.numMips = pixelBuffer->GetNumMips();
 	barrier.mipLevel = 0;
-	barrier.arraySizeOrDepth = gpuImage->GetArraySize();
+	barrier.arraySizeOrDepth = pixelBuffer->GetArraySize();
 	barrier.arraySlice = 0;
 	barrier.bWholeTexture = true;
 

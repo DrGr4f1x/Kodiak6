@@ -11,7 +11,7 @@
 #pragma once
 
 
-#include "Graphics\VK\VulkanCommon.h"
+#include "Graphics\VK\PixelBufferVK.h"
 
 
 namespace Kodiak::VK
@@ -39,7 +39,7 @@ struct ColorBufferCreationParamsExt
 };
 
 
-class ColorBuffer : public IColorBuffer
+class ColorBuffer : public IColorBuffer, public PixelBuffer
 {
 	IMPLEMENT_IOBJECT
 
@@ -50,20 +50,6 @@ public:
 
 	// IObject implementation
 	NativeObjectPtr GetNativeObject(NativeObjectType nativeObjectType) const noexcept override;
-
-	// IGpuImage implementation
-	ResourceType GetType() const noexcept override { return m_resourceType; }
-	uint64_t GetWidth() const noexcept override { return m_width; }
-	uint32_t GetHeight() const noexcept override { return m_height; }
-	uint32_t GetDepth() const noexcept override { return m_resourceType == ResourceType::Texture3D ? m_arraySizeOrDepth : 1; }
-	uint32_t GetArraySize() const noexcept override { return m_resourceType == ResourceType::Texture3D ? 1 : m_arraySizeOrDepth; }
-	uint32_t GetNumMips() const noexcept override { return m_numMips; }
-	uint32_t GetNumSamples() const noexcept override { return m_numSamples; }
-	Format GetFormat() const noexcept override { return m_format; }
-	uint32_t GetPlaneCount() const noexcept override { return 1; }
-
-	ResourceState GetUsageState() const noexcept override { return m_usageState; }
-	void SetUsageState(ResourceState usageState) noexcept override { m_usageState = usageState; }
 
 	// IColorBuffer implementation
 	void SetClearColor(Color clearColor) noexcept final { m_clearColor = clearColor; }
@@ -85,21 +71,9 @@ private:
 	ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt);
 
 private:
-	ResourceType m_resourceType{ ResourceType::Texture2D };
-	uint64_t m_width{ 0 };
-	uint32_t m_height{ 0 };
-	uint32_t m_arraySizeOrDepth{ 0 };
-	uint32_t m_numMips{ 1 };
-	uint32_t m_numSamples{ 1 };
-	Format m_format{ Format::Unknown };
-
 	const std::string m_name;
 	Color m_clearColor{ DirectX::Colors::Black };
 	uint32_t m_numFragments{ 1 };
-
-	VkImageHandle m_resource;
-	ResourceState m_usageState{ ResourceState::Undefined };
-	ResourceState m_transitioningState{ ResourceState::Undefined };
 
 	VkImageViewHandle m_imageViewRtv;
 	VkImageViewHandle m_imageViewSrv;

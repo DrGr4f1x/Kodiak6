@@ -58,6 +58,8 @@
     <ClCompile Include="Graphics\DX12\Enums12.cpp" />
     <ClCompile Include="Graphics\DX12\DeviceManager12.cpp" />
     <ClCompile Include="Graphics\DX12\FrameBuffer12.cpp" />
+    <ClCompile Include="Graphics\DX12\GpuImage12.cpp" />
+    <ClCompile Include="Graphics\DX12\PixelBuffer12.cpp" />
     <ClCompile Include="Graphics\DX12\Queue12.cpp" />
     <ClCompile Include="Graphics\DX12\DescriptorHeap12.cpp" />
     <ClCompile Include="Graphics\Formats.cpp" />
@@ -73,6 +75,8 @@
     <ClCompile Include="Graphics\VK\DeviceVK.cpp" />
     <ClCompile Include="Graphics\VK\EnumsVK.cpp" />
     <ClCompile Include="Graphics\VK\Generated\LoaderVK.cpp" />
+    <ClCompile Include="Graphics\VK\GpuImageVK.cpp" />
+    <ClCompile Include="Graphics\VK\PixelBufferVK.cpp" />
     <ClCompile Include="Graphics\VK\QueueVK.cpp" />
     <ClCompile Include="Graphics\VK\RefCountingVK.cpp" />
     <ClCompile Include="Graphics\VK\VersionVK.cpp" />
@@ -166,6 +170,8 @@
     <ClInclude Include="Graphics\DX12\Device12.h" />
     <ClInclude Include="Graphics\DX12\Enums12.h" />
     <ClInclude Include="Graphics\DX12\FrameBuffer12.h" />
+    <ClInclude Include="Graphics\DX12\GpuImage12.h" />
+    <ClInclude Include="Graphics\DX12\PixelBuffer12.h" />
     <ClInclude Include="Graphics\DX12\Queue12.h" />
     <ClInclude Include="Graphics\DX12\Strings12.h" />
     <ClInclude Include="Graphics\Formats.h" />
@@ -183,6 +189,8 @@
     <ClInclude Include="Graphics\VK\FlagsVK.h" />
     <ClInclude Include="Graphics\VK\FormatsVK.h" />
     <ClInclude Include="Graphics\VK\Generated\LoaderVK.h" />
+    <ClInclude Include="Graphics\VK\GpuImageVK.h" />
+    <ClInclude Include="Graphics\VK\PixelBufferVK.h" />
     <ClInclude Include="Graphics\VK\QueueVK.h" />
     <ClInclude Include="Graphics\VK\StringsVK.h" />
     <ClInclude Include="Graphics\VK\VersionVK.h" />
@@ -264,6 +272,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)External\DirectX-Headers\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4250</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -282,6 +291,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)External\DirectX-Headers\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4250</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -302,6 +312,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)\Include;$(VULKAN_SDK)\Include\vulkan;$(ProjectDir)External\DirectX-Headers\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4250</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

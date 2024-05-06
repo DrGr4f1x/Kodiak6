@@ -22,20 +22,20 @@ namespace Kodiak::DX12
 {
 
 ColorBuffer::ColorBuffer(const ColorBufferCreationParams& creationParams, const ColorBufferCreationParamsExt& creationParamsExt)
-	: m_resourceType{ creationParams.resourceType }
-	, m_width{ creationParams.width }
-	, m_height{ creationParams.height }
-	, m_arraySizeOrDepth{ creationParams.arraySizeOrDepth }
-	, m_numMips{ creationParams.numMips }
-	, m_numSamples{ creationParams.numSamples }
-	, m_format{ creationParams.format }
-	, m_planeCount{ creationParamsExt.planeCount }
+	: PixelBuffer{
+		creationParams.resourceType,
+		creationParamsExt.resource,
+		creationParamsExt.usageState,
+		creationParams.width,
+		creationParams.height,
+		creationParams.arraySizeOrDepth,
+		creationParams.numMips,
+		creationParams.numSamples,
+		creationParams.format,
+		creationParamsExt.planeCount }
 	, m_name{ creationParams.name }
 	, m_clearColor{ creationParams.clearColor }
 	, m_numFragments{ 1 }
-	, m_resource{ creationParamsExt.resource }
-	, m_usageState{ creationParamsExt.usageState }
-	, m_transitioningState{ ResourceState::Undefined }
 	, m_rtvHandle{ creationParamsExt.rtvHandle }
 	, m_srvHandle{ creationParamsExt.srvHandle }
 	, m_uavHandles{ creationParamsExt.uavHandles }

@@ -32,6 +32,17 @@ class IGpuImage : public IObject
 public:
 	virtual ResourceType GetType() const noexcept = 0;
 
+	virtual ResourceState GetUsageState() const noexcept = 0;
+	virtual void SetUsageState(ResourceState usageState) noexcept = 0;
+};
+
+
+//
+// PixelBuffer
+//
+class IPixelBuffer : public virtual IGpuImage
+{
+public:
 	virtual uint64_t GetWidth() const noexcept = 0;
 	virtual uint32_t GetHeight() const noexcept = 0;
 	virtual uint32_t GetDepth() const noexcept = 0;
@@ -41,15 +52,13 @@ public:
 	virtual Format GetFormat() const noexcept = 0;
 	virtual uint32_t GetPlaneCount() const noexcept = 0;
 
-	virtual ResourceState GetUsageState() const noexcept = 0;
-	virtual void SetUsageState(ResourceState usageState) noexcept = 0;
 };
 
 
 //
 // ColorBuffer
 //
-class IColorBuffer : public IGpuImage
+class IColorBuffer : public virtual IPixelBuffer
 {
 public:
 	virtual void SetClearColor(Color clearColor) noexcept = 0;
@@ -62,7 +71,7 @@ using ColorBufferHandle = IntrusivePtr<IColorBuffer>;
 //
 // DepthBuffer
 //
-class IDepthBuffer : public IGpuImage
+class IDepthBuffer : public virtual IPixelBuffer
 {
 public:
 	virtual float GetClearDepth() const noexcept = 0;

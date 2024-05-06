@@ -14,23 +14,24 @@
 
 #include "Graphics\CreationParams.h"
 
+
 namespace Kodiak::VK
 {
 
 DepthBuffer::DepthBuffer(const DepthBufferCreationParams& creationParams, const DepthBufferCreationParamsExt& creationParamsExt) noexcept
-	: m_resourceType{ creationParams.resourceType }
-	, m_width{ creationParams.width }
-	, m_height{ creationParams.height }
-	, m_arraySizeOrDepth{ creationParams.arraySizeOrDepth }
-	, m_numMips{ creationParams.numMips }
-	, m_numSamples{ creationParams.numSamples }
-	, m_format{ creationParams.format }
+	: PixelBuffer{
+		creationParams.resourceType,
+		creationParamsExt.image,
+		creationParamsExt.usageState,
+		creationParams.width,
+		creationParams.height,
+		creationParams.arraySizeOrDepth,
+		creationParams.numMips,
+		creationParams.numSamples,
+		creationParams.format }
 	, m_name{ creationParams.name }
 	, m_clearDepth{ creationParams.clearDepth }
 	, m_clearStencil{ creationParams.clearStencil }
-	, m_resource{ creationParamsExt.image }
-	, m_usageState{ creationParamsExt.usageState }
-	, m_transitioningState{ ResourceState::Undefined }
 	, m_imageViewDepthStencil{ creationParamsExt.imageViewDepthStencil }
 	, m_imageViewDepthOnly{ creationParamsExt.imageViewDepthOnly }
 	, m_imageViewStencilOnly{ creationParamsExt.imageViewStencilOnly }
@@ -48,7 +49,7 @@ NativeObjectPtr DepthBuffer::GetNativeObject(NativeObjectType nativeObjectType) 
 	switch (nativeObjectType)
 	{
 	case VK_Image:
-		return NativeObjectPtr(*m_resource);
+		return NativeObjectPtr(*m_image);
 		break;
 	default:
 		return nullptr;

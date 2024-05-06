@@ -144,15 +144,17 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 		assert(IsValidComputeResourceState(newState));
 	}
 
+	const auto* pixelBuffer = dynamic_cast<IPixelBuffer*>(gpuImage);
+
 	TextureBarrier barrier{};
 	barrier.resource = gpuImage->GetNativeObject(NativeObjectType::DX12_Resource);
 	barrier.beforeState = oldState;
 	barrier.afterState = newState;
-	barrier.numMips = gpuImage->GetNumMips();
+	barrier.numMips = pixelBuffer->GetNumMips();
 	barrier.mipLevel = 0;
-	barrier.arraySizeOrDepth = gpuImage->GetArraySize();
+	barrier.arraySizeOrDepth = pixelBuffer->GetArraySize();
 	barrier.arraySlice = 0;
-	barrier.planeCount = gpuImage->GetPlaneCount();
+	barrier.planeCount = pixelBuffer->GetPlaneCount();
 	barrier.bWholeTexture = true;
 
 	m_textureBarriers.push_back(barrier);
