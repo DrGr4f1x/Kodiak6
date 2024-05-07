@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\DX12\PixelBuffer12.h"
+#include "Graphics\DX12\GpuImage12.h"
 
 
 namespace Kodiak::DX12
@@ -49,7 +49,7 @@ struct DepthBufferCreationParamsExt
 };
 
 
-class DepthBuffer : public IDepthBuffer, public PixelBuffer
+class DepthBuffer : public IDepthBuffer, public GpuImage
 {
 	IMPLEMENT_IOBJECT
 

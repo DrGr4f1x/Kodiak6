@@ -31,18 +31,9 @@ class __declspec(novtable) IGpuImage : public IObject
 {
 public:
 	virtual ResourceType GetType() const noexcept = 0;
-
 	virtual ResourceState GetUsageState() const noexcept = 0;
 	virtual void SetUsageState(ResourceState usageState) noexcept = 0;
-};
 
-
-//
-// PixelBuffer
-//
-class __declspec(novtable) IPixelBuffer : public virtual IGpuImage
-{
-public:
 	virtual uint64_t GetWidth() const noexcept = 0;
 	virtual uint32_t GetHeight() const noexcept = 0;
 	virtual uint32_t GetDepth() const noexcept = 0;
@@ -51,14 +42,13 @@ public:
 	virtual uint32_t GetNumSamples() const noexcept = 0;
 	virtual Format GetFormat() const noexcept = 0;
 	virtual uint32_t GetPlaneCount() const noexcept = 0;
-
 };
 
 
 //
 // ColorBuffer
 //
-class __declspec(novtable) IColorBuffer : public virtual IPixelBuffer
+class __declspec(novtable) IColorBuffer : public virtual IGpuImage
 {
 public:
 	virtual void SetClearColor(Color clearColor) noexcept = 0;
@@ -71,7 +61,7 @@ using ColorBufferHandle = IntrusivePtr<IColorBuffer>;
 //
 // DepthBuffer
 //
-class __declspec(novtable) IDepthBuffer : public virtual IPixelBuffer
+class __declspec(novtable) IDepthBuffer : public virtual IGpuImage
 {
 public:
 	virtual float GetClearDepth() const noexcept = 0;
@@ -105,8 +95,8 @@ public:
 	virtual void EndEvent() = 0;
 	virtual void SetMarker(const std::string& label) = 0;
 
-	virtual void TransitionResource(IPixelBuffer* gpuImage, ResourceState newState, bool bFlushImmediate = false) = 0;
-	virtual void InsertUAVBarrier(IPixelBuffer* gpuImage, bool bFlushImmediate = false) = 0;
+	virtual void TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate = false) = 0;
+	virtual void InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate = false) = 0;
 
 	virtual class IGraphicsContext* GetGraphicsContext() = 0;
 	virtual class IComputeContext* GetComputeContext() = 0;

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\DX12\PixelBuffer12.h"
+#include "Graphics\DX12\GpuImage12.h"
 
 
 namespace Kodiak::DX12
@@ -47,7 +47,7 @@ struct ColorBufferCreationParamsExt
 };
 
 
-class ColorBuffer : public IColorBuffer, public PixelBuffer
+class ColorBuffer : public IColorBuffer, public GpuImage
 {
 	IMPLEMENT_IOBJECT
 

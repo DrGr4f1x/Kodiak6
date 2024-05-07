@@ -16,10 +16,25 @@
 namespace Kodiak::VK
 {
 
-GpuImage::GpuImage(ResourceType resourceType, CVkImage* image, ResourceState usageState) noexcept
-	: m_resourceType{ resourceType }
-	, m_image{ image }
+GpuImage::GpuImage(
+	CVkImage* image,
+	uint64_t width,
+	uint32_t height,
+	uint32_t arraySizeOrDepth,
+	uint32_t numMips,
+	uint32_t numSamples,
+	ResourceType resourceType,
+	ResourceState usageState,
+	Format format) noexcept
+	: m_image{ image }
+	, m_width{ width }
+	, m_height{ height }
+	, m_arraySizeOrDepth{ arraySizeOrDepth }
+	, m_numMips{ numMips }
+	, m_numSamples{ numSamples }
+	, m_resourceType{ resourceType }
 	, m_usageState{ usageState }
+	, m_format{ format }
 {}
 
 } // namespace Kodiak::VK

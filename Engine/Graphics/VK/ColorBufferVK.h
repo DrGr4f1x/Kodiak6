@@ -11,7 +11,7 @@
 #pragma once
 
 
-#include "Graphics\VK\PixelBufferVK.h"
+#include "Graphics\VK\GpuImageVK.h"
 
 
 namespace Kodiak::VK
@@ -39,7 +39,7 @@ struct ColorBufferCreationParamsExt
 };
 
 
-class ColorBuffer : public IColorBuffer, public PixelBuffer
+class ColorBuffer : public IColorBuffer, public GpuImage
 {
 	IMPLEMENT_IOBJECT
 

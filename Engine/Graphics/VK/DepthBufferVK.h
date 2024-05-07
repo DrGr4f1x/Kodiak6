@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Graphics\VK\PixelBufferVK.h"
+#include "Graphics\VK\GpuImageVK.h"
 
 
 namespace Kodiak::VK
@@ -40,7 +40,7 @@ struct DepthBufferCreationParamsExt
 };
 
 
-class DepthBuffer : public IDepthBuffer, public PixelBuffer
+class DepthBuffer : public IDepthBuffer, public GpuImage
 {
 	IMPLEMENT_IOBJECT
 

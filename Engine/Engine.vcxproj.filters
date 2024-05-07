@@ -129,13 +129,7 @@
     <ClCompile Include="Graphics\DX12\GpuImage12.cpp">
       <Filter>Graphics\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\DX12\PixelBuffer12.cpp">
-      <Filter>Graphics\DX12</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\VK\GpuImageVK.cpp">
-      <Filter>Graphics\VK</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\VK\PixelBufferVK.cpp">
       <Filter>Graphics\VK</Filter>
     </ClCompile>
   </ItemGroup>
@@ -451,16 +445,10 @@
     <ClInclude Include="Graphics\DX12\FrameBuffer12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DX12\PixelBuffer12.h">
-      <Filter>Graphics\DX12</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\DX12\GpuImage12.h">
       <Filter>Graphics\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\VK\GpuImageVK.h">
-      <Filter>Graphics\VK</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\VK\PixelBufferVK.h">
       <Filter>Graphics\VK</Filter>
     </ClInclude>
   </ItemGroup>

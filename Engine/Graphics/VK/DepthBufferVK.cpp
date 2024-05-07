@@ -19,15 +19,15 @@ namespace Kodiak::VK
 {
 
 DepthBuffer::DepthBuffer(const DepthBufferCreationParams& creationParams, const DepthBufferCreationParamsExt& creationParamsExt) noexcept
-	: PixelBuffer{
-		creationParams.resourceType,
+	: GpuImage{
 		creationParamsExt.image,
-		creationParamsExt.usageState,
 		creationParams.width,
 		creationParams.height,
 		creationParams.arraySizeOrDepth,
 		creationParams.numMips,
 		creationParams.numSamples,
+		creationParams.resourceType,
+		creationParamsExt.usageState,
 		creationParams.format }
 	, m_name{ creationParams.name }
 	, m_clearDepth{ creationParams.clearDepth }

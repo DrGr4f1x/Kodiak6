@@ -113,23 +113,23 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-void CommandContext::TransitionResource(IPixelBuffer* pixelBuffer, ResourceState newState, bool bFlushImmediate)
+void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate)
 {
 	TextureBarrier barrier{};
-	barrier.image = pixelBuffer->GetNativeObject(NativeObjectType::VK_Image);
-	barrier.format = FormatToVulkan(pixelBuffer->GetFormat());
-	barrier.imageAspect = GetImageAspect(pixelBuffer->GetFormat());
-	barrier.beforeState = pixelBuffer->GetUsageState();
+	barrier.image = gpuImage->GetNativeObject(NativeObjectType::VK_Image);
+	barrier.format = FormatToVulkan(gpuImage->GetFormat());
+	barrier.imageAspect = GetImageAspect(gpuImage->GetFormat());
+	barrier.beforeState = gpuImage->GetUsageState();
 	barrier.afterState = newState;
-	barrier.numMips = pixelBuffer->GetNumMips();
+	barrier.numMips = gpuImage->GetNumMips();
 	barrier.mipLevel = 0;
-	barrier.arraySizeOrDepth = pixelBuffer->GetArraySize();
+	barrier.arraySizeOrDepth = gpuImage->GetArraySize();
 	barrier.arraySlice = 0;
 	barrier.bWholeTexture = true;
 
 	m_textureBarriers.push_back(barrier);
 
-	pixelBuffer->SetUsageState(newState);
+	gpuImage->SetUsageState(newState);
 
 	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
 	{
@@ -138,11 +138,11 @@ void CommandContext::TransitionResource(IPixelBuffer* pixelBuffer, ResourceState
 }
 
 
-void CommandContext::InsertUAVBarrier(IPixelBuffer* pixelBuffer, bool bFlushImmediate)
+void CommandContext::InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate)
 {
-	assert_msg(HasFlag(pixelBuffer->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
+	assert_msg(HasFlag(gpuImage->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
 
-	TransitionResource(pixelBuffer, pixelBuffer->GetUsageState(), bFlushImmediate);
+	TransitionResource(gpuImage, gpuImage->GetUsageState(), bFlushImmediate);
 }
 
 
