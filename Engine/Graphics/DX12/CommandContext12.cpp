@@ -134,9 +134,9 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate)
+void CommandContext::TransitionResource(IPixelBuffer* pixelBuffer, ResourceState newState, bool bFlushImmediate)
 {
-	auto oldState = gpuImage->GetUsageState();
+	auto oldState = pixelBuffer->GetUsageState();
 
 	if (m_type == CommandListType::Compute)
 	{
@@ -144,10 +144,8 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 		assert(IsValidComputeResourceState(newState));
 	}
 
-	const auto* pixelBuffer = dynamic_cast<PixelBuffer*>(gpuImage);
-
 	TextureBarrier barrier{};
-	barrier.resource = gpuImage->GetNativeObject(NativeObjectType::DX12_Resource);
+	barrier.resource = pixelBuffer->GetNativeObject(NativeObjectType::DX12_Resource);
 	barrier.beforeState = oldState;
 	barrier.afterState = newState;
 	barrier.numMips = pixelBuffer->GetNumMips();
@@ -159,7 +157,7 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 
 	m_textureBarriers.push_back(barrier);
 
-	gpuImage->SetUsageState(newState);
+	pixelBuffer->SetUsageState(newState);
 
 
 	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
@@ -169,13 +167,13 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 }
 
 
-void CommandContext::InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate)
+void CommandContext::InsertUAVBarrier(IPixelBuffer* pixelBuffer, bool bFlushImmediate)
 {
-	assert_msg(HasFlag(gpuImage->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
+	assert_msg(HasFlag(pixelBuffer->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
 
 	BufferBarrier barrier{};
-	barrier.resource = gpuImage->GetNativeObject(NativeObjectType::DX12_Resource);
-	barrier.beforeState = gpuImage->GetUsageState();
+	barrier.resource = pixelBuffer->GetNativeObject(NativeObjectType::DX12_Resource);
+	barrier.beforeState = pixelBuffer->GetUsageState();
 	barrier.afterState = barrier.beforeState;
 
 	m_bufferBarriers.push_back(barrier);

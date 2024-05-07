@@ -113,15 +113,13 @@ void CommandContext::SetMarker(const string& label)
 }
 
 
-void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newState, bool bFlushImmediate)
+void CommandContext::TransitionResource(IPixelBuffer* pixelBuffer, ResourceState newState, bool bFlushImmediate)
 {
-	const auto* pixelBuffer = dynamic_cast<IPixelBuffer*>(gpuImage);
-
 	TextureBarrier barrier{};
-	barrier.image = gpuImage->GetNativeObject(NativeObjectType::VK_Image);
+	barrier.image = pixelBuffer->GetNativeObject(NativeObjectType::VK_Image);
 	barrier.format = FormatToVulkan(pixelBuffer->GetFormat());
 	barrier.imageAspect = GetImageAspect(pixelBuffer->GetFormat());
-	barrier.beforeState = gpuImage->GetUsageState();
+	barrier.beforeState = pixelBuffer->GetUsageState();
 	barrier.afterState = newState;
 	barrier.numMips = pixelBuffer->GetNumMips();
 	barrier.mipLevel = 0;
@@ -131,7 +129,7 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 
 	m_textureBarriers.push_back(barrier);
 
-	gpuImage->SetUsageState(newState);
+	pixelBuffer->SetUsageState(newState);
 
 	if (bFlushImmediate || GetPendingBarrierCount() >= 16)
 	{
@@ -140,11 +138,11 @@ void CommandContext::TransitionResource(IGpuImage* gpuImage, ResourceState newSt
 }
 
 
-void CommandContext::InsertUAVBarrier(IGpuImage* gpuImage, bool bFlushImmediate)
+void CommandContext::InsertUAVBarrier(IPixelBuffer* pixelBuffer, bool bFlushImmediate)
 {
-	assert_msg(HasFlag(gpuImage->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
+	assert_msg(HasFlag(pixelBuffer->GetUsageState(), ResourceState::UnorderedAccess), "Resource must be in UnorderedAccess state to insert a UAV barrier");
 
-	TransitionResource(gpuImage, gpuImage->GetUsageState(), bFlushImmediate);
+	TransitionResource(pixelBuffer, pixelBuffer->GetUsageState(), bFlushImmediate);
 }
 
 
